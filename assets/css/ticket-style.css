@@ -1,0 +1,875 @@
+* {
+    box-sizing: border-box;
+}
+
+.show-listing-wrappper {
+    padding: 0 16px;
+}
+
+.show-listing-wrappper .show-listing-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -16px;
+}
+.show-listing-wrappper .show-listing-wrap .show-listing-inner {
+    width: calc((100% / 3) - 20px);
+    padding: 20px 16px;
+    height: 130px;
+    box-shadow: 0px 0px 10px 1px rgb(0 0 0 / 30%);
+    margin: 10px;
+}
+.show-listing-wrappper .pagination-links {
+    width: 100%;
+    text-align: center;
+    margin-top: 30px;
+}
+.show-listing-wrappper .pagination-links .page-numbers{
+    margin: 0 10px;
+    font-size: 18px;
+}
+
+.spettacolo-list-box{
+    padding-bottom: 25px;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    flex-direction: column;
+}
+.list-date p {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+}
+@media only screen and (min-width: 768px){
+    .spettacolo-list-box{
+        flex-direction: row;
+        align-items: center;
+    }
+    .spettacolo-list-box h3 {
+        text-align: left !important;
+    }
+    .spettacolo-list-box .list-cta a{
+        margin-top:0px;
+    }
+    .spettacolo-list-box .list-location p{
+        font-size: 17px !important;
+    }
+    .spettacolo-thumb{
+        margin: 0 !important;
+    }
+}
+.spettacolo-list-box h3 {
+    font-size: 20px;
+    text-align: center;
+}
+.spettacolo-thumb {
+    max-width: 200px;
+    margin: 0 auto;
+}
+.spettacolo-thumb img {
+    max-width: 100%;
+}
+.spettacolo-list-box .list-title a:hover {
+    text-decoration: none;
+    color: #dd3d41;
+}
+
+.spettacolo-list-box .list-title a {
+    text-decoration: none;
+    color: #1b1b1b;
+}
+.spettacolo-list-box .list-cta a {
+    background-color: #dd3d41;
+    color: #fff;
+    text-transform: uppercase;
+    -webkit-font-smoothing: antialiased;
+    width: 100%;
+    display: block;
+    padding: 15px;
+    margin-top:1rem;
+    text-align: center;
+    text-decoration: none;
+}
+.spettacolo-list-box .list-cta a:hover {
+    text-decoration: none;
+    color: #fff;
+    background-color: #ff4b4f;
+}
+svg.fa-location-dot{
+    height: 1em;
+    margin: 7px 10px 5px 5px;
+}
+
+svg.fa-calendar{
+    height: 1em;
+    margin: 7px 10px 5px 5px;
+}
+.spettacolo-listing-box-wrapper svg.fa-clipboard-list {
+    height: 1em;
+    margin: 2px 10px 5px 5px;
+}
+
+.spettacolo-list-box .list-location{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.spettacolo-list-box .list-location p{
+    font-size: 13px;
+}
+.spettacolo-list-box .list-date{
+    display: flex;
+}
+
+.spettacolo-listing-wrapper .spettacolo-listing-box-wrapper {    
+    padding: 20px 16px;        
+    margin: 10px;
+    border-bottom: 2px solid #d8dbe2;
+}
+
+.spettacolo-listing-wrapper .pagination-links {
+    width: 100%;
+    text-align: center;
+    margin-top: 30px;
+}
+
+.spettacolo-listing-wrapper .pagination-links a.page-numbers {
+    margin: 0 10px;
+    font-size: 18px;
+}
+
+.single-date-list-wrapper .single-date-list{
+    display: flex;
+    padding: 10px 0;
+}
+
+.spettacolo-single-wrapper{
+    display: flex;
+}
+
+.spettacolo-single-wrapper .list-location{
+    display: flex;
+}
+
+.spettacolo-single-wrapper .list-location p{
+    margin: 0;
+}
+.spettacolo-single-wrapper .single-date-left {
+    width: 100%;
+}
+.spettacolo-single-wrapper .list-date{
+    display: flex;
+}
+
+.spettacolo-single-wrapper .list-date p{
+    margin: 0;
+}
+
+.spe-half-wrap {
+    padding: 0px 30px;
+}
+
+.spettacolo-single-wrapper {
+    padding-top: 70px;
+}
+
+
+.spettacolo-single-inner {
+    width: 100%;
+}
+
+.single-date-list-wrapper {
+    padding-top: 50px;
+}
+
+.single-date-list p {
+    margin: auto 50px auto 20px;
+}
+
+.spettacolo-info-wrap{
+    display: flex;
+}
+
+.spettacolo-info-img{
+    margin-right: 1rem;
+}
+.spettacolo-info-inner .list-location{
+    display: flex;
+}
+.spettacolo-info-inner .list-date{
+    display: flex;
+}
+.spettacolo-prices-wrap{
+    display: flex;
+}
+.list-row{
+    display: flex;
+}
+.price-table .table-row{
+    padding: 20px 16px;
+    box-shadow: none;
+    margin: 10px;
+    border: 1px solid #1b1b1b; 
+}
+.spettacolo-prices-inner {
+    background: #f8f9fa;
+}
+.table-row .row-title{
+    padding-right: 50px;
+}
+
+.button-counter{
+    display: flex;
+}
+.button-counter input{
+    border-style: hidden !important;
+    max-width: 45px !important;
+    text-align: center;
+}
+.table-row .row-title {
+    padding-right: 15px;
+}
+@media (max-width: 400px){
+    .spettacolo-prices-inner .seat-desc {
+    font-size: 14px;
+    }
+    .spettacolo-prices-inner .seat-price {
+    font-size: 14px;
+    }
+    .spettacolo-prices-inner .change-seat-dropdown select {
+    font-size: 14px;
+    }
+.list-table-wrap{
+overflow: scroll;
+}
+.price-table .table-row{   width: 306px;}
+
+.spettacolo-prices-wrapper .row-title p {
+    font-size: 14px;
+}
+.spettacolo-prices-wrapper .spettacolo-prices-wrap .row-price p {
+    font-size: 14px;
+}
+.total-values-wrap {
+    flex-direction: column;
+}
+}
+.spettacolo-prices-wrapper .list-row button {
+    border-radius: 0;
+    background: #343a40;
+    -webkit-appearance: button !important;
+    box-shadow: 0px 0px 0px -7px rgba(0,0,0,0);
+    padding: 0.4em 1em;
+    border: 0;
+    line-height: 1.6;
+    display: inline-block;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 100%;
+}
+.spettacolo-prices-wrapper .list-row button.cart-qty-minus {
+    opacity: 0.25;
+    color: #fff;
+}
+.spettacolo-prices-wrapper .container{
+    width: 100%;
+}
+.spettacolo-seat-map-body .container{
+    max-width: 1500px;
+}
+.spettacolo-prices-inner ul.tab {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+.spettacolo-prices-inner ul.tab li {
+    flex: 1 1 auto;
+    text-align: center;
+}
+.spettacolo-prices-inner ul.tab li a {
+    display: block;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: #000;
+    background-color: transparent;
+    text-transform: uppercase;
+}
+.spettacolo-prices-inner ul.tab li.active a {
+    background: #000;
+    color: #fff;
+}
+.spettacolo-prices-inner .priceqty {
+    display: flex;
+    align-items: center;
+}
+.spettacolo-prices-inner ul.tab li a:hover {
+    background: #000;
+    color: #fff;
+}
+.spettacolo-prices-wrap .list-table-wrap .list-row {
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #cccecf;
+    border-top: 1px solid #cccecf;
+    border-style: dotted;
+    border-right: 0;
+    border-left: 0;
+    align-items: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.spettacolo-prices-wrapper .row-title p {
+    font-weight: 800;
+    -webkit-font-smoothing: antialiased;
+}
+.spettacolo-prices-wrapper .zone-pricing {
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.spettacolo-prices-wrapper .zone-pricing p {
+    font-size: 14px;
+    color: #6c757d;
+}
+.spettacolo-prices-wrapper .spettacolo-prices-inner ul.tab {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+.spettacolo-prices-wrapper .showheader{
+    background: #343a40;
+    padding:1rem;
+}
+.spettacolo-prices-wrapper .showheader a.backtoshow {
+    color: #fff;
+}
+.spettacolo-prices-wrapper .showheader h3 {
+    color: #fff;
+}
+.spettacolo-prices-wrapper .showheader .spettacolo-info-inner {
+    color: #fff;
+}
+.spettacolo-prices-wrapper .spettacolo-info-img img {
+    max-width: 80px;
+    border-radius: 10px;
+}
+.spettacolo-prices-wrapper .spettacolo-info-wrap{
+        justify-content: left;
+        align-items: center;
+}
+.spettacolo-prices-wrapper .spettacolo-prices-wrap{
+    flex-wrap:wrap;
+    justify-content: space-between;
+    margin-top: 50px;
+    align-items: flex-start;
+}
+
+.spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap:first-child {
+    width: 100%;
+    padding: 0 !important;
+}
+.spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap:last-child{
+    width: 100%;
+    padding: 0 !important;
+}
+
+.price-table .table-row{
+    margin:0 !important;
+}
+
+
+@media screen and (min-width: 768px) {
+  .spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap:first-child {
+    width: 50%;
+    }
+.spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap:last-child{
+    width: 50%;
+    }  
+    .price-table .table-row{
+    margin-top: 10px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-bottom: 10px !important;
+    }
+}
+
+.spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap img{
+    width: 100%;
+}
+.spettacolo-prices-inner .selected-seat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #cccecf;
+    border-top: 1px solid #cccecf;
+    border-style: dotted;
+    border-right: 0;
+    border-left: 0;
+    align-items: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.spettacolo-prices-wrapper .spettacolo-prices-wrap .row-price {padding-right: 20px;}
+.total-values-wrap{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    background: #343a40;
+    color: #fff;
+}
+.total-values-wrap button.buy-btn {
+    background-color: #dd3d41;
+    color: #fff;
+    text-transform: uppercase;
+    -webkit-font-smoothing: antialiased;
+    width: 100%;
+    display: block;
+    padding: 15px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 0;
+    border:0;
+}
+.total-values-wrap .total-values{
+    display: flex;
+}
+.ticket-total-wrap{
+    display: flex;
+}
+.cart-page-btn {
+    display: inline-block;
+}
+.events-wrapper {
+    border: 1px solid gray;
+    padding: 10px 20px;
+    margin-bottom: 5px;
+}
+
+.ticket-title {
+    border-bottom: 1px solid gray;
+    background: gray;
+    padding: 5px 10px;
+}
+
+.ticket-title h2 {
+    color: #ffffff;
+}
+
+.zone-title {
+    padding: 5px 20px;
+}
+
+.ticket-zone ul, .ticket-zone ul li{
+    list-style-type: none;
+}
+.ticket-zone ul {
+    display: flex;
+    flex-direction: column;
+    padding-bottom : 15px
+}
+.ticket-zone ul li span{
+    color: gray;
+    font-size: 14px;
+    margin-left: 10px;
+}
+.ticket-zone:not(:last-child) {
+    border-bottom: 1px solid gray;
+}
+.wc-spettacolo-cart-wrapper {
+    width: 100%;
+    display: flex;
+}
+
+.wc-spettacolo-cart-wrapper .ticket-zone {
+    /*width: 50%;*/
+    padding: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: baseline;
+    /* border-right: 1px solid #000000; */
+    border-bottom: 0px solid;
+    padding-left: 0;
+}
+.spettacolo-cart-inner .ticket-title h2 {
+    color: #1b1b1b;
+    text-align: left;
+    font-size: 15px;
+    
+}
+.wc-spettacolo-cart-wrapper .ticket-zone .zone-title {
+    padding-left: 0;
+}
+.spettacolo-cart-inner .ticket-title {
+    background: transparent;
+    padding: 0;
+    border-bottom: 0;
+}
+.wc-spettacolo-cart-wrapper .zone-reductions {
+    width: 50%;
+    display: inline-block;
+}
+
+.wc-spettacolo-cart-wrapper .zone-title h4 {
+    font-size: 18px;
+}
+
+.wc-spettacolo-cart-wrapper .zone-reductions p {
+    font-size: 14px;
+}
+
+.wc-spettacolo-cart-wrapper .spettacolo-tickets {
+    display: flex;
+    flex-wrap: wrap;
+}
+.wc-spettacolo-cart-wrapper .ticket-zone:nth-child(3n + 1),
+.wc-spettacolo-cart-wrapper .ticket-zone:nth-child(2){
+    border-left: 0px solid #000000;
+
+}
+#login-fancybox-form .woocommerce-form-row label, #login-fancybox-form button[type="submit"] {
+    width: 100%;
+    display: block;
+}
+.spettacolo-list-box svg path {
+    fill: #dd3d41 !important;
+}
+.spettacolo-month-filter .spettacolo-month {
+    padding: 0px;
+    border: 0px;
+    border-radius: 0px;
+    font-size: 20px;
+}
+
+.spettacolo-month-filter {
+    flex-wrap: wrap;
+    row-gap: 10px;
+    display: flex;
+    column-gap: 10px;
+    border-bottom: 1px solid #857b7b;
+    padding-bottom: 1rem;
+    justify-content: space-between;
+}
+.spettacolo-prices-img image {
+    scale: 2;
+    transform: translate(-4px, -4px);
+}
+.spettacolo-prices-img circle {
+    scale: 2;
+}
+.error-display {
+    color: red;
+}
+/*.spettacolo-cart-inner .zone-reductions{
+    display: flex;
+}*/
+
+.spettacolo-prices-page .content-container.site-container { max-width: 96%;}
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+        margin: auto;
+    }
+}
+
+.spettacolo-prices-inner .title h2 {
+    font-size: 28px;
+    margin: 0;
+}
+.spettacolo-prices-wrapper .row-title p {
+    margin: 0;
+    color: #1b1b1b;
+    font-size: 17px;
+}
+.spettacolo-prices-wrapper .row-price p {
+    margin: 0;
+    font-size: 17px;
+    color: #1b1b1b;
+    font-weight: 800;
+    -webkit-font-smoothing: antialiased;
+}
+
+.spettacolo-prices-inner .title-wrap {
+    position: relative;
+}
+
+.spettacolo-prices-inner .title-wrap svg {
+    width: 14px;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: 0.4s ease all;
+}
+
+.spettacolo-prices-inner .title-wrap.open svg{
+    transform: translateY(-50%) rotateZ(90deg);
+}
+
+.spettacolo-prices-inner .table-row .title span {
+    background-color: #e0e5e9;
+    display: inline-flex;
+    width: 15px;
+    height: 15px;
+    content: '';
+    margin-right: 1rem;
+    align-items: flex-end;
+}
+
+.spettacolo-prices-inner .table-row .title {
+    display: flex;
+    align-items: center;
+}
+
+.spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap.left_part {
+    position: relative;
+}
+
+.spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap.left_part .controls.custom-controls {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
+    flex-flow: column wrap;
+    padding-right: 10px;
+    /* width: auto !important; */
+}
+
+.spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap.left_part .controls.custom-controls button {border-radius: 0;color: #000;border-color: #000;border: 1px solid;background: transparent;padding: 9px 12px;font-size: .875rem;line-height: 20px;}
+.spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap.left_part .controls.custom-controls button:hover { background: #000; } 
+.spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap.left_part .controls.custom-controls button:hover svg { fill: #fff; }
+
+.spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap.left_part .controls.custom-controls button#reset { margin-top: 15px; }
+.spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap.left_part .controls.custom-controls button#zoom-out { border-top: 0; }
+
+@media (max-width: 991px) and (min-width: 768px) {
+    .spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap.left_part .controls.custom-controls { flex-flow: row wrap; }
+    .spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap.left_part .controls.custom-controls button#reset { margin-top: 0; margin-left: 15px; }
+    .spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap.left_part .controls.custom-controls button#zoom-out { border-top: 1px solid; border-left: 0; }  
+}
+
+select#reg_country_code, select#reg_country_codegishdgrd {
+    border: none;
+    border-bottom: 2px solid #857b7b;
+    padding-top: 1rem;
+    padding-bottom: 1.1rem;
+    max-width: 100px;
+    font-family: 'Inter';
+    color: #857b7b;
+    font-weight: 600;
+    font-size: max(15px,min(1.1vw,16px))!important;
+    line-height: 1.5;
+}
+.woocommerce-checkout input#billing_phone {
+    pointer-events: none;
+    display: none;
+}
+
+table.woocommerce-checkout-review-order-table thead {
+    display: none;
+}
+
+.woocommerce-checkout-review-order .product-total {
+    display: none;
+    width: 0px;
+}
+
+.woocommerce-checkout-review-order td.product-name {
+    width: 100%;
+}
+
+.spettacolo-tickets .ticket-datails-wrap.border-bot {
+    border-bottom: 2px solid #000;
+    margin-bottom: 20px;
+}
+.woocommerce table.shop_table td {
+    border-top : none !important;
+}
+
+.spettacolo-prices-wrapper .spettacolo-prices-wrap .spe-half-wrap.left_part .controls.custom-controls { 
+    background-color: #fff;
+    z-index: 9999; 
+}
+.spettacolo-prices-img {
+    position: relative !important;
+}
+
+.tooltip {
+    position: absolute;
+    /*                  top: 30px;  Adjust this value to position the tooltip above the SVG 
+    left: 50%;*/
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    display: none; /* Initially hide the tooltip */
+}
+
+.spettacolo-prices-img:hover .tooltip {
+    display: block; /* Show the tooltip on hover */
+}
+
+.seat-delete svg {
+    width: 16px;
+    height: 17px;
+    cursor: pointer;
+    color: #f9f9f9;
+}
+.seat-price-wrap { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.seat-price-wrap .seat-price { border: 1px solid #a19e9e; padding: 0px 5px; }
+.seat-price-wrap .seat-delete { display: flex; align-items: center; flex-wrap: wrap; }
+.select-subscription-wrap .table-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+.woocommerce-cart table.cart .ticket-delete img {
+    width: 16px;
+    height: 17px;
+    cursor: pointer;
+    color: #f9f9f9;
+}
+.ticket-title-wrap { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.ticket-title-wrap .ticket-delete { display: flex; align-items: center; flex-wrap: wrap; }
+
+#order_review .ticket-delete {display:none;}
+
+.woocommerce-cart .product-name .go-to-subscription-btn {
+    display: inline-block;
+    text-decoration: none;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 3px;
+    padding: 12px 30px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+
+/* jr style*/
+.subsciption-list .spettacolo-info-inner-wrap {
+    padding-left: calc(10vw - 15px);
+    padding-right: calc(10vw - 15px);
+    display: flex;
+    align-items: center;
+}
+
+.subsciption-list .spettacolo-info-inner-wrap .spe-info-half-wrap {
+    width: 30%;
+}
+.subsciption-list .spettacolo-info-inner-wrap .spe-info-half-wrap .spettacolo-info-img img{
+    max-width: 220px;
+    width: 100%;
+}
+
+.subsciption-list .spettacolo-info-inner-wrap .spe-info-half-wrap.descpription-right {
+    width: 60%;
+}
+
+.subsciption-list .spettacolo-info-inner-wrap .spettacolo-info-inner .list-date {
+    align-items: start;
+}
+
+.subsciption-list .spettacolo-info-inner-wrap .spettacolo-info-inner .list-date p {
+    padding: 0;
+    margin: 0;
+}
+
+.subsciption-list .spettacolo-info-inner-wrap .spettacolo-info-inner .list-title h3 {
+    margin: 0;
+    padding: 0;
+}
+
+.subsciption-list .spettacolo-info-inner-wrap .drop-select-box {
+    display: flex;
+    gap: 30px;
+	width: 40%;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.subsciption-list .spettacolo-info-inner-wrap .drop-select-box select {
+    min-width: 200px;
+    padding: 10px;
+}
+
+.subsciption-list .spettacolo-info-inner-wrap .drop-select-box .single-date-right a button {
+    padding: 12px 31px;
+    border: none;
+    background: #000;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 5px;
+}
+.subscription-check-wrap { margin: 50px; }
+.subscription-check-wrap .subscription-check-form { max-width: 570px; margin: 0 auto; padding: 50px; background: #f5f6f6; border: 1px solid #000; }
+.subscription-check-wrap .subscription-check-form .subscription-check-input-wrap { display: inline-block; vertical-align: middle; }
+.subscription-check-wrap .subscription-check-form .subscription-check-btn-wrap { display: inline-block; vertical-align: middle; margin-left: 5px; }
+.subscription-check-wrap .subscription-check-form .subscription-check-input { border: 1px solid #000 !important; box-shadow: none !important; }
+.subscription-check-wrap .subscription-check-form .subscription-check-btn { background: #000; color: #fff; vertical-align: middle; cursor: pointer; height: 60px; }
+
+.woocommerce-account.woocommerce-view-order .ticket-title .spettacolo:before {
+    content: 'Spettacolo:';
+}
+.woocommerce-account.woocommerce-view-order .ticket-title .abbonamento:before {
+    content: 'Abbonamento:';
+}
+.woocommerce-order-details .print-error-msg {
+    color: red;
+}
+.subscription-check-form .subscription-check-error p {
+    color: red;
+}
+.subscription-orders-table .subscription-view-error {
+    color: red;
+}
+.spettacolo-cart-inner p:empty {
+    display: none;
+}
+.vivaticket-original-field{
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 0;
+    width: 0;
+    z-index: -1;
+}
+div#edit-fancybox-form {
+    max-width: 600px;
+}
+
+p:not(.bf-title).upd-phone-msg {
+    font-size: 14px !important;
+}
+@media (max-width: 767px) {
+    .fancybox-content{
+        max-height: 630px;
+        overflow: auto;
+    }
+    
+    .fancybox-content::-webkit-scrollbar {
+      -webkit-appearance: none;
+      width: 7px;
+    }
+
+    .fancybox-content::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background-color: rgb(144 138 138 / 50%);
+      box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+    }
+}
