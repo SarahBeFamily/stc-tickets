@@ -30,8 +30,8 @@ function fun_getBookingCart (){
 //    echo "<pre>";
 //    print_r($addToCartObject);
 //    echo "</pre>";
-    
-    if(!empty( $subscription_list )) {
+
+    if(is_array($subscription_list) && !empty( $subscription_list )) {
         foreach ( $addToCartObject as $addToCartObject_key => $addToCartObject_value ) {
             $first_addToCartObject = array_map( function ($addToCartObject_val){
                 $addToCartObject_val['doBooking'] = 1;
@@ -44,6 +44,12 @@ function fun_getBookingCart (){
         $subscription_cart_obj_final = $subscription_cart_obj;
     }
     
+    /**
+     * if user has already added some tickets to cart
+     * saved in user meta
+     * then merge the new tickets with the old tickets
+     * else add the new tickets to cart
+     */
     if( ! empty( $get_user_meta_before ) && ! empty( $get_user_meta_before[ 0 ] ) ) {
 //    if( ! empty( $get_user_meta_before ) && ! empty( $get_user_meta_before[ 0 ] ) && empty( $subscription_list ) ) {
         
@@ -102,7 +108,7 @@ function fun_getBookingCart (){
                                             array_push( $transaction_ids_to_remove, $transaction_ids_before[$zoneId.$pcode]['transaction_id'] );
                                         }
                                         if( isset($zone_reductions["seatId"]) || isset($reductions_value["seatId"]) ) {
-                                            $zone_reductions["seatId"] = isset($zone_reductions["seatId"]) ? array_unique(array_merge($zone_reductions["seatId"],$reductions_value["seatId"])) : $reductions_value["seatId"];
+                                            $zone_reductions["seatId"] = isset($zone_reductions["seatId"]) && is_array($zone_reductions["seatId"] && is_array($reductions_value["seatId"])) ? array_unique(array_merge($zone_reductions["seatId"],$reductions_value["seatId"])) : $reductions_value["seatId"];
                                         }
                                     }
                                 }
@@ -1295,11 +1301,28 @@ function print_order_fun() {
 
     $pdfApiUrl = API_HOST.'backend/backend.php?id=' . APIKEY . '&cmd=printAtHome&trcode='.$order_id.'&xml=0';
 
-    // Make a request to the API
+    // Make a request to the API and create a pdf file
+    // Creo un file pdf dalla risposta api
+    $pdf = file_get_contents($pdfApiUrl);
+    $response[ 'message' ] = $pdf;
+    $response[ 'status' ]  = true;
+    
+    /** MOD SARAH **/
     $api_response = file_get_contents($pdfApiUrl);
-    $response_xml           = isset($api_response) && !empty($api_response)? simplexml_load_string ( $api_response ) : '';
-    $response_json          = isset($response_xml) && !empty($response_xml) ? json_encode ( $response_xml ) : '';
-    $apiData          = isset($response_json) && !empty($response_json) ?  json_decode ( $response_json, TRUE ) : array();
+    $errmsg = array();
+    // $response_xml           = isset($api_response) && !empty($api_response)? simplexml_load_string ( $api_response ) : '';
+    // $response_xml = isset($api_response) && !empty($api_response) ? simplexml_load_string(file_get_contents(API_HOST.'backend/backend.php?id=' . APIKEY . '&cmd=printAtHome&trcode='.$order_id.'&xml=0')) : '';
+    // $response_json          = isset($response_xml) && !empty($response_xml) ? json_encode ( $response_xml ) : '';
+    // $apiData          = isset($response_json) && !empty($response_json) ?  json_decode ( $response_json, TRUE ) : array();
+    // if(!empty($apiData['@attributes'])){
+    //     if(!empty($apiData['@attributes']['errstring'])){
+    //         $errmsg = $apiData['@attributes']['errstring'];
+    //     }
+    // }
+
+    // Check if ApiData has error messages
+    // Controllo se ApiData ha messaggi di errore
+    $apiData = json_decode($api_response, true);
     if(!empty($apiData['@attributes'])){
         if(!empty($apiData['@attributes']['errstring'])){
             $errmsg = $apiData['@attributes']['errstring'];
