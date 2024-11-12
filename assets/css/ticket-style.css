@@ -574,6 +574,11 @@ overflow: scroll;
 .error-display {
     color: red;
 }
+.error-msg {
+    padding: 4% 10%;
+    color: red;
+    font-size: 20px;
+}
 /*.spettacolo-cart-inner .zone-reductions{
     display: flex;
 }*/

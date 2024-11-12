@@ -110,15 +110,18 @@ function stcTickets_spettacolo_prices_callback() {
     </script>
     <?php            
     $extGetMapData = json_decode( $json_en, true );
-//        if($_GET['print'] == 1) {
-//        
-//        echo "<pre>";
-//        print_r($json_en);
-//        echo "</pre>";
-//    }
+
+    // Testing: print the array of extGetMapData
+    // by adding ?print=1 to the URL
+    if(isset($_GET['print']) && $_GET['print'] == 1) {
+        echo "<pre>";
+        print_r($extGetMapData);
+        echo "</pre>";
+    }
+
     if( isset( $extGetMapData[ 'reply' ][ 'performance' ] ) ) {
         $performance           = $extGetMapData[ 'reply' ][ 'performance' ];
-        $map_seats             = $performance[ 'seats' ];
+        $map_seats             = isset($performance[ 'seats' ]) ? $performance[ 'seats' ] : array();
         $map_reductions        = $performance[ 'reductions' ]['reduction'];
 //        if($_GET['print'] == 1) {            
 //            echo "<pre>";
@@ -126,7 +129,7 @@ function stcTickets_spettacolo_prices_callback() {
 //            echo "</pre>";
 //        }
         $roomLastUpdate        = $performance[ '@attribute' ][ 'roomLastUpdate' ];
-        $map_zones             = $performance[ 'zones' ][ 'zone' ];
+        $map_zones             = isset($performance[ 'zones' ][ 'zone' ]) ? $performance[ 'zones' ][ 'zone' ] : array();
         $seatsLayout           = get_post_meta( $spe_id, 'map_room_data_xml', true );
         $room_last_update_time = get_post_meta( $spe_id, 'room_last_update_time' . $pcode, true );
         if( empty( $room_last_update_time ) ) {
@@ -154,12 +157,17 @@ function stcTickets_spettacolo_prices_callback() {
         $svgLastUpdate       = $seatsLayout[ 'room' ][ '@attributes' ][ 'lastUpdate' ];
         $seatsLayoutTypes    = $seatsLayout[ 'room' ][ 'types' ][ 'type' ];
         $temp_map_seat_array = array ();
-//        if($_GET['print'] == 1) {
-//
-//            echo "<pre>";
-//            print_r($map_zones);
-//            echo "</pre>";
-//        }
+
+        // Testing: print the array of map_zones
+        // by adding ?print=1 to the URL
+        if(isset($_GET['print']) && $_GET['print'] == 1) {
+
+            echo "<pre>";
+            print_r($map_zones);
+            echo "</pre>";
+        }
+
+        if (!empty($map_seats)) : // Mod sarah
         foreach ( $map_seats as $map_seats_key => $map_seats_value ) {
             if( key( $map_seats_value ) == '0' ) {
                 foreach ( $map_seats_value as $map_seats_k => $map_seats_val ) {
@@ -309,6 +317,7 @@ function stcTickets_spettacolo_prices_callback() {
                 }
             }
         }
+        endif;
         foreach ( $seatFromXml as $seatFromXml_key => $seatFromXml_value ) {
             $currentSeat = $seatFromXml_value;
 //            if($_GET['print'] == 1) {

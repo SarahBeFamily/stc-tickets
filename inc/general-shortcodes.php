@@ -376,9 +376,21 @@ function stcTickets_spettacolo_thankyou_callback() {
         $current_user_id = $get_current_user->ID;
         $cart = WC()->cart;
         if( ! empty( $cart ) && ! empty( $addToCartObject ) ) {
-            $checkout            = WC()->checkout();
-            $order_id            = $checkout->create_order( array('customer_id'=>$current_user_id,'billing_email'=>$current_user_email,'payment_method' => 'online') );
-            $order               = wc_get_order( $order_id );
+            
+            /** MOD SARAH **/
+            // nascondo ciò che non serve
+            // $checkout            = WC()->checkout();
+            // $order_id            = $checkout->create_order( array('customer_id'=>$current_user_id,'billing_email'=>$current_user_email,'payment_method' => 'online') );
+            // $order               = wc_get_order( $order_id );
+
+            // Creo un nuovo ordine
+            $order = wc_create_order();
+            $order->set_customer_id( $current_user_id );
+            $order->set_billing_email( $current_user_email );
+            $order->set_payment_method( 'online' );
+            $order_id = $order->get_id();
+            // fine mod sarah
+            
             update_post_meta( $order_id, '_customer_user', get_current_user_id() );
             $order->set_address( $address, 'billing' );
             $order->calculate_totals();
@@ -870,10 +882,10 @@ function stcTickets_spettacolo_get_users_live_callback($atts) {
         .dt-buttons {display: inline-block;}
         #data-table-accept-report_wrapper{padding: 0 20px;}
         .table-responsive.scrollbar.customer-table-wrap {
-    max-width: 100%;
-    overflow: hidden;
-    overflow-x: auto;
-}
+            max-width: 100%;
+            overflow: hidden;
+            overflow-x: auto;
+        }
     </style>
     <div class="page-wrap">
 
@@ -956,7 +968,6 @@ function stcTickets_spettacolo_get_users_live_callback($atts) {
                 var startDate = jQuery(document).find('#get-customers-form #start_date').val();
                 var endDate = jQuery(document).find('#get-customers-form #end_date').val();
                 jQuery.ajax({
-//                    url: 'https://d9ffd48ce9.nxcli.io/wp-admin/admin-ajax.php',
                     url: STCTICKETSPUBLIC.ajaxurl,
                     method: 'post',
                     beforeSend: function () {
@@ -976,7 +987,7 @@ function stcTickets_spettacolo_get_users_live_callback($atts) {
                         var row_html = '';
                         if (rows) {
                             if (jQuery(document).find('#data-table-accept-report').length > 0) {
-//                                console.log("test");
+                                // console.log("test");
                                 if ($.fn.DataTable.isDataTable('#data-table-accept-report')) {
                                     // Get the DataTable instance
                                     var dataTableInstance = jQuery(document).find('#data-table-accept-report').DataTable();
@@ -988,53 +999,52 @@ function stcTickets_spettacolo_get_users_live_callback($atts) {
 
                                         // Remove the DataTable element from the DOM
                                         jQuery(document).find('#data-table-accept-report tbody').html('');
-//                                        console.log("test 1");
+                                    //    console.log("test 1");
                                     }
                                 }
                             rows.forEach(function (singlerow, index) {
                                 var number = index + 1;
                                 row_html += '<tr data-count="' + index + '">';
-//                                row_html += '<td data-id="count">-</td>';
-//                                row_html += '<td data-id="cusid">-</td>';                                
-//                                row_html += '<td data-id="cusfcode">-</td>';
-//                                row_html += '<td data-id="cusfname">-</td>';
-//                                row_html += '<td data-id="cuslname">-</td>';
-//                                row_html += '<td data-id="cuscompany">-</td>';
-//                                row_html += '<td data-id="cusadd1">-</td>';
-//                                row_html += '<td data-id="cusadd2">-</td>';
-//                                row_html += '<td data-id="cuscity">-</td>';
-//                                row_html += '<td data-id="cusstate">-</td>';
-//                                row_html += '<td data-id="cuscountry">-</td>';
-//                                row_html += '<td data-id="cuspcode">-</td>';
-//                                row_html += '<td data-id="cusmobile">-</td>';
-//                                row_html += '<td data-id="cusbdate">-</td>';
-//                                row_html += '<td data-id="cusemail">-</td>';
-//                                console.log(singlerow['@attributes'], number, singlerow['@attributes'].cusprivacy);
-////                                if(singlerow['@attributes'].hasOwnProperty('cusprivacy')){
-//                                if(singlerow['@attributes'].cusprivacy != ''){
-//                                    
-////                                    var privacyValues = singlerow['@attributes'];
-//                                    var privacyValues = singlerow['@attributes'].cusprivacy.split(",");
-//                                    var privacy_val_count = 0;
-////                                    console.log(number, singlerow['@attributes'].cusprivacy);
-//                                    privacyValues.forEach(function (singleprivacy, index) {
-//                                        if(index < 2) {                                            
-//                                            if(singleprivacy.split("=")[1] == '1'){
-//                                                jQuery(document).find('.privacy'+(index+1)).html(privacyData[singleprivacy.split("=")[0]]['description']);
-//                                                row_html += '<td data-id="cusprivacy">' + privacyData[singleprivacy.split("=")[0]]['body'] + '</td>';
-//                                                privacy_val_count++;
-//                                            }
-//                                        }
-//                                    });
-//                                    for(var i = privacy_val_count;i<2;i++) {
-//                                        row_html += '<td data-id="cusprivacy">-</td>';                                    
-//                                    }
-//                                }else{
-//                                    row_html += '<td data-id="cusprivacy">-</td>';
-//                                    row_html += '<td data-id="cusprivacy">-</td>';
-//                                }
-                                
-                                
+    //                             row_html += '<td data-id="count">-</td>';
+    //                             row_html += '<td data-id="cusid">-</td>';                                
+    //                             row_html += '<td data-id="cusfcode">-</td>';
+    //                             row_html += '<td data-id="cusfname">-</td>';
+    //                             row_html += '<td data-id="cuslname">-</td>';
+    //                             row_html += '<td data-id="cuscompany">-</td>';
+    //                             row_html += '<td data-id="cusadd1">-</td>';
+    //                             row_html += '<td data-id="cusadd2">-</td>';
+    //                             row_html += '<td data-id="cuscity">-</td>';
+    //                             row_html += '<td data-id="cusstate">-</td>';
+    //                             row_html += '<td data-id="cuscountry">-</td>';
+    //                             row_html += '<td data-id="cuspcode">-</td>';
+    //                             row_html += '<td data-id="cusmobile">-</td>';
+    //                             row_html += '<td data-id="cusbdate">-</td>';
+    //                             row_html += '<td data-id="cusemail">-</td>';
+    //                             console.log(singlerow['@attributes'], number, singlerow['@attributes'].cusprivacy);
+    // //                                if(singlerow['@attributes'].hasOwnProperty('cusprivacy')){
+    //                             if(singlerow['@attributes'].cusprivacy != ''){
+                                    
+    // //                                    var privacyValues = singlerow['@attributes'];
+    //                                 var privacyValues = singlerow['@attributes'].cusprivacy.split(",");
+    //                                 var privacy_val_count = 0;
+    // //                                    console.log(number, singlerow['@attributes'].cusprivacy);
+    //                                 privacyValues.forEach(function (singleprivacy, index) {
+    //                                     if(index < 2) {                                            
+    //                                         if(singleprivacy.split("=")[1] == '1'){
+    //                                             jQuery(document).find('.privacy'+(index+1)).html(privacyData[singleprivacy.split("=")[0]]['description']);
+    //                                             row_html += '<td data-id="cusprivacy">' + privacyData[singleprivacy.split("=")[0]]['body'] + '</td>';
+    //                                             privacy_val_count++;
+    //                                         }
+    //                                     }
+    //                                 });
+    //                                 for(var i = privacy_val_count;i<2;i++) {
+    //                                     row_html += '<td data-id="cusprivacy">-</td>';                                    
+    //                                 }
+    //                             }else{
+    //                                 row_html += '<td data-id="cusprivacy">-</td>';
+    //                                 row_html += '<td data-id="cusprivacy">-</td>';
+    //                             }
+                                               
                                 row_html += '<td data-id="count">' + number + '</td>';
                                 row_html += '<td data-id="cusid">' + singlerow['@attributes'].cusid + '</td>';                                
                                 row_html += '<td data-id="cusfcode">' + singlerow['@attributes'].cusfcode + '</td>';
@@ -1056,7 +1066,7 @@ function stcTickets_spettacolo_get_users_live_callback($atts) {
                                     privacyValues.forEach(function (singleprivacy, index) {
                                         if(index < 2) {   
                                             if(singleprivacy.split("=")[1] == '1'){
-//                                                console.log(privacyData[singleprivacy.split("=")[0]]);
+                                                // console.log(privacyData[singleprivacy.split("=")[0]]);
                                                 
                                                 if(typeof privacyData[singleprivacy.split("=")[0]] != 'undefined' && privacyData[singleprivacy.split("=")[0]]['description'] != ''){
                                                     jQuery(document).find('.privacy'+(index+1)).html(privacyData[singleprivacy.split("=")[0]]['description']);
@@ -1081,10 +1091,10 @@ function stcTickets_spettacolo_get_users_live_callback($atts) {
                             });
                             jQuery(document).find('#data-table-accept-report tbody').html(row_html);
                             jQuery(document).find('.customer-table-wrap').show();
-//                                if ($.fn.DataTable.isDataTable('#data-table-accept-report')) {
-//                                    jQuery(document).find('#data-table-accept-report').DataTable().destroy();
-//                                }
-//                                    console.log("test 2",$.fn.DataTable.isDataTable('#data-table-accept-report'));
+ //                                if ($.fn.DataTable.isDataTable('#data-table-accept-report')) {
+ //                                    jQuery(document).find('#data-table-accept-report').DataTable().destroy();
+ //                                }
+ //                                    console.log("test 2",$.fn.DataTable.isDataTable('#data-table-accept-report'));
                                 jQuery(document).find('#data-table-accept-report').DataTable({
                                     dom: 'Bfrtip',
                                     buttons: [{

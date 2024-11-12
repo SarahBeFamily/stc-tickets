@@ -9,13 +9,14 @@ function fun_getBookingCart (){
         'message' => '',
         'status'  => false,
     );
-    $addToCartObject = $_POST['addToCart'];
-    $subscription_list   = isset($_POST[ 'subscription_list' ]) ? $_POST[ 'subscription_list' ] : '';
-    $orderId   = $_POST[ 'orderId' ];    
-    $user_id              = get_current_user_id();
-    $get_user_meta_before = get_user_meta( $user_id, 'addToCartObject' );
+    $addToCartObject        = $_POST['addToCart'];
+    $subscription_list      = isset($_POST[ 'subscription_list' ]) ? $_POST[ 'subscription_list' ] : '';
+    $orderId                = $_POST[ 'orderId' ];    
+    $user_id                = get_current_user_id();
+    $get_user_meta_before   = get_user_meta( $user_id, 'addToCartObject' );
     $transaction_ids_before = !empty(get_user_meta( $user_id, 'transactionIds' )[0]) ? get_user_meta( $user_id, 'transactionIds' )[0] : array();
-    $pcode            = $_POST[ 'pcode' ];
+    $pcode                  = $_POST[ 'pcode' ];
+    $show_date              = isset($_POST[ 'show_date' ]) ? $_POST[ 'show_date' ] : '';
 //    echo "<pre>";
 //    print_r($transaction_ids_before);
 //    echo "</pre>";
@@ -23,6 +24,7 @@ function fun_getBookingCart (){
     $final_cart_obj = array ();
     $current_cart_obj = array ();
     $subscription_cart_obj = array ();
+    $subscription_cart_obj_final = array ();
     $transaction_ids_to_remove = array ();
 //    echo "<pre>";
 //    print_r($get_user_meta_before);
@@ -56,12 +58,12 @@ function fun_getBookingCart (){
         $final_cart_obj = $get_user_meta_before[ 0 ];
         
         foreach ( $get_user_meta_before[ 0 ] as $get_key => $get_value ) {
-            if( $addToCartObject[ $get_key ] ) {
+            if( isset($addToCartObject[ $get_key ]) ) {
                 $addToCartZone = $addToCartObject[ $get_key ];
                 
                 foreach ( $get_value as $zone_key => $zone_value ) {
                     $zoneName             = $zone_value[ 'zoneName' ];
-                    $zoneId             = $zone_value[ 'zoneId' ];
+                    $zoneId               = $zone_value[ 'zoneId' ];
                     $reductions           = $zone_value[ 'reductions' ];
                     $final_zone_reduction = $reductions;
 
@@ -135,6 +137,8 @@ function fun_getBookingCart (){
                                 if( $final_cart_obj_value[ 'zoneName' ] == $addToCartZone_value[ 'zoneName' ] ) {
                                     $final_cart_obj_value[ 'reductions' ] = $final_zone_reduction;
                                     $final_cart_obj_value[ 'doBooking' ] = 1;
+                                    // MOD SARAH
+                                    $final_cart_obj_value[ 'showDate ' ] = $show_date;
                                     $current_cart_obj[ $get_key ][ $final_cart_obj_key ] = $final_cart_obj_value;
                                 }
                                 $final_cart_obj[ $get_key ][ $final_cart_obj_key ] = $final_cart_obj_value;
@@ -143,6 +147,7 @@ function fun_getBookingCart (){
                             $zoneNameArray = array_column( $final_cart_obj[ $get_key ], 'zoneName' );
                             if( ! in_array( $addToCartZone_value[ 'zoneName' ], $zoneNameArray ) ) {
                                 $addToCartZone_value[ 'doBooking' ] = 1;
+                                // $addToCartZone_value[ 'showDate' ] = $show_date;
                                 array_push( $final_cart_obj[ $get_key ], $addToCartZone_value );
                             }
                         }
@@ -164,6 +169,7 @@ function fun_getBookingCart (){
         foreach ( $addToCartObject as $addToCartObject_key => $addToCartObject_value ) {
             $first_addToCartObject = array_map( function ($addToCartObject_val){
                 $addToCartObject_val['doBooking'] = 1;
+                // $addToCartObject_val['showDate'] = $_POST[ 'show_date' ];
                 return $addToCartObject_val;
             }, $addToCartObject_value );
             if( empty( $final_cart_obj[ $addToCartObject_key ] ) ) {
@@ -172,12 +178,14 @@ function fun_getBookingCart (){
         }
         $final_cart_obj_before = $final_cart_obj;
     }
+
 //    echo "<pre>";
 //    print_r($final_cart_obj);
 //    echo "</pre>";
 //    if(!empty($current_cart_obj)){
 //        $addToCartObject = $current_cart_obj;
 //    }
+
     if(!empty($subscription_cart_obj_final)){
         $addToCartObject = $subscription_cart_obj_final;
     }else{
@@ -230,7 +238,7 @@ function fun_getBookingCart (){
         
         $set_expiry_xml         = isset($set_expiry_response) && !empty($set_expiry_response) ?  simplexml_load_string ( $set_expiry_response ) : '';
         $set_expiry_json        = isset($set_expiry_xml) && !empty($set_expiry_xml) ?  json_encode ( $set_expiry_xml ) : '';
-        $set_expiry_response = isset($set_expiry_json) && !empty($set_expiry_json) ?  json_decode ( $set_expiry_json, TRUE ) : array();
+        $set_expiry_response    = isset($set_expiry_json) && !empty($set_expiry_json) ?  json_decode ( $set_expiry_json, TRUE ) : array();
     }
 //    echo "<pre>";
 //    print_r($set_expiry_response);
@@ -661,7 +669,10 @@ function fun_getCheckout (){
 //    print_r(' '.$total_qty);
 //    echo "</pre>";
 //    if($regData == 1){
+
+//      INTERESSE SARAH CONTROLLARE SE URL CORRETTO
         $curl_url = API_HOST.'backend/backend.php?cmd=extXmlPrepareTransToPay&id='.APIKEY.$transaction_id.'&tNumSeats='.$total_qty.'&tAmount='.$amount.'&language=1&tranIp='.$tranIp.'&transaction_receipt_url[preprod]=https%3A%2F%2Fpreprod.teatrosancarlo.it%2Fthank-you%2F%3F&transaction_ser_notify[preprod]=https%3A%2F%2Fpreprod.teatrosancarlo.it%2Fthank-you%2F%3F';
+
 //    }else{
 //        $curl_url = API_HOST.'backend/backend.php?cmd=extXmlPrepareTransToPay&id='.APIKEY.$transaction_id.'&tNumSeats='.$total_qty.'&tAmount='.$amount.'&language=1';
 //    }
@@ -726,6 +737,10 @@ function fun_emptyCart (){
     $user_id = get_current_user_id();
     $transactionIds          = get_user_meta( $user_id, 'transactionIds' , true );
     $transactions_str = "";
+    // Set total quantity in order to manage errors in cart
+    $total_qty = isset($_POST['totalQuantity']) ? $_POST['totalQuantity'] : 1;
+
+    if($total_qty > 0) :
     if(!empty($transactionIds)){
         foreach($transactionIds as $transactionIds_key => $transactionIds_value){
             $transactions_str .= "transactionCode[]=".$transactionIds_value['transaction_id']."&";
@@ -758,14 +773,17 @@ function fun_emptyCart (){
         $response[ 'message' ] = $set_expiry_response;
         $response[ 'status' ]  = true;
     }
+    endif;
+
+    // MOD SARAH
+    // Empty cart with woo commerce
+    WC()->cart->empty_cart();
     
     update_user_meta($user_id,'addToCartObject',array());
     update_user_meta($user_id,'transactionIds',array());
     update_user_meta( $user_id, 'subscriptionSeatList', array () );
     update_user_meta( $user_id, 'subscriptionOrderId', array () );
     
-//    if($transactionIds){
-//    }
     echo json_encode ( $response );
     wp_die ();
 }
@@ -931,8 +949,8 @@ function fun_UpdateUserPhone (){
         'message' => '',
         'status'  => false,
     );
-//    $user = 'Kidea';
-//    $password = 'TSC@2023';
+ //    $user = 'Kidea';
+ //    $password = 'TSC@2023';
     $otpMatched          = false;
     $otpCreated          = false;
     $err                 = '';
@@ -952,18 +970,18 @@ function fun_UpdateUserPhone (){
         AND meta_value = %s
     ", 'billing_phone', $get_billing_phone);
     $results = $wpdb->get_results($query);
-//    $billing_phone_exist = false;
-//    $users = get_users(array( 'fields' => array( 'ID' ) ));
-//    foreach($users as $users_key => $users_value){
-//        $user_id = $users_value->id;
-//        $this_billing_phone  = get_user_meta ($user_id, 'billing_phone', true );
-////        if(in_array($get_billing_phone,$this_billing_phone)){
-////        if($get_billing_phone == $this_billing_phone){
-////            $billing_phone_exist = true;
-////        }else{
-////            $billing_phone_exist = false;
-////        }
-//    }
+    //    $billing_phone_exist = false;
+    //    $users = get_users(array( 'fields' => array( 'ID' ) ));
+    //    foreach($users as $users_key => $users_value){
+    //        $user_id = $users_value->id;
+    //        $this_billing_phone  = get_user_meta ($user_id, 'billing_phone', true );
+    ////        if(in_array($get_billing_phone,$this_billing_phone)){
+    ////        if($get_billing_phone == $this_billing_phone){
+    ////            $billing_phone_exist = true;
+    ////        }else{
+    ////            $billing_phone_exist = false;
+    ////        }
+    //    }
     $curl_response = array();
     if( $generate_otp_now ) {
         if(empty($results)) {
@@ -1139,7 +1157,7 @@ function get_customers_list_fun() {
     $get_customer_curl_response = curl_exec ( $get_customer_curl );
 
     curl_close ( $get_customer_curl );
-//    $customersResponse = json_decode ( $curl_response );
+ //    $customersResponse = json_decode ( $curl_response );
     $response_xml           = simplexml_load_string ( $get_customer_curl_response );
     $response_json          = json_encode ( $response_xml );
     $customersData          = json_decode ( $response_json, TRUE );
@@ -1218,7 +1236,7 @@ function import_customers_list_fun() {
         $err                   = curl_error ( $get_customer_curl );
         $response[ 'message' ] = $err;
     }
-//    $customersResponse = json_decode ( $curl_response );
+ //    $customersResponse = json_decode ( $curl_response );
     $response_xml           = isset($get_customer_curl_response) ? simplexml_load_string ( $get_customer_curl_response ) : '';
     $response_json          = json_encode ( $response_xml );
     $customersData          = json_decode ( $response_json, TRUE );
@@ -1228,9 +1246,9 @@ function import_customers_list_fun() {
     */
 
     if(!empty($customersData)) {
-//        echo "<pre>";
-//        print_r($customersData['rows']['row']);
-//        echo "</pre>";
+    //        echo "<pre>";
+    //        print_r($customersData['rows']['row']);
+    //        echo "</pre>";
         
         $customers = $customersData['rows']['row'];
         $user_ids = array();
@@ -1244,9 +1262,9 @@ function import_customers_list_fun() {
                     $customer = get_user_by ( 'email', $cusemail );
                     if( !empty($customer)) {
                         $user_ids[] = $customer->ID;
-//                        echo "<pre>";
-//                        print_r($customer);
-//                        echo "</pre>";
+    //   echo "<pre>";
+    //   print_r($customer);
+    //   echo "</pre>";
                     } else {
                         $password = wp_generate_password();
                         $user_id = wp_create_user( $cusfname, $password, $cusemail );
@@ -1257,9 +1275,9 @@ function import_customers_list_fun() {
                             update_user_meta( $user_id, 'last_name', $customers_value['@attributes']['cuslname'] );
                             update_user_meta( $user_id, 'user_address', $customers_value['@attributes']['cusadd1'] );
                             update_user_meta( $user_id, 'billing_phone', isset($customers_value['@attributes']['cusmobile']) ? $customers_value['@attributes']['cusmobile'] : $customers_value['@attributes']['custel'] );
-//                            echo "<pre>";
-//                            print_r($customers_value);
-//                            echo "</pre>";
+    //     echo "<pre>";
+    //     print_r($customers_value);
+    //     echo "</pre>";
                         } else {
                             // Error creating user
                             $error_msg = $user_id->get_error_message();
@@ -1269,9 +1287,9 @@ function import_customers_list_fun() {
             }
         }
         if(!empty($user_ids)){
-//            echo "<pre>";
-//            print_r($user_ids);
-//            echo "</pre>";
+        //  echo "<pre>";
+        //  print_r($user_ids);
+        //  echo "</pre>";
             $response[ 'user_ids' ]  = $user_ids;
             $response[ 'statue' ]  = true;
         }
@@ -1287,14 +1305,31 @@ function import_customers_list_fun() {
 
 /*
  * print order ajax function
+ * MOD SARAH
+ * take trace of the number of prints and results of the API
  */
 add_action ( 'wp_ajax_nopriv_printOrder', 'print_order_fun' );
 add_action ( 'wp_ajax_printOrder', 'print_order_fun' );
 
 function print_order_fun() {
+
+    // Get the current user data
+    $current_user = wp_get_current_user();
+    $user_email = $current_user->user_email;
+    $birthdate = get_user_meta( $current_user->ID, 'dob', true );
+
+    // Get or create the meta for number of prints
+    $print_count = get_user_meta( $current_user->ID, 'print_count', true );
+    if ( empty( $print_count ) ) {
+        $print_count = 0;
+    }
+    $print_count++;
+    update_user_meta( $current_user->ID, 'print_count', $print_count );
+
     $response = array (
         'message' => '',
         'status'  => false,
+        'user_email' => $user_email,
     );
     
     $order_id = $_POST['order_id'];
@@ -1343,16 +1378,32 @@ function print_order_fun() {
     //    echo $response;
     //    readfile($fileName);
         $response[ 'message' ] =  get_site_url().'/wp-content/plugins/stc-tickets/pdf/order_'.$order_id.'.pdf';
-//        $response[ 'message' ] = (is_plugin_active('sitepress-multilingual-cms/sitepress.php') ? rtrim(apply_filters( 'wpml_home_url', get_option( 'home' ) ), '/') : get_site_url()).'/wp-content/plugins/stc-tickets/pdf/order_'.$order_id.'.pdf';
         $response[ 'status' ]  = true;
     } else if(!empty($errmsg)){
         $response[ 'message' ] = $errmsg;
     } else {
         $response[ 'message' ] = __('Failed to get the PDF from the API.','stc-tickets');
     }
+
+    // Create a log file with the number of prints
+    // Creo un file di log con il numero di stampe
+    $logFile = dirname(__dir__) .'/print_logs/print_log_'.date('Y-m').'.txt';
+    // If the file exist but exceeds 100mb, create another file
+    // Se il file esiste ma supera i 100mb, crea un altro file
+    if (file_exists($logFile) && filesize($logFile) > 100000000) {
+        $logFile = dirname(__dir__) .'/print_logs/print_log_'.date('Y-m-d').'.txt';
+    } else if (!file_exists($logFile)) {
+        $log = fopen($logFile, 'w');
+        fclose($log);
+    }
+    // Write the number of prints to the log file
+    // Scrivi il numero di stampe nel file di log
+    $log = fopen($logFile, 'a');
+    fwrite($log, '['.date('d/m/Y H:i:s').'] User: '.$user_email.' - Birthdate: '.$birthdate.' - Prints: '.$print_count.' - Result: '.$response['message'].PHP_EOL);
+    fclose($log);
     
     echo json_encode ( $response );
-//    exit();
+
     wp_die ();
 }
 
@@ -1554,7 +1605,7 @@ function subscription_check_fun() {
             CURLOPT_MAXREDIRS      => 10,
             CURLOPT_TIMEOUT        => 0,
             CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_COOKIEJAR => $sub_check_cookie,
+            CURLOPT_COOKIEJAR      => $sub_check_cookie,
             CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST  => 'GET',
         ) );

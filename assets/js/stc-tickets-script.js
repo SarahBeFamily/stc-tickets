@@ -6,86 +6,73 @@ jQuery(document).ready(function ($) {
     
     var widgetId;
     
-//    setTimeout(function() {
-//        grecaptcha.ready(function() {
-//            // Render reCAPTCHA widget
-//            widgetId = grecaptcha.render('reCaptchDiv', {
-//                'sitekey' : '6LedGCcpAAAAAOGFFUqTQMl7ieQiSHh7ggKrXNnL',
-//                'theme' : 'light'  // Optional: change theme if needed
-//            });
-//
-//            // Example: reset reCAPTCHA on button click        
-//        });
-//    }, 1000);
-    
     renderReCaptcha();
     
     if (jQuery(document).find('.spettacolo-prices-wrapper').length > 0) {
         jQuery(document).find('body').addClass('spettacolo-prices-page');
     }
-    
-    
-    var incrementPlus;
-    var incrementMinus;
 
-    var buttonPlus = jQuery(".cart-qty-plus");
-    var buttonMinus = jQuery(".cart-qty-minus");
-    var remainingSeats = getCookie('remainingSeats');
+    let buttonPlus = jQuery(".cart-qty-plus");
+    let buttonMinus = jQuery(".cart-qty-minus");
+    let remainingSeats = getCookie('remainingSeats') !== undefined ? getCookie('remainingSeats') : '';
 
-    var incrementPlus = buttonPlus.click(function () {
-        var $n = jQuery(this).parent(".button-counter").find(".qty");
-        var max = jQuery(this).parent(".button-counter").find(".qty").attr("data-max");
-        var UrlVars = getUrlVars();
-        var barcode = UrlVars.barcode;
-        if(typeof barcode != "undefined" && barcode != ""){
-            if(typeof remainingSeats != 'undefined'){
+    /** MOD SARAH **/ // Increment and Decrement quantity of seats settings
+    let incrementPlus = buttonPlus.click(function () {
+        let $n = jQuery(this).parent(".button-counter").find(".qty");
+        let max = jQuery(this).parent(".button-counter").find(".qty").attr("data-max");
+        let UrlVars = getUrlVars();
+        let barcode = UrlVars.barcode !== undefined ? UrlVars.barcode : '';
+
+        // Check if barcode is set, so that a subscription is being selected
+        if(barcode != ''){
+            if(typeof remainingSeats == 'string' && remainingSeats != ''){
+                // Check for remeining selections for the subscription
                 remainingSeats = JSON.parse(remainingSeats);
                 console.log(remainingSeats);
                 var remainingSeatsVal = remainingSeats[barcode];
-        //        console.log(remainingSeatsVal,remainingSeatsVal.remaining);
+
                 console.log(remainingSeatsVal);
                 if(typeof remainingSeatsVal != 'undefined' && remainingSeatsVal.hasOwnProperty('remaining') && Number($n.val()) < Number(max)){
-//                    if(remainingSeatsVal.remaining == 0){
-//                        jQuery(document).find(".cart-qty-plus").attr("disabled","disabled");
-////                        remainingSeatsVal.remaining = remainingSeatsVal.remaining - 1;
-////                        remainingSeats[barcode] = remainingSeatsVal;
-//                    }else{
-//                        remainingSeatsVal.remaining = remainingSeatsVal.remaining - 1;
-//                        remainingSeats[barcode] = remainingSeatsVal;
-//                    }
+                //    if(remainingSeatsVal.remaining == 0){
+                //        jQuery(document).find(".cart-qty-plus").attr("disabled","disabled");
+                //     //  remainingSeatsVal.remaining = remainingSeatsVal.remaining - 1;
+                //     //  remainingSeats[barcode] = remainingSeatsVal;
+                //    }else{
+                //        remainingSeatsVal.remaining = remainingSeatsVal.remaining - 1;
+                //        remainingSeats[barcode] = remainingSeatsVal;
+                //    }
                     
                     remainingSeatsVal.remaining = remainingSeatsVal.remaining - 1;
                     if(remainingSeatsVal.remaining == 0){
                         jQuery(document).find(".cart-qty-plus").attr("disabled","disabled");
                     }
                     remainingSeats[barcode] = remainingSeatsVal;
-                    
-                    
                 }
                 remainingSeats = JSON.stringify(remainingSeats);
                 console.log('after = '+remainingSeats);
-        //        setCookie('remainingSeats', JSON.stringify(remainingSeats), 1);
-//                updateCookie('remainingSeats', encodeURIComponent(JSON.stringify(remainingSeats)), 1);
-   
+                // setCookie('remainingSeats', JSON.stringify(remainingSeats), 1);
+                // updateCookie('remainingSeats', encodeURIComponent(JSON.stringify(remainingSeats)), 1);
             }
         }
         
-//            console.log(typeof max,max,typeof $n.val(),$n.val());
+        // console.log(typeof max,max,typeof $n.val(),$n.val());
         if (Number($n.val()) < Number(max)) {
             $n.val(Number($n.val()) + 1);
         }
         total_values();
     });
 
-    var incrementMinus = buttonMinus.click(function () {
-        var UrlVars = getUrlVars();
-        var barcode = UrlVars.barcode;
-        var $n = jQuery(this).parent(".button-counter").find(".qty");
-        var amount = Number($n.val());
+    let incrementMinus = buttonMinus.click(function () {
+        let UrlVars = getUrlVars();
+        let barcode = UrlVars.barcode !== undefined ? UrlVars.barcode : '';
+        let $n = jQuery(this).parent(".button-counter").find(".qty");
+        let amount = Number($n.val());
         console.log(amount);
-        if(typeof barcode != "undefined" && barcode != ""){
-//            var remainingSeats = getCookie('remainingSeats');
-            if(typeof remainingSeats != 'undefined'){
+
+        // Check if barcode is set, so that a subscription is being selected
+        if(barcode != ''){
+            if(typeof remainingSeats == 'string' && remainingSeats != ''){
+                // Check for remeining selections for the subscription
                 remainingSeats = JSON.parse(remainingSeats);
                 console.log(remainingSeats);
                 var remainingSeatsVal = remainingSeats[barcode];
@@ -119,7 +106,7 @@ jQuery(document).ready(function ($) {
             let user_logged_in = STCTICKETSPUBLIC.loggedIn;
             let addToCartObject = localStorage.getItem("addToCartObject");
             addToCartObject = JSON.parse(addToCartObject);
-            
+
             console.log(profile_status,user_logged_in,addToCartObject);
             if(addToCartObject != null){
                 /** MOD SARAH **/
@@ -181,8 +168,10 @@ jQuery(document).ready(function ($) {
         var subscription = jQuery(document).find('.spettacolo-prices-wrapper').attr('data-subscription');
         var barcode = jQuery(document).find('.spettacolo-prices-wrapper').attr('data-barcode');
         var orderId = UrlVars.hasOwnProperty("orderId") ? UrlVars.orderId : "";
+        let showDate = jQuery(document).find('.spettacolo-info-inner-wrap .list-date p').text();
         
         addToCart[ticketTitle] = [];
+        
         if (jQuery('.spettacolo-prices-inner .table-row:visible').length > 0) {
             jQuery('.spettacolo-prices-inner .table-row').each(function () {
                 var zoneArr = new Object();
@@ -208,8 +197,14 @@ jQuery(document).ready(function ($) {
                 });
                 zoneArr.reductions = reductionArr;
                 zoneArr.doBooking = 1;
-                /** MOD SARAH **/
-                zoneArr.showDate = $('.spettacolo-info-inner-wrap .list-date p').text();
+                // Add show date to the object
+                zoneArr.showDate = showDate;
+                zoneArr.ticketName = ticketTitle;
+
+                // If there is a barcode, add an evidenca of the subscription
+                if(barcode != ''){
+                    zoneArr.abbonamento = barcode;
+                }
 
                 if (reductionArr.length !== 0) {
                     addToCart[ticketTitle].push(zoneArr);
@@ -234,6 +229,7 @@ jQuery(document).ready(function ($) {
                         currReductionArr.reductionQuantity = currReductionArr.reductionQuantity + 1;
                         let seatIdArr = currReductionArr.seatId;
                         seatIdArr = seatIdArr.push(seat_id);
+
                     } else {
                         let selectedReductionValue = new Object();
                         let selectedZoneVal = new Object();
@@ -250,6 +246,10 @@ jQuery(document).ready(function ($) {
                         selectedZoneVal.zoneId = zone_id;
                         selectedZoneVal.reductions = final_selectedReductionArr;
                         selectedZoneVal.doBooking = 1;
+                        // Add show date to the object
+                        selectedZoneVal.showDate = showDate;
+                        selectedZoneVal.ticketName = ticketTitle;
+        
                         man_addToCart[zone_id] = selectedZoneVal;
                     }
                 } else {
@@ -270,12 +270,14 @@ jQuery(document).ready(function ($) {
                     selectedZoneVal.zoneId = zone_id;
                     selectedZoneVal.reductions = final_selectedReductionArr;
                     selectedZoneVal.doBooking = 1;
-                    /** MOD SARAH **/
-                    selectedZoneVal.showDate = $('.spettacolo-info-inner-wrap .list-date p').text();
+                    // Add show date to the object
+                    selectedZoneVal.showDate = showDate;
+
                     man_addToCart[zone_id] = selectedZoneVal;
                 }
             });
             addToCart[ticketTitle] = man_addToCart;
+
 //            ////////////////////////////////////////////
 //                    let selectedZoneArr = new Object();
 ////                    let selectedZoneArr = [];
@@ -332,8 +334,8 @@ jQuery(document).ready(function ($) {
 ////            console.log(selectedZoneArr);
 //            ////////////////////////////////////////////
         }
-        var subscription_list = [];
-        var selection_error = false;
+        let subscription_list = [];
+        let selection_error = false;
         if(jQuery(document).find('.select-box-form').length > 0){
             jQuery(document).find('.select-box-form .event-ticketlist').each(function(){
                 var reduction_detail = new Object();
@@ -349,7 +351,7 @@ jQuery(document).ready(function ($) {
             });
             console.log(subscription_list);            
         }
-        console.log(addToCart, JSON.parse(JSON.stringify(addToCart)));
+        console.log(addToCart);
         
         if(selection_error){
             return false;
@@ -364,7 +366,8 @@ jQuery(document).ready(function ($) {
                     subscription: subscription,
                     barcode: barcode,
                     subscription_list: subscription_list,
-                    orderId:orderId
+                    orderId:orderId,
+                    show_date:showDate,
                 };
         if (profile_status == 'complete') {
                 
@@ -377,7 +380,6 @@ jQuery(document).ready(function ($) {
                 data: ajax_data,
                 success: function (data) {
                     jQuery( "body" ).css('opacity', '1');
-                    console.log(data);
                     var responseData = JSON.parse(data);
                     if (responseData.status) {
                         console.log(responseData.message);
@@ -472,7 +474,6 @@ jQuery(document).ready(function ($) {
 //        });
 //    });
     jQuery(document).on('click', '.empty-cart-btn', function () {
-//        alert('clicked');
         jQuery.ajax({
             url: STCTICKETSPUBLIC.ajaxurl,
             method: 'post',
@@ -484,12 +485,12 @@ jQuery(document).ready(function ($) {
             },
             success: function (data) {
                 jQuery( "body" ).css('opacity', '1');
-//                    console.log(data);
                 var responseData = JSON.parse(data);
                 if (responseData.status) {
                     console.log(responseData.message);
-//                    window.location.href = STCTICKETSPUBLIC.siteurl + "/spettacolo-cart";
                 }
+                // refresh the page
+                location.reload();
             },
             error: function (request, status, error) {
                 console.log(error);
@@ -1186,36 +1187,56 @@ jQuery(document).ready(function ($) {
     
     if(jQuery(document).find('.cart-count').length > 0){
         // Function to calculate the total reductionQuantity
-    function calculateTotalReductionQuantity(data) {
-        var totalQuantity = 0;
-        let bookedSeatCount = 0;
+        function calculateTotalReductionQuantity(data) {
+            var totalQuantity = 0;
+            let bookedSeatCount = 0;
 
-        jQuery.each(data.cart_contents, function (key, content) {
-            jQuery.each(content.booked_subs_seats, function (index, booked_subs_seat) {
-                bookedSeatCount = bookedSeatCount + (booked_subs_seat.length > 0 ? booked_subs_seat.length : 0);
-            });
-            jQuery.each(content.selected_seat_price, function (index, selectedPrice) {
-                jQuery.each(selectedPrice, function (artist, zones) {
-                    jQuery.each(zones, function (zoneId, zoneData) {
-                        jQuery.each(zoneData.reductions, function (reductionId, reduction) {
-                            totalQuantity += parseInt(reduction.reductionQuantity);
+            jQuery.each(data.cart_contents, function (key, content) {
+                jQuery.each(content.booked_subs_seats, function (index, booked_subs_seat) {
+                    bookedSeatCount = bookedSeatCount + (booked_subs_seat.length > 0 ? booked_subs_seat.length : 0);
+                });
+                jQuery.each(content.selected_seat_price, function (index, selectedPrice) {
+                    jQuery.each(selectedPrice, function (artist, zones) {
+                        jQuery.each(zones, function (zoneId, zoneData) {
+                            jQuery.each(zoneData.reductions, function (reductionId, reduction) {
+                                totalQuantity += parseInt(reduction.reductionQuantity);
+                            });
                         });
                     });
                 });
             });
-        });
-        console.log(totalQuantity,bookedSeatCount);
-        totalQuantity = totalQuantity - bookedSeatCount;
+            console.log(totalQuantity,bookedSeatCount);
+            totalQuantity = totalQuantity - bookedSeatCount;
 
-        return totalQuantity;
-    }
+            return totalQuantity;
+        }
 
-    // Calculate the total reductionQuantity
-    var cartData = JSON.parse(STCTICKETSPUBLIC.cartData);
-    console.log(cartData);
-    var totalQuantity = calculateTotalReductionQuantity(cartData);
-    console.log(totalQuantity);
-    jQuery(document).find('.cart-count').text(Math.abs(totalQuantity));
+        // Calculate the total reductionQuantity
+        var cartData = JSON.parse(STCTICKETSPUBLIC.cartData);
+        console.log(cartData);
+        var totalQuantity = calculateTotalReductionQuantity(cartData);
+        console.log(totalQuantity);
+        if(totalQuantity < 0) {
+            // empty the cart throught ajax
+            jQuery.ajax({
+                url: STCTICKETSPUBLIC.ajaxurl,
+                method: 'post',
+                dataType: 'json',
+                data: {
+                    action: 'emptyCart',
+                    totalQuantity: totalQuantity
+                },
+                success: function (data) {
+                    console.log('Cart emptied');
+                    // refresh the page
+                    location.reload();
+                },
+                error: function (request, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+        jQuery(document).find('.cart-count').text(Math.abs(totalQuantity));
     }
     
     if(jQuery(document).find('.spettacolo-tickets .barcode').length > 0){
@@ -1259,12 +1280,13 @@ jQuery(document).ready(function ($) {
                 if (responseData.status) {
                     console.log(responseData.message);
                     jQuery(document).find('.print-error-msg').hide();
-//                    window.open(responseData.message, '_blank');
-                    var pdf_a = document.createElement('a');
-                    pdf_a.href = responseData.message;
-                    pdf_a.setAttribute('target', '_blank');
-                    pdf_a.click();
-                    pdf_a.remove();
+                //    window.open(responseData.message, '_blank');
+                    // var pdf_a = document.createElement('a');
+                    // pdf_a.href = responseData.message;
+                    // pdf_a.setAttribute('target', '_blank');
+                    // pdf_a.click();
+                    // pdf_a.remove();
+                    window.location.href = responseData.message;
                 }else{
                     console.log(responseData.message);
                     let data_tran_id = $this.parents(".order-print-row-wrap").attr("data-tran-id");
@@ -1274,6 +1296,8 @@ jQuery(document).ready(function ($) {
             },
             error: function (request, status, error) {
                 console.log(error);
+                console.log(request);
+                console.log(status);
             }
         });
     });
@@ -1823,6 +1847,13 @@ function total_values() {
     }
 //    console.log( typeof cart_counter_flag,cart_counter_flag,typeof cart_count,cart_count);
 }
+
+/**
+ * Function to get the URL parameters
+ * 
+ * @returns {Array}
+ * @link https://css-tricks.com/snippets/javascript/get-url-variables/
+ */
 function getUrlVars() {
     var vars = {};
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {

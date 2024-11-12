@@ -6,408 +6,681 @@ add_shortcode ( 'developer_test', 'stcTickets_developer_test_callback' );
 
 function stcTickets_developer_test_callback() {
     ob_start ();
-//    echo "<pre>";
-//    print_r(get_user_meta( get_current_user_id()));
-//    echo "</pre>";
-//    $cart       = WC()->cart->cart_contents;
-//    echo "<pre>";
-//    print_r($cart);
-//    echo "</pre>";
+
+        // $order_id = '11142';
+        // require_once WP_PLUGIN_DIR . '/woocommerce-mailchimp/includes/class-ss-wc-mailchimp-handler.php';    
+    //    if (class_exists('SS_WC_MailChimp_Handler')) {        
+    //        // Instantiate or use the existing class
+    //        $mailchimp_handler = new SS_WC_MailChimp_Handler();
+    ////
+    ////        // Now you can call the method
+    ////        $mailchimp_handler->maybe_subscribe($order_id);            
+    //        $list = $mailchimp_handler->ajax_get_lists();            
+    //        echo "<pre>";
+    //        print_r($list);
+    //        echo "</pre>";
+    //    }   
+    //    maybe_subscribe();
+
+    //    echo "<pre>";
+    //    print_r(get_user_meta( get_current_user_id()));
+    //    echo "</pre>";
+    //    $cart       = WC()->cart->cart_contents;
+    //    echo "<pre>";
+    //    print_r($cart);
+    //    echo "</pre>";
+        
+    //    foreach ( $cart as $cart_item_key => $cart_item ) {
+    //        $selected_seat_price = $cart_item[ 'selected_seat_price' ][ 0 ];
+    //    }
+        
+    //    $order_array = array(11142);
+    //    if(!empty($order_array)){
+    //        foreach($order_array as $order_key => $order_value){
+    //            $current_order_id = $order_value;
+    //            $current_order = wc_get_order($current_order_id);
+    //            if(!empty($current_order)){
+    //
+    //            $transactionIds = $current_order->get_meta( 'transactionIds' );
+    //
+    //            if(!empty($transactionIds)){
+    //                foreach($transactionIds as $transactionIds_key => $transactionIds_value){
+    //                    $seatObject = $transactionIds_value['seatObject'];
+    //                    if(is_array($seatObject) && !empty($seatObject) && array_key_first( $seatObject ) == 0){
+    //                        foreach($seatObject as $trans_seat_key => $trans_seat_value){
+    //                            $current_seat_price = (int) $trans_seat_value['price'];
+    //                            $transaction_final_price        = $transaction_final_price + ((int) $current_seat_price / 100);
+    //                        }
+    //                    }else{
+    //                        $seat_price = (int) $seatObject['price'];
+    //                        $transaction_final_price        = $transaction_final_price + ((int) $seat_price / 100);
+    //                    }
+    //                }
+    //            }
+    //
+    //            // Add product
+    //            $product_id          = ! empty( get_option( 'TICKET_WOOCOMMERCE_PRODUCT_ID' ) ) ? get_option( 'TICKET_WOOCOMMERCE_PRODUCT_ID' ) : get_option( 'wc_ticket_product' ); // product ID to add to cart
+    //
+    //            $items = $current_order->get_items();
+    //            if(!empty($items)){
+    //                foreach ( $items as $item ) {
+    //                    $deletable_product = wc_get_product( $item['product_id'] );
+    //
+    //                    if ( $deletable_product->get_id() == $product_id ) {
+    //                        $current_order->remove_item( $item->get_id() );
+    //                    }
+    //                }
+    //            }
+    //
+    //            $product = wc_get_product( $product_id ); // Replace with your product ID
+    //            if ( $product ) {
+    //                $current_order->add_product( $product, 1, [
+    //                    'subtotal'     => $transaction_final_price, // e.g. 32.95
+    //                    'total'        => $transaction_final_price, // e.g. 32.95
+    //                ] );
+    //            }        
+    //
+    //            // Calculate totals        
+    //            $current_order->calculate_totals();
+    //
+    //            // Save the order
+    //            $order_id = $current_order->save();
+    //
+    //            echo "<pre>";
+    //            print_r($order_id);
+    //            echo "</pre>";
+    //            }else{
+    //                echo "<pre>";
+    //                print_r("order not found.");
+    //                echo "</pre>";
+    //            }
+    //        }
+    //    }
+        
+    /*
+    * 
+    * start of add order from live to preprod
+    */
+
+    //  array(47) {
+    //     ["articolo_in_evidenza"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(0) ""
+    //     }
+    //     ["_order_key"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(22) "wc_order_ybnLHLf7vsElp"
+    //     }
+    //     ["_customer_user"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(5) "44319"
+    //     }
+    //     ["_payment_method"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(6) "online"
+    //     }
+    //     ["_customer_ip_address"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(13) "151.25.43.189"
+    //     }
+    //     ["_customer_user_agent"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(139) "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0.1 Mobile/15E148 Safari/604.1"
+    //     }
+    //     ["_created_via"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(8) "checkout"
+    //     }
+    //     ["_cart_hash"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(32) "01b71eddd5db1849bbd46e26ec2cecb3"
+    //     }
+    //     ["_download_permissions_granted"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(3) "yes"
+    //     }
+    //     ["_recorded_sales"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(3) "yes"
+    //     }
+    //     ["_recorded_coupon_usage_counts"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(3) "yes"
+    //     }
+    //     ["_new_order_email_sent"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(5) "false"
+    //     }
+    //     ["_order_stock_reduced"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(3) "yes"
+    //     }
+    //     ["_billing_email"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(13) "piamat@me.com"
+    //     }
+    //     ["_order_currency"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(3) "EUR"
+    //     }
+    //     ["_cart_discount"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(1) "0"
+    //     }
+    //     ["_cart_discount_tax"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(1) "0"
+    //     }
+    //     ["_order_shipping"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(1) "0"
+    //     }
+    //     ["_order_shipping_tax"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(1) "0"
+    //     }
+    //     ["_order_tax"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(1) "0"
+    //     }
+    //     ["_order_total"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(6) "300.00"
+    //     }
+    //     ["_order_version"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(5) "8.8.5"
+    //     }
+    //     ["_prices_include_tax"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(2) "no"
+    //     }
+    //     ["_billing_address_index"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(23) "         piamat@me.com "
+    //     }
+    //     ["_shipping_address_index"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(9) "         "
+    //     }
+    //     ["is_vat_exempt"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(2) "no"
+    //     }
+    //     ["_mc4wp_optin"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(0) ""
+    //     }
+    //     ["_billing_first_name"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(9) "Maria Pia"
+    //     }
+    //     ["_billing_last_name"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(8) "Comunale"
+    //     }
+    //     ["_billing_phone"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(10) "3498765628"
+    //     }
+    //     ["_billing_address_1"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(0) ""
+    //     }
+    //     ["_billing_address_2"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(0) ""
+    //     }
+    //     ["_billing_city"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(0) ""
+    //     }
+    //     ["_billing_state"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(0) ""
+    //     }
+    //     ["_billing_postcode"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(0) ""
+    //     }
+    //     ["_billing_country"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(0) ""
+    //     }
+    //     ["_date_paid"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(10) "1728451043"
+    //     }
+    //     ["_paid_date"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(19) "2024-10-09 07:17:23"
+    //     }
+    //     ["confirmedOrderObject"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(511) "a:1:{s:29:"LO SCHIACCIANOCI FOR FAMILIES";a:2:{i:0;a:3:{s:8:"zoneName";s:17:"POLTRONISSIMA ORO";s:6:"zoneId";s:6:"125304";s:5:"seats";a:1:{i:0;a:4:{s:13:"reductionName";s:6:"INTERO";s:11:"reductionId";s:5:"30741";s:17:"reductionQuantity";s:1:"4";s:14:"reductionPrice";s:2:"30";}}}i:1;a:3:{s:8:"zoneName";s:13:"POLTRONISSIMA";s:6:"zoneId";s:6:"125305";s:5:"seats";a:1:{i:0;a:4:{s:13:"reductionName";s:6:"INTERO";s:11:"reductionId";s:5:"30741";s:17:"reductionQuantity";s:1:"6";s:14:"reductionPrice";s:2:"30";}}}}}"
+    //     }
+    //     ["transactionIds"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(5408) "a:2:{i:12530411726863;a:14:{s:15:"transaction_qty";i:4;s:6:"seatId";a:0:{}s:10:"ticketName";s:29:"LO SCHIACCIANOCI FOR FAMILIES";s:9:"timestamp";i:1728451182;s:14:"transaction_id";s:18:"TLITE0122982399270";s:18:"transaction_amount";s:5:"12732";s:7:"regData";s:1:"1";s:8:"zoneName";s:17:"POLTRONISSIMA ORO";s:6:"zoneId";s:6:"125304";s:5:"pcode";s:8:"11726863";s:5:"vcode";s:9:"vt0001012";s:5:"seats";a:1:{i:30741;a:5:{s:13:"reductionName";s:6:"INTERO";s:11:"reductionId";s:5:"30741";s:14:"reductionPrice";s:2:"30";s:17:"reductionQuantity";s:1:"4";s:6:"seatId";a:4:{i:0;s:8:"17806935";i:1;s:8:"17806936";i:2;s:8:"17806950";i:3;s:8:"17806951";}}}s:10:"seatObject";a:4:{i:0;a:9:{s:11:"@attributes";a:2:{s:2:"id";s:9:"346416539";s:5:"scode";s:8:"17806935";}s:11:"description";s:39:"POLTRONISSIMA ORO PLATEA Fila 4 Posto 1";s:5:"price";s:4:"3000";s:7:"presale";s:1:"0";s:10:"commission";s:3:"150";s:3:"iva";s:2:"33";s:7:"barcode";s:10:"LUQG6SWFNB";s:4:"zone";s:6:"125304";s:9:"reduction";a:2:{s:11:"@attributes";a:1:{s:2:"id";s:5:"30741";}s:11:"description";s:6:"INTERO";}}i:1;a:9:{s:11:"@attributes";a:2:{s:2:"id";s:9:"346416540";s:5:"scode";s:8:"17806936";}s:11:"description";s:39:"POLTRONISSIMA ORO PLATEA Fila 4 Posto 3";s:5:"price";s:4:"3000";s:7:"presale";s:1:"0";s:10:"commission";s:3:"150";s:3:"iva";s:2:"33";s:7:"barcode";s:10:"PP7ETWWY83";s:4:"zone";s:6:"125304";s:9:"reduction";a:2:{s:11:"@attributes";a:1:{s:2:"id";s:5:"30741";}s:11:"description";s:6:"INTERO";}}i:2;a:9:{s:11:"@attributes";a:2:{s:2:"id";s:9:"346416541";s:5:"scode";s:8:"17806950";}s:11:"description";s:39:"POLTRONISSIMA ORO PLATEA Fila 3 Posto 1";s:5:"price";s:4:"3000";s:7:"presale";s:1:"0";s:10:"commission";s:3:"150";s:3:"iva";s:2:"33";s:7:"barcode";s:10:"10E8GTUIZY";s:4:"zone";s:6:"125304";s:9:"reduction";a:2:{s:11:"@attributes";a:1:{s:2:"id";s:5:"30741";}s:11:"description";s:6:"INTERO";}}i:3;a:9:{s:11:"@attributes";a:2:{s:2:"id";s:9:"346416542";s:5:"scode";s:8:"17806951";}s:11:"description";s:39:"POLTRONISSIMA ORO PLATEA Fila 3 Posto 3";s:5:"price";s:4:"3000";s:7:"presale";s:1:"0";s:10:"commission";s:3:"150";s:3:"iva";s:2:"33";s:7:"barcode";s:10:"9YW80IW4O6";s:4:"zone";s:6:"125304";s:9:"reduction";a:2:{s:11:"@attributes";a:1:{s:2:"id";s:5:"30741";}s:11:"description";s:6:"INTERO";}}}s:12:"subscription";s:1:"0";}i:12530511726863;a:14:{s:15:"transaction_qty";i:6;s:6:"seatId";a:0:{}s:10:"ticketName";s:29:"LO SCHIACCIANOCI FOR FAMILIES";s:9:"timestamp";i:1728451182;s:14:"transaction_id";s:18:"TLITE0122982400072";s:18:"transaction_amount";s:5:"19098";s:7:"regData";s:1:"1";s:8:"zoneName";s:13:"POLTRONISSIMA";s:6:"zoneId";s:6:"125305";s:5:"pcode";s:8:"11726863";s:5:"vcode";s:9:"vt0001012";s:5:"seats";a:1:{i:30741;a:5:{s:13:"reductionName";s:6:"INTERO";s:11:"reductionId";s:5:"30741";s:14:"reductionPrice";s:2:"30";s:17:"reductionQuantity";s:1:"6";s:6:"seatId";a:6:{i:0;s:8:"17806937";i:1;s:8:"17806952";i:2;s:8:"17806938";i:3;s:8:"17806940";i:4;s:8:"17806954";i:5;s:8:"17806955";}}}s:10:"seatObject";a:6:{i:0;a:9:{s:11:"@attributes";a:2:{s:2:"id";s:9:"346416543";s:5:"scode";s:8:"17806937";}s:11:"description";s:35:"POLTRONISSIMA PLATEA Fila 4 Posto 5";s:5:"price";s:4:"3000";s:7:"presale";s:1:"0";s:10:"commission";s:3:"150";s:3:"iva";s:2:"33";s:7:"barcode";s:10:"PU72TOWZX6";s:4:"zone";s:6:"125305";s:9:"reduction";a:2:{s:11:"@attributes";a:1:{s:2:"id";s:5:"30741";}s:11:"description";s:6:"INTERO";}}i:1;a:9:{s:11:"@attributes";a:2:{s:2:"id";s:9:"346416544";s:5:"scode";s:8:"17806952";}s:11:"description";s:35:"POLTRONISSIMA PLATEA Fila 3 Posto 5";s:5:"price";s:4:"3000";s:7:"presale";s:1:"0";s:10:"commission";s:3:"150";s:3:"iva";s:2:"33";s:7:"barcode";s:10:"9VNDMVW4HO";s:4:"zone";s:6:"125305";s:9:"reduction";a:2:{s:11:"@attributes";a:1:{s:2:"id";s:5:"30741";}s:11:"description";s:6:"INTERO";}}i:2;a:9:{s:11:"@attributes";a:2:{s:2:"id";s:9:"346416545";s:5:"scode";s:8:"17806938";}s:11:"description";s:35:"POLTRONISSIMA PLATEA Fila 4 Posto 7";s:5:"price";s:4:"3000";s:7:"presale";s:1:"0";s:10:"commission";s:3:"150";s:3:"iva";s:2:"33";s:7:"barcode";s:10:"XGH1BUUW8X";s:4:"zone";s:6:"125305";s:9:"reduction";a:2:{s:11:"@attributes";a:1:{s:2:"id";s:5:"30741";}s:11:"description";s:6:"INTERO";}}i:3;a:9:{s:11:"@attributes";a:2:{s:2:"id";s:9:"346416546";s:5:"scode";s:8:"17806940";}s:11:"description";s:35:"POLTRONISSIMA PLATEA Fila 4 Posto 9";s:5:"price";s:4:"3000";s:7:"presale";s:1:"0";s:10:"commission";s:3:"150";s:3:"iva";s:2:"33";s:7:"barcode";s:10:"PI18XYWM8Z";s:4:"zone";s:6:"125305";s:9:"reduction";a:2:{s:11:"@attributes";a:1:{s:2:"id";s:5:"30741";}s:11:"description";s:6:"INTERO";}}i:4;a:9:{s:11:"@attributes";a:2:{s:2:"id";s:9:"346416547";s:5:"scode";s:8:"17806954";}s:11:"description";s:35:"POLTRONISSIMA PLATEA Fila 3 Posto 7";s:5:"price";s:4:"3000";s:7:"presale";s:1:"0";s:10:"commission";s:3:"150";s:3:"iva";s:2:"33";s:7:"barcode";s:10:"UVJ907WDNM";s:4:"zone";s:6:"125305";s:9:"reduction";a:2:{s:11:"@attributes";a:1:{s:2:"id";s:5:"30741";}s:11:"description";s:6:"INTERO";}}i:5;a:9:{s:11:"@attributes";a:2:{s:2:"id";s:9:"346416548";s:5:"scode";s:8:"17806955";}s:11:"description";s:35:"POLTRONISSIMA PLATEA Fila 3 Posto 9";s:5:"price";s:4:"3000";s:7:"presale";s:1:"0";s:10:"commission";s:3:"150";s:3:"iva";s:2:"33";s:7:"barcode";s:10:"UTJBLFWDXU";s:4:"zone";s:6:"125305";s:9:"reduction";a:2:{s:11:"@attributes";a:1:{s:2:"id";s:5:"30741";}s:11:"description";s:6:"INTERO";}}}s:12:"subscription";s:1:"0";}}"
+    //     }
+    //     ["orderTransactionCodeArr"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(66) "a:2:{i:0;s:18:"TLITE0122982399270";i:1;s:18:"TLITE0122982400072";}"
+    //     }
+    //     ["booked_subs_seats"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(6) "a:0:{}"
+    //     }
+    //     ["subscriptionOrderId"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(0) ""
+    //     }
+    //     ["_date_completed"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(10) "1728451044"
+    //     }
+    //     ["_completed_date"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(19) "2024-10-09 07:17:24"
+    //     }
+    //     ["_edit_lock"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(12) "1728498875:1"
+    //     }
+    //     ["_edit_last"]=>
+    //     array(1) {
+    //       [0]=>
+    //       string(1) "1"
+    //     }
+    //   }
+    $json_data = '{"id":16231,"parent_id":0,"status":"completed","currency":"EUR","version":"8.8.5","prices_include_tax":false,"date_created":{"date":"2024-10-09 07:17:23.000000","timezone_type":3,"timezone":"Europe\/Rome"},"date_modified":{"date":"2024-10-09 14:53:19.000000","timezone_type":3,"timezone":"Europe\/Rome"},"discount_total":"0","discount_tax":"0","shipping_total":"0","shipping_tax":"0","cart_tax":"0","total":"300.00","total_tax":"0","customer_id":44319,"order_key":"wc_order_ybnLHLf7vsElp","billing":{"first_name":"Maria Pia","last_name":"Comunale","company":"","address_1":"","address_2":"","city":"","state":"","postcode":"","country":"","email":"piamat@me.com","phone":"3498765628"},"shipping":{"first_name":"","last_name":"","company":"","address_1":"","address_2":"","city":"","state":"","postcode":"","country":"","phone":""},"payment_method":"online","payment_method_title":"","transaction_id":"","customer_ip_address":"151.25.43.189","customer_user_agent":"Mozilla\/5.0 (iPhone; CPU iPhone OS 18_0_1 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/18.0.1 Mobile\/15E148 Safari\/604.1","created_via":"checkout","customer_note":"","date_completed":{"date":"2024-10-09 07:17:24.000000","timezone_type":3,"timezone":"Europe\/Rome"},"date_paid":{"date":"2024-10-09 07:17:23.000000","timezone_type":3,"timezone":"Europe\/Rome"},"cart_hash":"01b71eddd5db1849bbd46e26ec2cecb3","order_stock_reduced":true,"download_permissions_granted":true,"new_order_email_sent":false,"recorded_sales":true,"recorded_coupon_usage_counts":true,"number":"16231","meta_data":[{"id":665194,"key":"articolo_in_evidenza","value":""},{"id":665219,"key":"is_vat_exempt","value":"no"},{"id":665220,"key":"_mc4wp_optin","value":""},{"id":665232,"key":"confirmedOrderObject","value":{"LO SCHIACCIANOCI FOR FAMILIES":[{"zoneName":"POLTRONISSIMA ORO","zoneId":"125304","seats":[{"reductionName":"INTERO","reductionId":"30741","reductionQuantity":"4","reductionPrice":"30"}]},{"zoneName":"POLTRONISSIMA","zoneId":"125305","seats":[{"reductionName":"INTERO","reductionId":"30741","reductionQuantity":"6","reductionPrice":"30"}]}]}},{"id":665233,"key":"transactionIds","value":{"12530411726863":{"transaction_qty":4,"seatId":[],"ticketName":"LO SCHIACCIANOCI FOR FAMILIES","timestamp":1728451182,"transaction_id":"TLITE0122982399270","transaction_amount":"12732","regData":"1","zoneName":"POLTRONISSIMA ORO","zoneId":"125304","pcode":"11726863","vcode":"vt0001012","seats":{"30741":{"reductionName":"INTERO","reductionId":"30741","reductionPrice":"30","reductionQuantity":"4","seatId":["17806935","17806936","17806950","17806951"]}},"seatObject":[{"@attributes":{"id":"346416539","scode":"17806935"},"description":"POLTRONISSIMA ORO PLATEA Fila 4 Posto 1","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"LUQG6SWFNB","zone":"125304","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416540","scode":"17806936"},"description":"POLTRONISSIMA ORO PLATEA Fila 4 Posto 3","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"PP7ETWWY83","zone":"125304","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416541","scode":"17806950"},"description":"POLTRONISSIMA ORO PLATEA Fila 3 Posto 1","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"10E8GTUIZY","zone":"125304","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416542","scode":"17806951"},"description":"POLTRONISSIMA ORO PLATEA Fila 3 Posto 3","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"9YW80IW4O6","zone":"125304","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}}],"subscription":"0"},"12530511726863":{"transaction_qty":6,"seatId":[],"ticketName":"LO SCHIACCIANOCI FOR FAMILIES","timestamp":1728451182,"transaction_id":"TLITE0122982400072","transaction_amount":"19098","regData":"1","zoneName":"POLTRONISSIMA","zoneId":"125305","pcode":"11726863","vcode":"vt0001012","seats":{"30741":{"reductionName":"INTERO","reductionId":"30741","reductionPrice":"30","reductionQuantity":"6","seatId":["17806937","17806952","17806938","17806940","17806954","17806955"]}},"seatObject":[{"@attributes":{"id":"346416543","scode":"17806937"},"description":"POLTRONISSIMA PLATEA Fila 4 Posto 5","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"PU72TOWZX6","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416544","scode":"17806952"},"description":"POLTRONISSIMA PLATEA Fila 3 Posto 5","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"9VNDMVW4HO","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416545","scode":"17806938"},"description":"POLTRONISSIMA PLATEA Fila 4 Posto 7","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"XGH1BUUW8X","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416546","scode":"17806940"},"description":"POLTRONISSIMA PLATEA Fila 4 Posto 9","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"PI18XYWM8Z","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416547","scode":"17806954"},"description":"POLTRONISSIMA PLATEA Fila 3 Posto 7","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"UVJ907WDNM","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416548","scode":"17806955"},"description":"POLTRONISSIMA PLATEA Fila 3 Posto 9","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"UTJBLFWDXU","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}}],"subscription":"0"}}},{"id":665234,"key":"orderTransactionCodeArr","value":["TLITE0122982399270","TLITE0122982400072"]},{"id":665235,"key":"booked_subs_seats","value":[]},{"id":665236,"key":"subscriptionOrderId","value":""}],"line_items":{"6491":{"legacy_values":null,"legacy_cart_item_key":null,"legacy_package_key":null}},"tax_lines":[],"shipping_lines":[],"fee_lines":[],"coupon_lines":[]}';
+
+    //    $json_data = '{
+    //    "id": 10641,
+    //    "parent_id": 0,
+    //    "status": "completed",
+    //    "currency": "EUR",
+    //    "version": "8.8.5",
+    //    "prices_include_tax": false,
+    //    "date_created": {
+    //        "date": "2024-06-29 14:38:11.000000",
+    //        "timezone_type": 3,
+    //        "timezone": "Europe/Rome"
+    //    },
+    //    "date_modified": {
+    //        "date": "2024-06-29 14:38:12.000000",
+    //        "timezone_type": 3,
+    //        "timezone": "Europe/Rome"
+    //    },
+    //    "discount_total": "0",
+    //    "discount_tax": "0",
+    //    "shipping_total": "0",
+    //    "shipping_tax": "0",
+    //    "cart_tax": "0",
+    //    "total": "110.00",
+    //    "total_tax": "0",
+    //    "customer_id": 38049,
+    //    "order_key": "wc_order_A78bai5pcELCP",
+    //    "billing": {
+    //        "first_name": "Mueller",
+    //        "last_name": "Christian",
+    //        "company": "",
+    //        "address_1": "",
+    //        "address_2": "",
+    //        "city": "",
+    //        "state": "",
+    //        "postcode": "",
+    //        "country": "",
+    //        "email": "drchristianmueller@kabelmail.de",
+    //        "phone": "1715333533"
+    //    },
+    //    "shipping": {
+    //        "first_name": "",
+    //        "last_name": "",
+    //        "company": "",
+    //        "address_1": "",
+    //        "address_2": "",
+    //        "city": "",
+    //        "state": "",
+    //        "postcode": "",
+    //        "country": "",
+    //        "phone": ""
+    //    },
+    //    "payment_method": "online",
+    //    "payment_method_title": "",
+    //    "transaction_id": "",
+    //    "customer_ip_address": "104.28.45.22",
+    //    "customer_user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
+    //    "created_via": "checkout",
+    //    "customer_note": "",
+    //    "date_completed": {
+    //        "date": "2024-06-29 14:38:12.000000",
+    //        "timezone_type": 3,
+    //        "timezone": "Europe/Rome"
+    //    },
+    //    "date_paid": {
+    //        "date": "2024-06-29 14:38:11.000000",
+    //        "timezone_type": 3,
+    //        "timezone": "Europe/Rome"
+    //    },
+    //    "cart_hash": "06156577d5a202a1db4d9d672da0a665",
+    //    "order_stock_reduced": true,
+    //    "download_permissions_granted": true,
+    //    "new_order_email_sent": false,
+    //    "recorded_sales": true,
+    //    "recorded_coupon_usage_counts": true,
+    //    "number": "10641",
+    //    "meta_data": [
+    //        {
+    //            "id": 416801,
+    //            "key": "articolo_in_evidenza",
+    //            "value": ""
+    //        },
+    //        {
+    //            "id": 416826,
+    //            "key": "is_vat_exempt",
+    //            "value": "no"
+    //        },
+    //        {
+    //            "id": 416827,
+    //            "key": "_mc4wp_optin",
+    //            "value": ""
+    //        },
+    //        {
+    //            "id": 416839,
+    //            "key": "confirmedOrderObject",
+    //            "value": {
+    //                "LA TRAVIATA": [
+    //                    {
+    //                        "zoneName": "PALCHI CENT. III/IV ORD. PARAPETTO",
+    //                        "zoneId": "125313",
+    //                        "seats": [
+    //                            {
+    //                                "reductionName": "INTERO",
+    //                                "reductionId": "30741",
+    //                                "reductionQuantity": "2",
+    //                                "reductionPrice": "55"
+    //                            }
+    //                        ]
+    //                    }
+    //                ]
+    //            }
+    //        },
+    //        {
+    //            "id": 416840,
+    //            "key": "transactionIds",
+    //            "value": {
+    //                "12531310703910": {
+    //                    "transaction_qty": 2,
+    //                    "ticketName": "LA TRAVIATA",
+    //                    "timestamp": 1719665061,
+    //                    "transaction_id": "TLITE0120814417957",
+    //                    "transaction_amount": "7957",
+    //                    "regData": "1",
+    //                    "zoneName": "PALCHI CENT. III/IV ORD. PARAPETTO",
+    //                    "zoneId": "125313",
+    //                    "pcode": "10703910",
+    //                    "vcode": "vt0001012",
+    //                    "seats": [
+    //                        {
+    //                            "reductionName": "INTERO",
+    //                            "reductionId": "30741",
+    //                            "reductionQuantity": "2",
+    //                            "reductionPrice": "55"
+    //                        }
+    //                    ],
+    //                    "seatObject": [
+    //                        {
+    //                            "@attributes": {
+    //                                "id": "339846375",
+    //                                "scode": "17807359"
+    //                            },
+    //                            "description": "PALCHI CENT. III/IV ORD. PARAPETTO PALCO Ord. IV nr. 7 Posto 2",
+    //                            "price": "5500",
+    //                            "presale": "0",
+    //                            "commission": "275",
+    //                            "iva": "60",
+    //                            "barcode": "1SE0UEUGG2",
+    //                            "zone": "125313",
+    //                            "reduction": {
+    //                                "@attributes": {
+    //                                    "id": "30741"
+    //                                },
+    //                                "description": "INTERO"
+    //                            }
+    //                        },
+    //                        {
+    //                            "@attributes": {
+    //                                "id": "339846376",
+    //                                "scode": "17807358"
+    //                            },
+    //                            "description": "POSTI ASCOLTO PALCO Ord. IV nr. 7 Posto 5",
+    //                            "price": "2000",
+    //                            "presale": "0",
+    //                            "commission": "100",
+    //                            "iva": "22",
+    //                            "barcode": "1TFLNDU8IB",
+    //                            "zone": "125317",
+    //                            "reduction": {
+    //                                "@attributes": {
+    //                                    "id": "30741"
+    //                                },
+    //                                "description": "INTERO"
+    //                            }
+    //                        }
+    //                    ],
+    //                    "subscription": "0"
+    //                }
+    //            }
+    //        },
+    //        {
+    //            "id": 416841,
+    //            "key": "orderTransactionCodeArr",
+    //            "value": [
+    //                "TLITE0120814417957"
+    //            ]
+    //        },
+    //        {
+    //            "id": 416842,
+    //            "key": "booked_subs_seats",
+    //            "value": []
+    //        },
+    //        {
+    //            "id": 416843,
+    //            "key": "subscriptionOrderId",
+    //            "value": ""
+    //        },
+    //        {
+    //            "id": 442807,
+    //            "key": "wf_order_exported_status",
+    //            "value": "1"
+    //        }
+    //    ],
+    //    "line_items": {
+    //        "1574": {
+    //            "legacy_values": null,
+    //            "legacy_cart_item_key": null,
+    //            "legacy_package_key": null
+    //        }
+    //    },
+    //    "tax_lines": [],
+    //    "shipping_lines": [],
+    //    "fee_lines": [],
+    //    "coupon_lines": []
+    //}';
+
+    $order_data = json_decode($json_data, true);
+
+    //$args = array(
+    //    'order_id' => $order_data['id'],
+    //);
+    // Create a new order
+    //$order = wc_create_order($args);
+    $order = wc_create_order();
+
+    // Set customer and billing information
+    $order->set_customer_id( $order_data['customer_id'] );
+    $order->set_currency( $order_data['currency'] );
+
+    // Set billing address
+    $billing_address = array(
+    'first_name' => $order_data['billing']['first_name'],
+    'last_name'  => $order_data['billing']['last_name'],
+    'email'      => $order_data['billing']['email'],
+    'phone'      => $order_data['billing']['phone'],
+    'address_1'  => $order_data['billing']['address_1'],
+    'address_2'  => $order_data['billing']['address_2'],
+    'city'       => $order_data['billing']['city'],
+    'state'      => $order_data['billing']['state'],
+    'postcode'   => $order_data['billing']['postcode'],
+    'country'    => $order_data['billing']['country']
+    );
+    $order->set_billing_address( $billing_address );
+
+    // Set shipping address if available
+    if ( ! empty( $order_data['shipping']['first_name'] ) ) {
+    $shipping_address = array(
+        'first_name' => $order_data['shipping']['first_name'],
+        'last_name'  => $order_data['shipping']['last_name'],
+        'address_1'  => $order_data['shipping']['address_1'],
+        'address_2'  => $order_data['shipping']['address_2'],
+        'city'       => $order_data['shipping']['city'],
+        'state'      => $order_data['shipping']['state'],
+        'postcode'   => $order_data['shipping']['postcode'],
+        'country'    => $order_data['shipping']['country']
+    );
+    $order->set_shipping_address( $shipping_address );
+    }
+
+    // Set other order details
+
+    $order->set_payment_method( $order_data['payment_method'] );
+    $order->set_payment_method_title( $order_data['payment_method_title'] );
+    $order->set_created_via( $order_data['created_via'] );
+
+    // Add product
+    $product_id          = ! empty( get_option( 'TICKET_WOOCOMMERCE_PRODUCT_ID' ) ) ? get_option( 'TICKET_WOOCOMMERCE_PRODUCT_ID' ) : get_option( 'wc_ticket_product' ); // product ID to add to cart
+    $product = wc_get_product( $product_id ); // Replace with your product ID
+    if ( $product ) {
+        $order->add_product( $product, 1, [
+            'subtotal'     => $order_data["total"], // e.g. 32.95
+            'total'        => $order_data["total"], // e.g. 32.95
+        ] );
+    }
+
+    // Add meta data
+    foreach ( $order_data['meta_data'] as $meta ) {
+    $order->update_meta_data( $meta['key'], $meta['value'] );
+    }
+
+    // Calculate totals
+    $order->calculate_totals();
+
+    // Save the order
+    $order_id = $order->save();
+
+    //// Print or use the data as needed
+    //print_r($order_id);
     
-//    foreach ( $cart as $cart_item_key => $cart_item ) {
-//        $selected_seat_price = $cart_item[ 'selected_seat_price' ][ 0 ];
-//    }
-    
-//    $order_array = array(11142);
-//    if(!empty($order_array)){
-//        foreach($order_array as $order_key => $order_value){
-//            $current_order_id = $order_value;
-//            $current_order = wc_get_order($current_order_id);
-//            if(!empty($current_order)){
-//
-//            $transactionIds = $current_order->get_meta( 'transactionIds' );
-//
-//            if(!empty($transactionIds)){
-//                foreach($transactionIds as $transactionIds_key => $transactionIds_value){
-//                    $seatObject = $transactionIds_value['seatObject'];
-//                    if(is_array($seatObject) && !empty($seatObject) && array_key_first( $seatObject ) == 0){
-//                        foreach($seatObject as $trans_seat_key => $trans_seat_value){
-//                            $current_seat_price = (int) $trans_seat_value['price'];
-//                            $transaction_final_price        = $transaction_final_price + ((int) $current_seat_price / 100);
-//                        }
-//                    }else{
-//                        $seat_price = (int) $seatObject['price'];
-//                        $transaction_final_price        = $transaction_final_price + ((int) $seat_price / 100);
-//                    }
-//                }
-//            }
-//
-//            // Add product
-//            $product_id          = ! empty( get_option( 'TICKET_WOOCOMMERCE_PRODUCT_ID' ) ) ? get_option( 'TICKET_WOOCOMMERCE_PRODUCT_ID' ) : get_option( 'wc_ticket_product' ); // product ID to add to cart
-//
-//            $items = $current_order->get_items();
-//            if(!empty($items)){
-//                foreach ( $items as $item ) {
-//                    $deletable_product = wc_get_product( $item['product_id'] );
-//
-//                    if ( $deletable_product->get_id() == $product_id ) {
-//                        $current_order->remove_item( $item->get_id() );
-//                    }
-//                }
-//            }
-//
-//            $product = wc_get_product( $product_id ); // Replace with your product ID
-//            if ( $product ) {
-//                $current_order->add_product( $product, 1, [
-//                    'subtotal'     => $transaction_final_price, // e.g. 32.95
-//                    'total'        => $transaction_final_price, // e.g. 32.95
-//                ] );
-//            }        
-//
-//            // Calculate totals        
-//            $current_order->calculate_totals();
-//
-//            // Save the order
-//            $order_id = $current_order->save();
-//
-//            echo "<pre>";
-//            print_r($order_id);
-//            echo "</pre>";
-//            }else{
-//                echo "<pre>";
-//                print_r("order not found.");
-//                echo "</pre>";
-//            }
-//        }
-//    }
-    
-/*
- * 
- * start of add order from live to preprod
- */
-    
-//    $json_data = '{
-//    "id": 10641,
-//    "parent_id": 0,
-//    "status": "completed",
-//    "currency": "EUR",
-//    "version": "8.8.5",
-//    "prices_include_tax": false,
-//    "date_created": {
-//        "date": "2024-06-29 14:38:11.000000",
-//        "timezone_type": 3,
-//        "timezone": "Europe/Rome"
-//    },
-//    "date_modified": {
-//        "date": "2024-06-29 14:38:12.000000",
-//        "timezone_type": 3,
-//        "timezone": "Europe/Rome"
-//    },
-//    "discount_total": "0",
-//    "discount_tax": "0",
-//    "shipping_total": "0",
-//    "shipping_tax": "0",
-//    "cart_tax": "0",
-//    "total": "110.00",
-//    "total_tax": "0",
-//    "customer_id": 38049,
-//    "order_key": "wc_order_A78bai5pcELCP",
-//    "billing": {
-//        "first_name": "Mueller",
-//        "last_name": "Christian",
-//        "company": "",
-//        "address_1": "",
-//        "address_2": "",
-//        "city": "",
-//        "state": "",
-//        "postcode": "",
-//        "country": "",
-//        "email": "drchristianmueller@kabelmail.de",
-//        "phone": "1715333533"
-//    },
-//    "shipping": {
-//        "first_name": "",
-//        "last_name": "",
-//        "company": "",
-//        "address_1": "",
-//        "address_2": "",
-//        "city": "",
-//        "state": "",
-//        "postcode": "",
-//        "country": "",
-//        "phone": ""
-//    },
-//    "payment_method": "online",
-//    "payment_method_title": "",
-//    "transaction_id": "",
-//    "customer_ip_address": "104.28.45.22",
-//    "customer_user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
-//    "created_via": "checkout",
-//    "customer_note": "",
-//    "date_completed": {
-//        "date": "2024-06-29 14:38:12.000000",
-//        "timezone_type": 3,
-//        "timezone": "Europe/Rome"
-//    },
-//    "date_paid": {
-//        "date": "2024-06-29 14:38:11.000000",
-//        "timezone_type": 3,
-//        "timezone": "Europe/Rome"
-//    },
-//    "cart_hash": "06156577d5a202a1db4d9d672da0a665",
-//    "order_stock_reduced": true,
-//    "download_permissions_granted": true,
-//    "new_order_email_sent": false,
-//    "recorded_sales": true,
-//    "recorded_coupon_usage_counts": true,
-//    "number": "10641",
-//    "meta_data": [
-//        {
-//            "id": 416801,
-//            "key": "articolo_in_evidenza",
-//            "value": ""
-//        },
-//        {
-//            "id": 416826,
-//            "key": "is_vat_exempt",
-//            "value": "no"
-//        },
-//        {
-//            "id": 416827,
-//            "key": "_mc4wp_optin",
-//            "value": ""
-//        },
-//        {
-//            "id": 416839,
-//            "key": "confirmedOrderObject",
-//            "value": {
-//                "LA TRAVIATA": [
-//                    {
-//                        "zoneName": "PALCHI CENT. III/IV ORD. PARAPETTO",
-//                        "zoneId": "125313",
-//                        "seats": [
-//                            {
-//                                "reductionName": "INTERO",
-//                                "reductionId": "30741",
-//                                "reductionQuantity": "2",
-//                                "reductionPrice": "55"
-//                            }
-//                        ]
-//                    }
-//                ]
-//            }
-//        },
-//        {
-//            "id": 416840,
-//            "key": "transactionIds",
-//            "value": {
-//                "12531310703910": {
-//                    "transaction_qty": 2,
-//                    "ticketName": "LA TRAVIATA",
-//                    "timestamp": 1719665061,
-//                    "transaction_id": "TLITE0120814417957",
-//                    "transaction_amount": "7957",
-//                    "regData": "1",
-//                    "zoneName": "PALCHI CENT. III/IV ORD. PARAPETTO",
-//                    "zoneId": "125313",
-//                    "pcode": "10703910",
-//                    "vcode": "vt0001012",
-//                    "seats": [
-//                        {
-//                            "reductionName": "INTERO",
-//                            "reductionId": "30741",
-//                            "reductionQuantity": "2",
-//                            "reductionPrice": "55"
-//                        }
-//                    ],
-//                    "seatObject": [
-//                        {
-//                            "@attributes": {
-//                                "id": "339846375",
-//                                "scode": "17807359"
-//                            },
-//                            "description": "PALCHI CENT. III/IV ORD. PARAPETTO PALCO Ord. IV nr. 7 Posto 2",
-//                            "price": "5500",
-//                            "presale": "0",
-//                            "commission": "275",
-//                            "iva": "60",
-//                            "barcode": "1SE0UEUGG2",
-//                            "zone": "125313",
-//                            "reduction": {
-//                                "@attributes": {
-//                                    "id": "30741"
-//                                },
-//                                "description": "INTERO"
-//                            }
-//                        },
-//                        {
-//                            "@attributes": {
-//                                "id": "339846376",
-//                                "scode": "17807358"
-//                            },
-//                            "description": "POSTI ASCOLTO PALCO Ord. IV nr. 7 Posto 5",
-//                            "price": "2000",
-//                            "presale": "0",
-//                            "commission": "100",
-//                            "iva": "22",
-//                            "barcode": "1TFLNDU8IB",
-//                            "zone": "125317",
-//                            "reduction": {
-//                                "@attributes": {
-//                                    "id": "30741"
-//                                },
-//                                "description": "INTERO"
-//                            }
-//                        }
-//                    ],
-//                    "subscription": "0"
-//                }
-//            }
-//        },
-//        {
-//            "id": 416841,
-//            "key": "orderTransactionCodeArr",
-//            "value": [
-//                "TLITE0120814417957"
-//            ]
-//        },
-//        {
-//            "id": 416842,
-//            "key": "booked_subs_seats",
-//            "value": []
-//        },
-//        {
-//            "id": 416843,
-//            "key": "subscriptionOrderId",
-//            "value": ""
-//        },
-//        {
-//            "id": 442807,
-//            "key": "wf_order_exported_status",
-//            "value": "1"
-//        }
-//    ],
-//    "line_items": {
-//        "1574": {
-//            "legacy_values": null,
-//            "legacy_cart_item_key": null,
-//            "legacy_package_key": null
-//        }
-//    },
-//    "tax_lines": [],
-//    "shipping_lines": [],
-//    "fee_lines": [],
-//    "coupon_lines": []
-//}';
-//
-//$order_data = json_decode($json_data, true);
-//
-////$args = array(
-////    'order_id' => $order_data['id'],
-////);
-//// Create a new order
-////$order = wc_create_order($args);
-//$order = wc_create_order();
-//
-//// Set customer and billing information
-//$order->set_customer_id( $order_data['customer_id'] );
-//$order->set_currency( $order_data['currency'] );
-//
-//// Set billing address
-//$billing_address = array(
-//    'first_name' => $order_data['billing']['first_name'],
-//    'last_name'  => $order_data['billing']['last_name'],
-//    'email'      => $order_data['billing']['email'],
-//    'phone'      => $order_data['billing']['phone'],
-//    'address_1'  => $order_data['billing']['address_1'],
-//    'address_2'  => $order_data['billing']['address_2'],
-//    'city'       => $order_data['billing']['city'],
-//    'state'      => $order_data['billing']['state'],
-//    'postcode'   => $order_data['billing']['postcode'],
-//    'country'    => $order_data['billing']['country']
-//);
-//$order->set_billing_address( $billing_address );
-//
-//// Set shipping address if available
-//if ( ! empty( $order_data['shipping']['first_name'] ) ) {
-//    $shipping_address = array(
-//        'first_name' => $order_data['shipping']['first_name'],
-//        'last_name'  => $order_data['shipping']['last_name'],
-//        'address_1'  => $order_data['shipping']['address_1'],
-//        'address_2'  => $order_data['shipping']['address_2'],
-//        'city'       => $order_data['shipping']['city'],
-//        'state'      => $order_data['shipping']['state'],
-//        'postcode'   => $order_data['shipping']['postcode'],
-//        'country'    => $order_data['shipping']['country']
-//    );
-//    $order->set_shipping_address( $shipping_address );
-//}
-//
-//// Set other order details
-//
-//$order->set_payment_method( $order_data['payment_method'] );
-//$order->set_payment_method_title( $order_data['payment_method_title'] );
-//$order->set_created_via( $order_data['created_via'] );
-//
-//// Add product
-//    $product_id          = ! empty( get_option( 'TICKET_WOOCOMMERCE_PRODUCT_ID' ) ) ? get_option( 'TICKET_WOOCOMMERCE_PRODUCT_ID' ) : get_option( 'wc_ticket_product' ); // product ID to add to cart
-//    $product = wc_get_product( $product_id ); // Replace with your product ID
-//    if ( $product ) {
-//        $order->add_product( $product, 1, [
-//            'subtotal'     => $order_data["total"], // e.g. 32.95
-//            'total'        => $order_data["total"], // e.g. 32.95
-//        ] );
-//    }
-//
-//// Add meta data
-//foreach ( $order_data['meta_data'] as $meta ) {
-//    $order->update_meta_data( $meta['key'], $meta['value'] );
-//}
-//
-//// Calculate totals
-//$order->calculate_totals();
-//
-//// Save the order
-//$order_id = $order->save();
-//
-//// Print or use the data as needed
-//print_r($order_id);
-    
-    
+    $html = ob_get_clean ();
+    return $html;
+}
+
 /*
  * 
  * end of add order from live to preprod
  */
 
+add_shortcode('add_order_from_live_to_preprod', 'add_order_from_live_to_preprod_func');
+
+function add_order_from_live_to_preprod_func($attr) {
+
 //    $order = wc_get_order( 11138 );
 //    echo "<pre>";
 //    print_r($order);
 //    echo "</pre>";
-//    $xml_sub_cookie = tempnam ("/tmp", "CURLCOOKIE");
-//        $curl = curl_init();
-//
-//        curl_setopt_array($curl, array(
-//          CURLOPT_URL => 'https://www.teatrosancarlo.it/wp-json/vivaticket/v1/getOrder/?id=11138',
-//          CURLOPT_RETURNTRANSFER => true,
-//          CURLOPT_ENCODING => '',
-//          CURLOPT_MAXREDIRS => 10,
-//          CURLOPT_TIMEOUT => 0,
-//          CURLOPT_FOLLOWLOCATION => true,
-//          CURLOPT_COOKIEJAR => $xml_sub_cookie,
-//          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-//          CURLOPT_CUSTOMREQUEST => 'GET',
-//        ));
-//
-//        $response = curl_exec($curl);
-//
-//        curl_close($curl);
-//        
-//        echo "<pre>";
-//        print_r($response);
-//        echo "</pre>";
+// Add attributes to the shortcode
+    $attr = shortcode_atts(
+            array(
+        'order_id' => 0,
+            ), $attr
+    );
 
-    ?>
-        <?php
+    $order_id = $attr['order_id'];
+    // $url = 'https://www.teatrosancarlo.it/wp-json/vivaticket/v1/getOrder/?id=' . $order_id;
+    // Retrieve order data from the live site through the API
+    $url = 'https://www.teatrosancarlo.it/wp-json/wc/v3/orders/' . $order_id;
+
+    $xml_sub_cookie = tempnam ("/tmp", "CURLCOOKIE");
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_COOKIEJAR => $xml_sub_cookie,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    
+    echo "<pre>";
+    print_r($response);
+    echo "</pre>";
+}
+
 //    if ( function_exists( 'icl_get_home_url' ) ) {
 //        $default_language_url = rtrim( apply_filters( 'wpml_home_url', icl_get_home_url(), ICL_LANGUAGE_CODE ), '/' );
 //        $base_directory = dirname( __DIR__ );
@@ -1161,6 +1434,16 @@ function stcTickets_developer_test_callback() {
 //            }
 //        }
 //    }
-    $html = ob_get_clean ();
-    return $html;
+    
+
+// Shortcode for testing orders
+function test_order_sc($order_id) {
+    // add attributes
+
+    $order = wc_get_order( $order_id );
+
+    echo '<pre>';
+    echo get_confirmed_order_arr_fun($order);
+    echo '</pre>';
 }
+add_shortcode( 'test_order', 'test_order_sc' );

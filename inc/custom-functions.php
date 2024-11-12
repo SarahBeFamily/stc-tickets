@@ -16,49 +16,54 @@ function get_item_data($other_data, $cart_item) {
     $selected_seats  = $cart_item [ 'selected_seat_price' ];
     $transaction_ids = $cart_item [ 'transaction_ids' ];
     $subs_seat_list  = $cart_item [ 'booked_subs_seats' ];
+    $subs_order_id   = isset($cart_item[ 'subscription_order_id' ]) ? $cart_item[ 'subscription_order_id' ] : array();
     $abbonamento     = false;
     $abbonamento_with_sub = false;
-//    if( $_GET[ 'print' ] == 1 ) {
-//        echo "<pre>";
-//        print_r($cart_item);
-//        echo "</pre>";
-//        echo "<pre>";
-//        print_r($transaction_ids);
-//        echo "</pre>";
-//        echo "<pre>";
-//        print_r($selected_seats);
-//        echo "</pre>";
-//        echo "<pre>";
-//        print_r($subs_seat_list);
-//        echo "</pre>";
-//    }
+
+    // test
+    if( isset($_GET['print']) && $_GET[ 'print' ] == 1 ) {
+        echo "<pre>";
+        print_r($cart_item);
+        echo "</pre>";
+        // echo "<pre>";
+        // print_r($transaction_ids);
+        // echo "</pre>";
+        // echo "<pre>";
+        // print_r($selected_seats);
+        // echo"</pre>";
+        // echo "<pre>";
+        // print_r($subs_seat_list);
+        // echo "</pre>";
+    }
+
     $tickets_array = array ();
     foreach ( $transaction_ids[ 0 ] as $transaction_ids_key => $transaction_ids_value ) {
         $zoneId = $transaction_ids_key;
         if( ! isset( $transaction_ids_value[ 'subscription_seat' ] ) ) {
-            $ticketName     = $transaction_ids_value[ 'ticketName' ];
-            $zoneName       = $transaction_ids_value[ 'zoneName' ];
-            $seatObject     = $transaction_ids_value[ 'seatObject' ];
-            $subscription   = $transaction_ids_value[ 'subscription' ];
-            $transaction_id = $transaction_ids_value[ 'transaction_id' ];
+            $ticketName          = isset($transaction_ids_value[ 'ticketName' ]) ?  $transaction_ids_value[ 'ticketName' ] : '';
+            $zoneName            = isset($transaction_ids_value[ 'zoneName' ]) ?  $transaction_ids_value[ 'zoneName' ] : '';
+            $seatObject          = isset($transaction_ids_value[ 'seatObject' ]) ?  $transaction_ids_value[ 'seatObject' ] : '';
+            $subscription        = isset($transaction_ids_value[ 'subscription' ]) ?  $transaction_ids_value[ 'subscription' ] : '';
+            $transaction_id      = isset($transaction_ids_value[ 'transaction_id' ]) ?  $transaction_ids_value[ 'transaction_id' ] : '';
             if($subscription){
                 $abbonamento     = true;
             }
             
             $tickets_array[ $ticketName ][] = array (
-                'zoneId'       => $transaction_ids_key,
-                'zoneName'     => $zoneName,
-                'seatObject'   => $seatObject,
-                'subscription' => $subscription,
-                'transaction_id' => $transaction_id,
+                'zoneId'            => $transaction_ids_key,
+                'zoneName'          => $zoneName,
+                'seatObject'        => $seatObject,
+                'subscription'      => $subscription,
+                'transaction_id'    => $transaction_id,
             );
-        } else if( isset( $transaction_ids_value[ 'subscription_seat' ] ) && ! empty( $subs_seat_list ) && ! empty( $cart_item [ 'subscription_order_id' ] ) ) {
+        } else if( isset( $transaction_ids_value[ 'subscription_seat' ] ) && ! empty( $subs_seat_list ) ) {
+            // dd($transaction_ids_value[ 'subscription_seat' ]);
             foreach ( $transaction_ids_value[ 'subscription_seat' ] as $subscription_seat_key => $subscription_seat_value ) {
                 if(!$abbonamento){
-                    $ticketName     = $subscription_seat_value[ 'ticketName' ];
+                    $ticketName = $subscription_seat_value[ 'ticketName' ];
                 }
                 if($abbonamento){
-                    $abbonamento_with_sub     = true;
+                    $abbonamento_with_sub = true;
                 }
                 $zoneName       = $subscription_seat_value[ 'zoneName' ];
                 $seatObject     = $subscription_seat_value[ 'seatObject' ];
@@ -71,19 +76,14 @@ function get_item_data($other_data, $cart_item) {
                     'seatObject'         => $seatObject,
                     'subscription'       => $subscription,
                     'under_subscription' => true,
-                    'transaction_id' => $transaction_id,
+                    'transaction_id'     => $transaction_id,
                 );
             }
         }
     }
-//    if(empty($tickets_array) && !empty($subs_seat_list)){
-//        $subscription_order_id = $cart_item [ 'subscription_order_id' ];
-//    }
-//    if($_GET['print'] == 1){
-//        echo "<pre>";
-//        print_r($tickets_array);
-//        echo "</pre>";
-//    }
+    //    if(empty($tickets_array) && !empty($subs_seat_list)){
+    //        $subscription_order_id = $cart_item [ 'subscription_order_id' ];
+    //    }
     ?>
     <div class="spettacolo-cart-wrapper wc-spettacolo-cart-wrapper cart-class">
         <div class="container">
@@ -96,11 +96,14 @@ function get_item_data($other_data, $cart_item) {
                             $extra_class = $counter < count( $tickets_array ) ? 'border-bot' : '';
                             $counter ++;
                             $ticketName  = $tickets_array_key;
+                            $showData = !empty($selected_seats) && $ticketName != '' && isset($selected_seats[0][$ticketName]) ? $selected_seats[0][$ticketName][0]['showDate'] : "";
                             ?>
                             <div class="ticket-datails-wrap <?php echo $extra_class; ?>">
                                 <div class="ticket-title-wrap">
                                     <div class="ticket-title" data-name="<?php echo $ticketName; ?>">
-                                        <h2 class="<?php echo ($abbonamento) ? "abbonamento" : "spettacolo"; ?>"><?php echo $ticketName; ?></h2>
+                                        <h2 class="<?php echo ($abbonamento) ? 'abbonamento' : 'spettacolo'; ?>"><?php echo $ticketName; ?></h2>
+                                        <?php /** MOD SARAH **/ // Display the show date ?>
+                                        <div class="data"><?php echo $showData;?></div>
                                     </div>
                                     <div class="ticket-delete">
                                         <img src="<?php echo plugin_dir_url( __DIR__ ) . 'assets/img/delete_icon.svg'; ?>">
@@ -115,8 +118,9 @@ function get_item_data($other_data, $cart_item) {
                                         $subscription       = isset($tickets_array_value_v[ 'subscription' ]) ? $tickets_array_value_v[ 'subscription' ] : '';
                                         $under_subscription = isset($tickets_array_value_v[ 'under_subscription' ]) ? $tickets_array_value_v[ 'under_subscription' ] : '';
                                         $transaction_id     = isset($tickets_array_value_v[ 'transaction_id' ]) ? $tickets_array_value_v[ 'transaction_id' ] : '';
-                                        if(!$abbonamento_with_sub || ($abbonamento_with_sub && !$under_subscription)){
-                                        ?>
+                                        $seatObject_new     = array(); // MOD SARAH
+
+                                        if(!$abbonamento_with_sub || ($abbonamento_with_sub && !$under_subscription)){ ?>
                                         <div class="ticket-zone" data-transaction-id="<?php echo $transaction_id; ?>">
                                             <div class="zone-title" data-zoneId="<?php echo $zoneId; ?>">
                                                 <h4><?php echo $zoneName; ?></h4>
@@ -129,17 +133,18 @@ function get_item_data($other_data, $cart_item) {
                                                     $seatObject_new = array ( $seatObject );
                                                 }
                                             }
-//                                            echo "<pre>";
-//                                            print_r($seatObject_new);
-//                                            echo "</pre>";
+                                            // echo "<pre>";
+                                            // print_r($seatObject_new);
+                                            // echo "</pre>";
+                                            if(is_array($seatObject_new) && !empty($seatObject_new)) :
                                             foreach ( $seatObject_new as $seatObject_key => $seatObject_value ) {
-//                                                echo "<pre>";
-//                                                print_r($seatObject_value[ 'barcode' ]);
-//                                                echo "</pre>";
+                                                // echo "<pre>";
+                                                // print_r($seatObject_value[ 'barcode' ]);
+                                                // echo "</pre>";
                                                 $seat_desc  = $seatObject_value[ 'description' ];
                                                 $seat_price = $seatObject_value[ 'price' ];
                                                 $barcode = "";
-                                                $currrent_subs_seats = "";
+                                                $currrent_subs_seats = array();
                                                 $seat_price = ! empty( $seat_price ) ? (float) $seat_price / 100 : 0;
                                                 if( $under_subscription ) {
                                                     $seat_price = 0;
@@ -153,11 +158,14 @@ function get_item_data($other_data, $cart_item) {
                                                 }
                                                 if( ! empty( $subs_seat_list ) ) {
                                                     if( array_key_first($subs_seat_list) == '0' ) {
-//                                                        $barcode = array_key_first($subs_seat_list[ 0 ]);
                                                         $currrent_subs_seats = $subs_seat_list[ 0 ][ $barcode ];
                                                     }else{
-//                                                        $barcode = array_key_first($subs_seat_list);
-                                                        $currrent_subs_seats = $subs_seat_list[ $barcode ];
+                                                        // If the key is not 0 then loop through the array to get the correct key
+                                                        foreach($subs_seat_list as $subs_seat_list_key => $subs_seat_list_value){
+                                                            if($subs_seat_list_key == $barcode){
+                                                                $currrent_subs_seats = $subs_seat_list_value;
+                                                            }
+                                                        }
                                                     }
                                                 }
                                                 ?>
@@ -180,9 +188,6 @@ function get_item_data($other_data, $cart_item) {
                                                     </div>
                                                     <?php
                                                     if( $subscription == 1 ) {
-//                                                        if(!isset($_COOKIE["remainingSeats"])) {
-//                                                            $_COOKIE["remainingSeats"];
-//                                                        }
                                                         ?>
                                                         <div class="barcode" data-barcode="<?php echo $barcode; ?>">
                                                             <p><?php echo $barcode; ?></p>
@@ -194,12 +199,18 @@ function get_item_data($other_data, $cart_item) {
                                                     <?php if( ! empty( $currrent_subs_seats ) ) { ?>
                                                         <div class="subscription-seats">
                                                             <?php
+                                                            // dd($currrent_subs_seats);
                                                             foreach ( $currrent_subs_seats as $currrent_subs_key => $currrent_subs_value ) {
                                                                 if( isset( $currrent_subs_value[ 'seat' ] ) ) {
                                                                     $seat_title = $currrent_subs_value[ 'seat' ][ 'description' ];
                                                                     $custref = $currrent_subs_value['@attributes']['custref'];
+                                                                    $ticketName = '';
                                                                     ?>
-                                                                    <p data-transaction-id="<?php echo $custref; ?>"><?php echo $seat_title; ?></p>
+                                                                    <p data-transaction-id="<?php echo $custref; ?>">
+                                                                        <?php //<span class="showTitle"><?php echo $ticketName;:</span> &nbsp;?>
+                                                                        <?php echo $seat_title; ?>
+                                                                        <span class="data"><?php echo $showData; ?></span>
+                                                                    </p>
                                                                     <?php
                                                                 }
                                                             }
@@ -209,6 +220,7 @@ function get_item_data($other_data, $cart_item) {
                                                 </div>
                                                 <?php
                                             }
+                                            endif;
                                             ?>
                                         </div>
                                         <?php
@@ -226,6 +238,11 @@ function get_item_data($other_data, $cart_item) {
         </div>
     </div>
     <?php
+    // test
+    if( isset($_GET['print']) && $_GET[ 'print' ] == 1 ) {
+        echo "Ticket array:<br><pre>".print_r($tickets_array)."</pre>";
+    }
+    
     $html = ob_get_clean();
 //    return $html;
 //    if ( isset( $cart_item [ 'custom_data' ] ) ) {
@@ -300,25 +317,45 @@ function alter_price_cart($cart) {
         }
         $transaction_ids     = $cart_item[ 'transaction_ids' ][ 0 ];
         $transaction_final_price = 0;
+        // dd($transaction_ids);
         if( ! empty( $transaction_ids ) ) {
-                foreach ( $transaction_ids as $trans_key => $trans_value ) {
-                    if(!empty($trans_value) && is_array($trans_value)){
+            foreach ( $transaction_ids as $trans_key => $trans_value ) {
+                if(is_array($trans_value) && !empty($trans_value)){
+
+                /** MOD SARAH -- error on add subscription selection to cart **/
+                    // Check if seatObject is set
+                    if(isset($trans_value['seatObject'])) {
+                        // Check if the seatObject is an array and not empty and the key is 0
                         if(is_array($trans_value['seatObject']) && !empty($trans_value['seatObject']) && array_key_first( $trans_value['seatObject'] ) == 0){
+                        // if(is_array($trans_value['seatObject']) && !empty($trans_value['seatObject'])){
+                            // dd($trans_value['seatObject']);
                             foreach($trans_value['seatObject'] as $trans_seat_key => $trans_seat_value){
                                 $current_seat_price = (int) $trans_seat_value['price'];
-                                $transaction_final_price        = $transaction_final_price + ((int) $current_seat_price / 100);
+                                $transaction_final_price = $transaction_final_price + ((int) $current_seat_price / 100);
                             }
-                        }else{
+                        } else {
                             $seat_price = (int) $trans_value['seatObject']['price'];
-                            $transaction_final_price        = $transaction_final_price + ((int) $seat_price / 100);
+                            $transaction_final_price = $transaction_final_price + ((int) $seat_price / 100);
+                        }
+                    }
+
+                    // Check if subscription_seat is set
+                    if(isset($trans_value['subscription_seat'])) {
+                        foreach($trans_value['subscription_seat'] as $sub_seat_key => $sub_seat_value){
+                            // $current_seat_price = (int) $sub_seat_value['seatObject']['price'];
+                            $current_seat_price = (int) $sub_seat_value['seats'][0]['reductionPrice'];
+                            $transaction_final_price = $transaction_final_price + ((int) $current_seat_price / 100);
+                            // dd($trans_value['subscription_seat']);
                         }
                     }
                 }
             }
-            if(!empty($transaction_final_price) && $transaction_final_price != 0 && $transaction_final_price != $totalPrice){
-                $totalPrice = $transaction_final_price;
-            }
-//        $total_price   = $custom_data[ 'product_del_price_' . $user_id ];
+        }
+
+        if(!empty($transaction_final_price) && $transaction_final_price != 0 && $transaction_final_price != $totalPrice){
+            $totalPrice = $transaction_final_price;
+        }
+        // $total_price   = $custom_data[ 'product_del_price_' . $user_id ];
         if( ! empty( $totalPrice ) && $totalPrice != 0 ) {
             $cart_item[ 'data' ]->set_price( $totalPrice );
         }
@@ -460,7 +497,7 @@ function woocommerce_order_details_fun($order) {
                             ?>
                             <div class="ticket-datails-wrap <?php echo $extra_class; ?>">
                                 <div class="ticket-title" data-name="<?php echo $ticketName; ?>">
-                                    <h2 class="<?php echo ($abbonamento) ? "abbonamento" : "spettacolo"; ?>"><?php echo $ticketName; ?></h2>
+                                    <h2 class="<?php echo ($abbonamento) ? __("Abbonamento",'stc-tickets')  : __("Spettacolo",'stc-tickets'); ?>"><?php echo $ticketName; ?></h2>
                                 </div>
                                 <?php
                                 if( ! empty( $tickets_array_value ) ) {
@@ -533,9 +570,11 @@ function woocommerce_order_details_fun($order) {
                                                         </div>
                                                         <?php
                                                         if( $subscription == 1 ) {
-    //                                                        if(!isset($_COOKIE["remainingSeats"])) {
-    //                                                            $_COOKIE["remainingSeats"];
-    //                                                        }
+
+                                                            // if(!isset($_COOKIE["remainingSeats"])) {
+                                                            //     $_COOKIE["remainingSeats"];
+                                                            // }
+
                                                             $sub_cookie = tempnam ("/tmp", "CURLCOOKIE");
                                                             $curl = curl_init();
 
@@ -770,7 +809,16 @@ function woocommerce_order_details_fun($order) {
 //        $item->add_meta_data('file', array( $values['file'] ) );
 //    }
 //}
-// Get custom order item meta and display a linked download button
+
+/**
+ * Get custom order item meta and display a linked download button
+ * Note for testing: add ?print=1 to the URL to see the output
+ * 
+ * @param int $item_id
+ * @param object $item
+ * @param object $product
+ * @return void
+ */
 add_action( 'woocommerce_after_order_itemmeta', 'display_admin_order_item_custom_button', 10, 3 );
 function display_admin_order_item_custom_button($item_id, $item, $product) {
     // Only "line" items and backend order pages
@@ -781,17 +829,15 @@ function display_admin_order_item_custom_button($item_id, $item, $product) {
     $transaction_ids       = $order->get_meta ( 'transactionIds', true, 'view' ); // Get order item meta data (array)
     $subs_seat_list        = $order->get_meta ( 'booked_subs_seats', true, 'view' ); // Get order item meta data (array)
     $subscription_order_id = $order->get_meta ( 'subscriptionOrderId', true, 'view' ); // Get order item meta data (array)
-    $tickets_array        = array ();
-    $abbonamento     = false;
-    $abbonamento_with_sub = false;
+    $tickets_array         = array ();
+    $abbonamento           = false;
+    $abbonamento_with_sub  = false;
     /** MoD sarah */
     if( is_array( $transaction_ids ) && ! empty( $transaction_ids ) ): //Check if $trasaction_id is an array and not empty
         foreach ( $transaction_ids as $transaction_ids_key => $transaction_ids_value ) {
             $zoneId = $transaction_ids_key;
             if( ! isset( $transaction_ids_value[ 'subscription_seat' ] ) ) {
-                if($subscription){
-                    $abbonamento     = true;
-                }
+                
                 $ticketName     = $transaction_ids_value[ 'ticketName' ];
                 $zoneName       = $transaction_ids_value[ 'zoneName' ];
                 $seatObject     = $transaction_ids_value[ 'seatObject' ];
@@ -805,6 +851,10 @@ function display_admin_order_item_custom_button($item_id, $item, $product) {
                     'subscription' => $subscription,
                     'transaction_id' => $transaction_id,
                 );
+
+                if($subscription){
+                    $abbonamento     = true;
+                }
             } else if( isset( $transaction_ids_value[ 'subscription_seat' ] ) && ! empty( $subs_seat_list ) && ! empty( $subscription_order_id ) ) {
                 foreach ( $transaction_ids_value[ 'subscription_seat' ] as $subscription_seat_key => $subscription_seat_value ) {
                     if(!$abbonamento){
@@ -825,7 +875,7 @@ function display_admin_order_item_custom_button($item_id, $item, $product) {
                         'seatObject'         => $seatObject,
                         'subscription'       => $subscription,
                         'under_subscription' => true,
-                        'transaction_id' => $transaction_id,
+                        'transaction_id'     => $transaction_id,
                     );
                 }
             }
@@ -943,12 +993,15 @@ function display_admin_order_item_custom_button($item_id, $item, $product) {
                                                             $xml              = simplexml_load_string( $response, 'SimpleXMLElement', LIBXML_NOCDATA );
                                                             $subscriptionJson = json_encode( $xml );
                                                             $subscriptionArr  = json_decode( $subscriptionJson, TRUE );
-    //                                                        if($_GET['print'] == '1') {
-    //                                                            echo "<pre>";
-    //                                                            print_r($subscriptionArr);
-    //                                                            echo "</pre>";
-    //                                                        }
-                                                            if( ! empty( $subscriptionArr ) ) {
+                                                            
+                                                            // test
+                                                            if(isset($_GET['print']) && $_GET['print'] == '1') {
+                                                                echo "<pre>";
+                                                                print_r($subscriptionArr);
+                                                                echo "</pre>";
+                                                            }
+
+                                                            if( ! empty( $subscriptionArr ) && isset($subscriptionArr['subscriptiondata']) ) {
                                                                 $accruals      = $subscriptionArr[ 'subscriptiondata' ][ 'accruals' ];
                                                                 $totalaccruals = $subscriptionArr[ 'subscriptiondata' ][ '@attributes' ][ 'numaccruals' ];
                                                             }
@@ -967,14 +1020,17 @@ function display_admin_order_item_custom_button($item_id, $item, $product) {
                                                         <?php
                                                         if( !isset($subscriptionArr['@attributes']['errcode'])){
                                                             if( ! empty( $accruals ) ) {
-        //                                                        if($_GET['print'] == '1') {
-        //                                                            echo "<pre>";
-        //                                                            print_r($subscriptionArr);
-        //                                                            echo "</pre>";
-        //                                                            echo "<pre>";
-        //                                                            print_r($accruals);
-        //                                                            echo "</pre>";
-        //                                                        }
+
+                                                                // test
+                                                                if(isset($_GET['print']) && $_GET['print'] == '1') {
+                                                                    echo "<pre>";
+                                                                        print_r($subscriptionArr);
+                                                                    echo "</pre>";
+                                                                    echo "<pre>";
+                                                                        print_r($accruals);
+                                                                    echo "</pre>";
+                                                                }
+
                                                                 if( array_key_first( $accruals[ 'accrual' ] ) == '0' ) {
                                                                     $accruals_count = array_filter( $accruals[ 'accrual' ], function ($var) {
                                                                         if( $var[ '@attributes' ][ 'status' ] == 30 ) {
@@ -1141,6 +1197,14 @@ function new_contact($user_id) {
     $update_user_meta = update_user_meta( $user_id, 'user_ip', $_SERVER[ 'REMOTE_ADDR' ] );
     wp_set_password( $_POST['password'], $user_id);
 }
+
+/**
+ * Empty the cart after an expiration time
+ *
+ * @param [type] $cart_item_key
+ * @param [type] $cart
+ * @return void
+ */
 function woocommerce_cart_updated($cart_item_key, $cart) {
 
     $user_id          = get_current_user_id();
@@ -1179,6 +1243,8 @@ function woocommerce_cart_updated($cart_item_key, $cart) {
     update_user_meta( $user_id, 'addToCartObject', array () );
     update_user_meta( $user_id, 'transactionIds', array () );
     update_user_meta( $user_id, 'subscriptionSeatList', array () );
+
+    $cart->empty_cart();
 }
 
 add_action( 'woocommerce_remove_cart_item', 'woocommerce_cart_updated', 99, 2 );
@@ -1456,121 +1522,6 @@ function stcticket_spettacolo_data($id) {
     return $response;
 }
 
-/*
-  function woocommerce_order_print_fun($order){
-  ob_start ();
-  $order_id = $order->ID;
-  $orderTransactionCodeArr = get_post_meta( $order_id, 'orderTransactionCodeArr', true );
-  $transaction_ids = get_post_meta( $order_id, 'transactionIds', true );
-  $totalPrice     = 0;
-  $totalQty       = 0;
-  $tickets_array = array();
-  foreach($transaction_ids as $transaction_ids_key => $transaction_ids_value){
-  $ticketName = $transaction_ids_value['ticketName'];
-  $zoneId = $transaction_ids_key;
-  $zoneName = $transaction_ids_value['zoneName'];
-  $seatObject = $transaction_ids_value['seatObject'];
-
-  $tickets_array[$ticketName][] = array(
-  'zoneId' => $transaction_ids_key,
-  'zoneName' => $zoneName,
-  'seatObject' => $seatObject,
-  );
-  }
-  $orderTransactionUrl = site_url()."/mio-account/view-order/".$order_id."/";
-  ?>
-  <h2>Stampa biglietti</h2>
-  <p class="order-print">
-  <a href="<?php echo $orderTransactionUrl;?>" class="button" target="_blank"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Stampa biglietti</font></font></a>
-  </p>
-  <div class="spettacolo-cart-wrapper wc-spettacolo-cart-wrapper ticket-order-table">
-  <div class="container">
-  <div class="spettacolo-cart-inner">
-  <div class="spettacolo-tickets">
-  <?php
-  if( ! empty ( $tickets_array ) ) {
-  $counter = 1;
-  foreach($tickets_array as $tickets_array_key => $tickets_array_value){
-  $extra_class = $counter < count($tickets_array) ? 'border-bot' : '' ;
-  $counter++;
-  $ticketName = $tickets_array_key;
-  ?>
-  <div class="ticket-datails-wrap <?php echo $extra_class; ?>">
-  <div class="ticket-title" data-name="<?php echo $ticketName; ?>">
-  <h2><?php echo $ticketName; ?></h2>
-  </div>
-  <?php
-  if( ! empty ( $tickets_array_value ) ) {
-  foreach ( $tickets_array_value as $tickets_array_value_k => $tickets_array_value_v ) {
-  $zoneName   = $tickets_array_value_v[ 'zoneName' ];
-  $zoneId     = $tickets_array_value_v[ 'zoneId' ];
-  $seatObject = $tickets_array_value_v[ 'seatObject' ];
-  ?>
-  <div class="ticket-zone">
-  <div class="zone-title" data-zoneId="<?php echo $zoneId; ?>">
-  <h4><?php echo $zoneName; ?></h4>
-  </div>
-  <?php
-  if(!empty($seatObject)){
-  if( array_key_first( $seatObject ) == '0' ) {
-  $seatObject_new = $seatObject;
-  } else {
-  $seatObject_new = array($seatObject);
-  }
-  }
-  foreach ( $seatObject_new as $seatObject_key => $seatObject_value ) {
-  $seat_desc      = $seatObject_value[ 'description' ];
-  $seat_price     = $seatObject_value[ 'price' ];
-  $seat_price = !empty($seat_price) ? (float)$seat_price/100  : 0 ;
-  $seat_reduction = $seatObject_value[ 'reduction' ];
-  $reduction_id   = $seat_reduction[ '@attributes' ][ 'id' ];
-  $reduction_name = $seat_reduction[ 'description' ];
-  $reductionQuantity = 1;
-  $totalPrice     = $totalPrice + ((int) $reductionPrice * (int) $reductionQuantity);
-  $totalQty       = $totalQty + (int) $reductionQuantity;
-  ?>
-  <div class="zone-reductions">
-  <div class="seat-title" data-reductionId="<?php echo $reduction_id; ?>">
-  <p><?php echo preg_replace('/' . preg_quote($zoneName, '/') . '/', '', $seat_desc, 1); ?></p>
-  </div>
-  <div class="tipoticketeprezzo">
-  <div class="reduction-title-wrap">
-  <div class="reduction-title">
-  <p><?php echo $reduction_name; ?></p>
-  </div>
-  <div class="reduction-qty">
-  <p><?php echo " X " . $reductionQuantity; ?></p>
-  </div>
-  </div>
-  <div class="reduction-price">
-  <p><?php echo "- " . $seat_price . " &euro;"; ?></p>
-  </div>
-  </div>
-  </div>
-  <?php
-  }
-  ?>
-  </div>
-  <?php
-  }
-  }
-  ?>
-  </div>
-  <?php
-  }
-  }
-  ?>
-  </div>
-  </div>
-  </div>
-  </div>
-  <?php
-  $html = ob_get_clean ();
-  echo $html;
-  }
-
- */
-
 add_action( 'woocommerce_order_details_after_order_table', 'woocommerce_order_print_fun', 10 );
 function woocommerce_order_print_fun($order) {
     ob_start();
@@ -1584,20 +1535,24 @@ function woocommerce_order_print_fun($order) {
     if( ! empty( $transactionIds ) ) {
         ?>
         <h2><?php _e('Stampa biglietti','stc-tickets'); ?></h2>
-        <table style="text-align:center;">
-            <thead>
-                <tr>
-                    <th>
-                        <?php _e('Spettacolo','stc-tickets'); ?>
-                    </th>
-                    <th>
-                        <?php _e('POSTI','stc-tickets'); ?>
-                    </th>
-                    <th>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
+        <?php // MOD SARAH - Elimino la tabella che crea problemi nella visualizzazione da mobile
+        // <table style="text-align:center;">
+        //     <thead>
+        //         <tr>
+        //             <th>
+        //                  _e('Spettacolo','stc-tickets'); 
+        //             </th>
+        //             <th>
+        //                  _e('POSTI','stc-tickets'); 
+        //             </th>
+        //             <th>
+        //             </th>
+        //         </tr>
+        //     </thead>
+        //     <tbody>
+        ?>
+        <div class="recap-wrap">
+            
                 <?php
                 $print_avail = false;
 //                if( $_GET[ 'print' ] == 1 ) {
@@ -1630,6 +1585,17 @@ function woocommerce_order_print_fun($order) {
                                 if( ! empty( $ticketName ) && ! empty( $orderTransactionCode ) && ! empty( $zoneName ) ) {
                                     $print_avail = true;
                                     ?>
+                                    <div class="spettacolo flex fwrap content-between" data-tran-id="<?php echo $orderTransactionCode; ?>">
+                                        <p><?php _e('Spettacolo','stc-tickets'); ?>: <br> <span><?php echo $ticketName; ?></span></p>
+                                        <p><?php _e('POSTI','stc-tickets'); ?>: <br> <span><?php echo $zoneName; ?></span></p>
+                                        <p class="order-print wm-100">
+                                            <a href="javascript:;" class="bf-btn primary icon-ticket woocommerce-button button order-print-btn" data-order-id='<?php echo $orderTransactionCode; ?>'><?php _e('Stampa biglietti','stc-tickets'); ?></a>
+                                        </p>
+                                    </div>
+                                    <div class="print-error-msg-wrap" data-tran-id="<?php echo $orderTransactionCode; ?>">
+                                        <p class="print-error-msg" style="display:none;"></p>
+                                    </div>
+                                    <?php /*
                                         <tr class="order-print-row-wrap" data-tran-id="<?php echo $orderTransactionCode; ?>">
                                             <td>
                                                 <?php echo $ticketName; ?>
@@ -1648,7 +1614,7 @@ function woocommerce_order_print_fun($order) {
                                                 <p class="print-error-msg" style="display:none;"></p>
                                             </td>
                                         </tr>
-                                    <?php
+                                    */
                                 }
                                 
                             }
@@ -1708,26 +1674,30 @@ function woocommerce_before_cart_fun() {
     $cart       = WC()->cart->cart_contents;
     $totalPrice = 0;
     $totalQty   = 0;
-//    echo "<pre>";
-//    print_r($cart);
-//    echo "</pre>";
+
     if( ! empty( $cart ) ) {
         foreach ( $cart as $cart_item_key => $cart_item ) {
             $selected_seat_price = $cart_item[ 'selected_seat_price' ][ 0 ];
-//            if( $_GET[ 'print' ] == 1 ) {
-//                echo "<pre>";
-//                print_r($selected_seat_price);
-//                echo "</pre>";
-//            }
+
+            // test
+            if( isset($_GET[ 'print' ]) && $_GET[ 'print' ] == 1 ) {
+                echo "<pre>";
+                print_r($selected_seat_price);
+                echo"</pre>";
+            }
+
             $transaction_ids     = $cart_item[ 'transaction_ids' ][ 0 ];
             $booked_subs_seats   = $cart_item[ 'booked_subs_seats' ];
             foreach ( $transaction_ids as $transaction_ids_key => $transaction_ids_value ) {
                 $zoneExists = false;
-//                if( $_GET[ 'print' ] == 1 ) {
-//                    echo "<pre>";
-//                    print_r($transaction_ids_value);
-//                    echo "</pre>";
-//                }
+
+                // test
+                if( isset($_GET[ 'print' ]) && $_GET[ 'print' ] == 1 ) {
+                    echo"<pre>";
+                    print_r($transaction_ids_value);
+                    echo"</pre>";
+                }
+
                 if( is_array( $transaction_ids_value ) && array_key_first( $transaction_ids_value ) == 'subscription_seat' ) {
                     foreach ( $transaction_ids_value[ 'subscription_seat' ] as $subscription_seat_key => $subscription_seat_value ) {
                         $zoneExistsInSubscription = false;
@@ -1736,9 +1706,6 @@ function woocommerce_before_cart_fun() {
                         $zoneId     = $subscription_seat_value[ 'zoneId' ];
                         $timestamp  = $subscription_seat_value[ 'timestamp' ];
                         if( $timestamp < time() ) {
-//                            echo "<pre>selected_seat_price_if";
-//                            print_r($selected_seat_price);
-//                            echo "</pre>";
                             if(!empty($selected_seat_price[ $ticketName ])){
                                 foreach ( $selected_seat_price[ $ticketName ] as $selected_seat_key => $selected_seat_value ) {
                                     if( $selected_seat_value[ 'zoneName' ] == $zoneName ) {
@@ -1749,10 +1716,6 @@ function woocommerce_before_cart_fun() {
                                     }
                                 }
                             }else{
-//                                echo "<pre>";
-//                                print_r($transaction_ids[ $transaction_ids_key ]);
-//                                echo "</pre>";
-//                                unset( $transaction_ids[ $transaction_ids_key ] );
                                 $transaction_ids_value = array();
                             }
                         }
@@ -1765,11 +1728,11 @@ function woocommerce_before_cart_fun() {
                         $transaction_ids = array ();
                     }
                 } else {
-                    $ticketName = $transaction_ids_value[ 'ticketName' ];
-                    $zoneName   = $transaction_ids_value[ 'zoneName' ];
-                    $zoneId     = $transaction_ids_value[ 'zoneId' ];
-                    $timestamp  = $transaction_ids_value[ 'timestamp' ];
-                    if( $timestamp < time() ) {
+                    $ticketName = isset($transaction_ids_value[ 'ticketName' ]) ? $transaction_ids_value[ 'ticketName' ] : '';
+                    $zoneName   = isset($transaction_ids_value[ 'zoneName' ]) ? $transaction_ids_value[ 'zoneName' ] : '';
+                    $zoneId     = isset($transaction_ids_value[ 'zoneId' ]) ? $transaction_ids_value[ 'zoneId' ] : '';
+                    $timestamp  = isset($transaction_ids_value[ 'timestamp' ]) ? $transaction_ids_value[ 'timestamp' ] : '';
+                    if( $timestamp != '' && $timestamp < time() ) {
 //                        echo "<pre>selected_seat_price_else";
 //                        print_r($selected_seat_price);
 //                        echo "</pre>";
@@ -1796,9 +1759,7 @@ function woocommerce_before_cart_fun() {
                 if($zoneExists){
                     unset( $transaction_ids[ $transaction_ids_key ]);
                 }
-//                echo "<pre>transaction_ids";
-//                print_r($transaction_ids);
-//                echo "</pre>";
+
             }
             if( ! empty( $selected_seat_price ) ) {
                 foreach ( $selected_seat_price as $meta_key => $meta_value ) {
@@ -1821,14 +1782,27 @@ function woocommerce_before_cart_fun() {
             if( ! empty( $transaction_ids ) ) {
                 foreach ( $transaction_ids as $trans_key => $trans_value ) {
                     if(!empty($trans_value) && is_array($trans_value)){
-                        if(is_array($trans_value['seatObject']) && !empty($trans_value['seatObject']) && array_key_first( $trans_value['seatObject'] ) == 0){
+                        /** MOD SARAH **/ // Error in managing subscription seats
+                        // dd($trans_value);
+
+                        if(isset($trans_value['seatObject']) && is_array($trans_value['seatObject']) && !empty($trans_value['seatObject']) && array_key_first( $trans_value['seatObject'] ) == 0){
                             foreach($trans_value['seatObject'] as $trans_seat_key => $trans_seat_value){
                                 $current_seat_price = (int) $trans_seat_value['price'];
                                 $transaction_final_price        = $transaction_final_price + ((int) $current_seat_price / 100);
                             }
                         }else{
-                            $seat_price = (int) $trans_value['seatObject']['price'];
-                            $transaction_final_price        = $transaction_final_price + ((int) $seat_price / 100);
+                            // if (isset($trans_value['subscription_seat']) && !empty($trans_value['subscription_seat']) && array_key_first( $trans_value['subscription_seat'] ) == 0) {
+                            //     foreach ($trans_value['subscription_seat'] as $trans_seat_key => $trans_seat_value) {
+                            //         $current_seat_price = (int) $trans_seat_value['seatObject']['price'];
+                            //         $transaction_final_price = $transaction_final_price + ((int) $current_seat_price / 100);
+                            //     }
+                            // } else {
+                            //     $seat_price = (int) $trans_value['seatObject']['price'];
+                            //     $transaction_final_price = $transaction_final_price + ((int) $seat_price / 100);
+                            // }
+
+                            // $seat_price = (int) $trans_value['seatObject']['price'];
+                            // $transaction_final_price        = $transaction_final_price + ((int) $seat_price / 100);
                         }
                     }
                 }
@@ -1839,30 +1813,21 @@ function woocommerce_before_cart_fun() {
             if(empty( $selected_seat_price )){
                 $transaction_ids = array();
             }
-//            echo "<pre>";
-//            print_r($selected_seat_price);
-//            echo "</pre>";
-//            echo "<pre>";
-//            print_r($transaction_ids);
-//            echo "</pre>";            
+            // echo "<pre>";
+            // print_r($selected_seat_price);
+            // echo "</pre>";
+            // echo "<pre>";
+            // print_r($transaction_ids);
+            // echo "</pre>";            
             if(( ! empty( $totalPrice ) && $totalPrice != 0 ) && !empty( $transaction_ids )) {
-//                echo "<pre>";
-//                print_r("if");
-//                echo "</pre>";
                 $cart_item[ 'data' ]->set_price( $totalPrice );
                 $cart_item[ 'selected_seat_price' ][ 0 ]    = $selected_seat_price;
                 $cart_item[ 'transaction_ids' ][ 0 ]    = $transaction_ids;
                 WC()->cart->cart_contents[ $cart_item_key ] = $cart_item;
-//                WC()->cart->set_total($totalPrice);
+                // WC()->cart->set_total($totalPrice);
                 WC()->cart->calculate_totals();
             } else {
-//                echo "<pre>";
-//                print_r("else");
-//                echo "</pre>";
                 if( empty( $booked_subs_seats ) ) {
-//                    echo "<pre>";
-//                    print_r("else if");
-//                    echo "</pre>";
                     WC()->cart->empty_cart();
                     $user_id = get_current_user_id();
                     update_user_meta( $user_id, 'addToCartObject', array () );
@@ -1870,13 +1835,7 @@ function woocommerce_before_cart_fun() {
                     update_user_meta( $user_id, 'subscriptionSeatList', array () );
                     update_user_meta( $user_id, 'subscriptionOrderId', array () );
                 } else {
-//                    echo "<pre>";
-//                    print_r("else else");
-//                    echo "</pre>";
                     if( empty( $transaction_ids ) ) {
-//                        echo "<pre>";
-//                        print_r("else else if");
-//                        echo "</pre>";
                         WC()->cart->empty_cart();
                         $user_id = get_current_user_id();
                         update_user_meta( $user_id, 'addToCartObject', array () );
@@ -1888,8 +1847,8 @@ function woocommerce_before_cart_fun() {
                     if(empty($transaction_ids)){
                         $cart_item[ 'selected_seat_price' ][ 0 ]    = $selected_seat_price;
                         $cart_item[ 'transaction_ids' ][ 0 ]        = $transaction_ids;
-                        $cart_item[ 'booked_subs_seats' ]        = array();
-                        $cart_item[ 'subscription_order_id' ]        = '';
+                        $cart_item[ 'booked_subs_seats' ]           = array();
+                        $cart_item[ 'subscription_order_id' ]       = '';
                     }else{
                         $cart_item[ 'selected_seat_price' ][ 0 ]    = $selected_seat_price;
                         $cart_item[ 'transaction_ids' ][ 0 ]        = $transaction_ids;
@@ -1913,191 +1872,13 @@ function woocommerce_before_cart_fun() {
     $html = ob_get_clean();
     echo $html;
 }
-/*
-  // change hook regarding multiple email issue 13/12/2023.
-  //add_action( 'woocommerce_email_after_order_table', 'add_order_instruction_email', 10, 2 );
-  add_action( 'woocommerce_email_recipient_customer_completed_order', 'add_order_instruction_email', 10, 2 );
 
-
-  function add_order_instruction_email( $recipient, $order ) {
-  ob_start ();
-  $order_id = $order->ID;
-  $orderTransactionCodeArr = get_post_meta( $order_id, 'orderTransactionCodeArr', true );
-  $transaction_ids = get_post_meta( $order_id, 'transactionIds', true );
-  $totalPrice     = 0;
-  $totalQty       = 0;
-  $tickets_array = array();
-  foreach($transaction_ids as $transaction_ids_key => $transaction_ids_value){
-  $ticketName = $transaction_ids_value['ticketName'];
-  $zoneId = $transaction_ids_key;
-  $zoneName = $transaction_ids_value['zoneName'];
-  $seatObject = $transaction_ids_value['seatObject'];
-
-  $tickets_array[$ticketName][] = array(
-  'zoneId' => $transaction_ids_key,
-  'zoneName' => $zoneName,
-  'seatObject' => $seatObject,
-  );
-  }
-  $orderTransactionUrl = site_url()."/mio-account/view-order/".$order_id."/";
-  ?>
-  <h2>Stampa biglietti</h2>
-  <p class="order-print">
-  <a href="<?php echo $orderTransactionUrl;?>" class="button" target="_blank"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Stampa biglietti</font></font></a>
-  </p>
-  <div class="spettacolo-cart-wrapper wc-spettacolo-cart-wrapper ticket-order-table">
-  <div class="container">
-  <div class="spettacolo-cart-inner">
-  <div class="spettacolo-tickets">
-  <?php
-  if( ! empty ( $tickets_array ) ) {
-  $counter = 1;
-  foreach($tickets_array as $tickets_array_key => $tickets_array_value){
-  $extra_class = $counter < count($tickets_array) ? 'border-bot' : '' ;
-  $counter++;
-  $ticketName = $tickets_array_key;
-  ?>
-  <div class="ticket-datails-wrap <?php echo $extra_class; ?>">
-  <div class="ticket-title" data-name="<?php echo $ticketName; ?>">
-  <h2><?php echo $ticketName; ?></h2>
-  </div>
-  <?php
-  if( ! empty ( $tickets_array_value ) ) {
-  foreach ( $tickets_array_value as $tickets_array_value_k => $tickets_array_value_v ) {
-  $zoneName   = $tickets_array_value_v[ 'zoneName' ];
-  $zoneId     = $tickets_array_value_v[ 'zoneId' ];
-  $seatObject = $tickets_array_value_v[ 'seatObject' ];
-  ?>
-  <div class="ticket-zone">
-  <div class="zone-title" data-zoneId="<?php echo $zoneId; ?>">
-  <h4><?php echo $zoneName; ?></h4>
-  </div>
-  <?php
-  if(!empty($seatObject)){
-  if( array_key_first( $seatObject ) == '0' ) {
-  $seatObject_new = $seatObject;
-  } else {
-  $seatObject_new = array($seatObject);
-  }
-  }
-  foreach ( $seatObject_new as $seatObject_key => $seatObject_value ) {
-  $seat_desc      = $seatObject_value[ 'description' ];
-  $seat_price     = $seatObject_value[ 'price' ];
-  $seat_price = !empty($seat_price) ? (float)$seat_price/100  : 0 ;
-  $seat_reduction = $seatObject_value[ 'reduction' ];
-  $reduction_id   = $seat_reduction[ '@attributes' ][ 'id' ];
-  $reduction_name = $seat_reduction[ 'description' ];
-  $reductionQuantity = 1;
-  $totalPrice     = $totalPrice + ((int) $reductionPrice * (int) $reductionQuantity);
-  $totalQty       = $totalQty + (int) $reductionQuantity;
-  ?>
-  <div class="zone-reductions">
-  <div class="seat-title" data-reductionId="<?php echo $reduction_id; ?>">
-  <p><?php echo preg_replace('/' . preg_quote($zoneName, '/') . '/', '', $seat_desc, 1); ?></p>
-  </div>
-  <div class="tipoticketeprezzo">
-  <div class="reduction-title-wrap">
-  <div class="reduction-title">
-  <p><?php echo $reduction_name; ?></p>
-  </div>
-  <div class="reduction-qty">
-  <p><?php echo " X " . $reductionQuantity; ?></p>
-  </div>
-  </div>
-  <div class="reduction-price">
-  <p><?php echo "- " . $seat_price . " &euro;"; ?></p>
-  </div>
-  </div>
-  </div>
-  <?php
-  }
-  ?>
-  </div>
-  <?php
-  }
-  }
-  ?>
-  </div>
-  <?php
-  }
-  }
-  ?>
-  </div>
-  </div>
-  </div>
-  </div>
-  <?php
-  $html = ob_get_clean ();
-  echo $html;
-  }
-
-
-
-  //function add_order_instruction_email( $order, $sent_to_admin ) {
-  function add_order_instruction_email( $recipient, $order ) {
-  ob_start ();
-  $order_id = $order->ID;
-  $orderTransactionCodeArr = get_post_meta( $order_id, 'orderTransactionCodeArr', true );
-  $transactionIds = get_post_meta( $order_id, 'transactionIds', true );
-  ?>
-  <h2>Stampa biglietti</h2>
-  <table style="text-align:center;">
-  <thead>
-  <tr>
-  <th>
-  Spettacolo
-  </th>
-  <th>
-  Zone
-  </th>
-  <th>
-  </th>
-  </tr>
-  </thead>
-  <tbody>
-  <?php
-  foreach($transactionIds as $transactionIds_key => $transactionIds_value){
-  $ticketName = '';
-  $zoneName = '';
-  $orderTransactionCode = '';
-  if(in_array($transactionIds_value['transaction_id'],$orderTransactionCodeArr)){
-  $ticketName = $transactionIds_value['ticketName'];
-  $zoneName = $transactionIds_value['zoneName'];
-  $orderTransactionCode = $transactionIds_value['transaction_id'];
-  //                $orderTransactionUrl = API_HOST."/backend/backend.php?id=".APIKEY."&cmd=printAtHome&trcode=".$orderTransactionCode;
-  $orderTransactionUrl = site_url()."/mio-account/view-order/".$order_id."/";
-  }
-  if(!empty($ticketName) && !empty($orderTransactionCode) && !empty($zoneName)){
-  ?>
-  <tr>
-  <td>
-  <?php echo $ticketName;?>
-  </td>
-  <td>
-  <?php echo $zoneName;?>
-  </td>
-  <td>
-  <p class="order-print">
-  <a href="<?php echo $orderTransactionUrl;?>" class="button" target="_blank"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Stampa biglietti</font></font></a>
-  </p>
-  </td>
-  </tr>
-  <?php
-  }
-  }
-  ?>
-  </tbody>
-  </table>
-  <?php
-  $html = ob_get_clean ();
-  echo $html;
-  }
- */
 add_action( 'woocommerce_before_cart_table', 'woocommerce_before_cart_table_fun', 10 );
 function woocommerce_before_cart_table_fun() {
     ob_start();
     global $woocommerce;
     $cart = WC()->cart->cart_contents;
+    $finaltimestamp = array(); // MOD SARAH
     if( ! empty( $cart ) ) {
         foreach ( $cart as $cart_item_key => $cart_item ) {
             $selected_seat_price = $cart_item[ 'selected_seat_price' ][ 0 ];
@@ -2106,9 +1887,9 @@ function woocommerce_before_cart_table_fun() {
                 if( is_array( $transaction_ids_value ) && array_key_first( $transaction_ids_value ) == 'subscription_seat' ) {
                     $timestamp = $transaction_ids_value[ 'subscription_seat' ][ 0 ][ 'timestamp' ];
                 } else {
-                    $timestamp = $transaction_ids_value[ 'timestamp' ];
+                    $timestamp = isset($transaction_ids_value[ 'timestamp' ]) ? $transaction_ids_value[ 'timestamp' ] : '';
                 }
-                if( $timestamp > time() ) {
+                if( $timestamp != '' && $timestamp > time() ) {
                     $finaltimestamp = $timestamp;
                 }
             }
@@ -2919,3 +2700,192 @@ function woocommerce_review_order_before_payment_fun(){
 add_action( 'woocommerce_review_order_before_payment', 'woocommerce_review_order_before_payment_fun' );
 
 add_filter('auto_update_plugin', '__return_false');
+
+/**
+ * Riprendo l'ordine creato su Tlite dalle API di Vivaticket, partendo dal codice di pagamento
+ * @param type $order_id
+ * @param type $payment_code
+ * @return boolean
+ */
+
+ function retrieve_order_from_vt_tlite_shortcode() {
+    $transactionCode = isset( $_GET[ 'transactionCode' ] ) ? $_GET[ 'transactionCode' ] : '';
+    $paym_code = isset( $_GET[ 'paym_code' ] ) ? $_GET[ 'paym_code' ] : '';
+    $xpp_restat = isset( $_GET[ 'xpp_restat' ] ) ? $_GET[ 'xpp_restat' ] : '';
+
+    if( ! empty( $transactionCode ) && ! empty( $paym_code ) && ! empty( $xpp_restat ) ) {
+        $xml_sub_cookie = tempnam( "/tmp", "CURLCOOKIE" );
+        $curl = curl_init();
+
+        curl_setopt_array( $curl, array (
+            CURLOPT_URL            => API_HOST . 'backend/backend.php?id=SANCARLO&cmd=xmlSubscriptionData&barcode=' . $transactionCode,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING       => '',
+            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_TIMEOUT        => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_COOKIEJAR      => $xml_sub_cookie,
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST  => 'GET',
+        ) );
+
+        $response = curl_exec( $curl );
+        if( curl_errno( $curl ) ) {
+            $error_msg = curl_error( $curl );
+        }
+        curl_close( $curl );
+        $xml              = simplexml_load_string( $response, 'SimpleXMLElement', LIBXML_NOCDATA );
+        $subscriptionJson = json_encode( $xml );
+        $subscriptionArr  = json_decode( $subscriptionJson, TRUE );
+
+        echo '<pre>';
+        print_r( $subscriptionArr );
+        echo '</pre>';
+
+        if( ! empty( $subscriptionArr ) ) {
+            if( isset( $subscriptionArr[ '@attributes' ][ 'errcode' ] ) && $subscriptionArr[ '@attributes' ][ 'errcode' ] == "-1" ) {
+                $errstring = $subscriptionArr[ '@attributes' ][ 'errstring' ];
+                $expired = true;
+            } else {
+                $expired = false;
+            }
+            $subscription_flag = true;
+        } else {
+            $expired = false;
+            $subscription_flag = false;
+        }
+
+        if( $subscription_flag ) {
+            $order_id = isset($subscriptionArr[ 'order_id' ]) ? $subscriptionArr[ 'order_id' ] : '';
+            $transactionIds = array();
+            if ($order_id !== '') {
+                $order = wc_get_order( $order_id );
+                $order_status = $order->get_status();
+                $order_total = $order->get_total();
+                $order_date = $order->get_date_created()->format( 'M j, Y' );
+                $transactionIds = get_post_meta( $order_id, 'transactionIds', true );
+            }
+            
+            $subscription_flag = false;
+            $errstring = "";
+            $expired = false;
+
+            if( ! empty( $transactionIds ) )
+            {
+                foreach ( $transactionIds as $transactionIds_key => $transactionIds_value )
+                {
+                    if( ! $subscription_flag )
+                    {
+                        if( $transactionIds_value[ 'subscription' ] == '1' )
+                        {
+                            $seatObject = $transactionIds_value[ 'seatObject' ];
+                            $barcode = $seatObject[ 'barcode' ];
+                            $xml_sub_cookie = tempnam( "/tmp", "CURLCOOKIE" );
+                            $curl = curl_init();
+
+                            curl_setopt_array( $curl, array (
+                                CURLOPT_URL            => API_HOST . 'backend/backend.php?id=SANCARLO&cmd=xmlSubscriptionData&barcode=' . $barcode,
+                                CURLOPT_RETURNTRANSFER => true,
+                                CURLOPT_ENCODING       => '',
+                                CURLOPT_MAXREDIRS      => 10,
+                                CURLOPT_TIMEOUT        => 0,
+                                CURLOPT_FOLLOWLOCATION => true,
+                                CURLOPT_COOKIEJAR      => $xml_sub_cookie,
+                                CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+                                CURLOPT_CUSTOMREQUEST  => 'GET',
+                            ) );
+
+                            $response = curl_exec( $curl );
+                            if( curl_errno( $curl ) )
+                            {
+                                $error_msg = curl_error( $curl );
+                            }
+                            curl_close( $curl );
+                            $xml              = simplexml_load_string( $response, 'SimpleXMLElement', LIBXML_NOCDATA );
+                            $subscriptionJson = json_encode( $xml );
+                            $subscriptionArr  = json_decode( $subscriptionJson, TRUE );
+
+                            if( ! empty( $subscriptionArr ) )
+                            {
+                                if( isset( $subscriptionArr[ '@attributes' ][ 'errcode' ] ) && $subscriptionArr[ '@attributes' ][ 'errcode' ] == "-1" )
+                                {
+                                    $errstring = $subscriptionArr[ '@attributes' ][ 'errstring' ];
+                                    $expired = true;
+                                }
+                                else
+                                {
+                                    $expired = false;
+                                }
+                                $subscription_flag = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if( $subscription_flag )
+            {
+                $order_date_new = ! empty( $order_date ) ? change_date_time_in_italy( strtotime( esc_html( $order_date ) ), 'MMMM d, y' ) : '';
+                $orders_html = '<li><div class="subscription-order-detail"><p>' . __( "Abbonamento", "stc-tickets" ) . ' #' . esc_html( $order_id ) . ' - ' . ucfirst( $order_date_new ) . ' - ' . $order_total . '</p></div> <div class="subscription-orders-table">' . ( $expired ? '</p></div> <div class="subscription-orders-table"><p class="subscription-view-error error">' . __( "Abbonamento non trovato", "stc-tickets" ) . '</p>' : '<a href="javascript:void(0);" data-url="' . site_url() . '/mio-account/view-order/' . $order_id . '" class="subscription-view-button button">' . __( "Visualizza", "stc-tickets" ) . '</a>' ) . '</div></li>';
+            }
+
+            if( ! empty( $orders_html ) )
+            {
+                echo '<ul class="subscription-orders">' . $orders_html . '</ul>';
+            }
+            else
+            {
+                echo '<p>' . __( "Non hai ancora nessun abbonamento nel tuo account", "stc-tickets" ) . '.</p>';
+            }
+
+            echo '</ul>';
+        
+        } else {
+            echo '<p>' . __( "Non hai ancora nessun abbonamento nel tuo account", "stc-tickets" ) . '.</p>';
+        }
+
+    } else {
+        echo '<p>' . __( "Aggiungere gli attributi necessari per recuperare l'ordine", "stc-tickets" ) . '.</p>';
+    }
+
+ }
+add_shortcode( 'retrieve_order_from_vt_tlite', 'retrieve_order_from_vt_tlite_shortcode' );
+
+/**
+ * Add custom column to woocommerce order list in admin
+ * This column will show if the order is a subscription order or not
+ * 
+ * @param array $columns
+ * @return array
+ */
+function add_subscription_order_column($columns) {
+    $columns['subscription_order'] = __('Subscription Order', 'stc-tickets');
+    return $columns;
+}
+add_filter('manage_edit-shop_order_columns', 'add_subscription_order_column');
+
+/**
+ * Display the value of the custom column in the order list
+ * 
+ * @param string $column
+ */
+function display_subscription_order_column($column) {
+    global $post;
+
+    if ($column === 'subscription_order') {
+        $transactionIds = get_post_meta($post->ID, 'transactionIds', true);
+        $is_subscription_order = false;
+
+        if (!empty($transactionIds)) {
+            foreach ($transactionIds as $transactionIds_key => $transactionIds_value) {
+                if (isset($transactionIds_value['subscription']) && $transactionIds_value['subscription'] == '1') {
+                    $is_subscription_order = true;
+                    break;
+                }
+            }
+        }
+
+        echo $is_subscription_order ? __('Yes', 'stc-tickets') : __('No', 'stc-tickets');
+    }
+}
+add_action('manage_shop_order_posts_custom_column', 'display_subscription_order_column');
