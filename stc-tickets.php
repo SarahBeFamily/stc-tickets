@@ -221,6 +221,7 @@ class stcTickets {
         require_once plugin_dir_path( __FILE__ ) . 'inc/developer-test-shortcodes.php';
         require_once plugin_dir_path( __FILE__ ) . 'inc/tickets-ajax.php';
         require_once plugin_dir_path( __FILE__ ) . 'inc/custom-define.php';
+        require_once plugin_dir_path( __FILE__ ) . 'inc/stc-mailchimp-functions.php';
     }
 }
 

@@ -297,6 +297,7 @@ function stcTickets_spettacolo_thankyou_callback() {
                         foreach($confirmed_order_value['subscription_seat'] as $subscription_seat_k => $subscription_seat_v){
                             $zone_arr                             = array ();
                             $ticketName                           = $subscription_seat_v[ 'ticketName' ];
+                            $showDate                             = $subscription_seat_v[ 'showDate' ];
                             $zoneName                             = $subscription_seat_v[ 'zoneName' ];
                             $zoneId                               = $subscription_seat_v[ 'zoneId' ];
                             $seats                                = $subscription_seat_v[ 'seats' ];
@@ -308,13 +309,14 @@ function stcTickets_spettacolo_thankyou_callback() {
                     }else{
                         $zone_arr                             = array ();
                         $ticketName                           = $confirmed_order_value[ 'ticketName' ];
+                        $showDate                             = $confirmed_order_value[ 'showDate' ];
                         $zoneName                             = $confirmed_order_value[ 'zoneName' ];
                         $zoneId                               = $confirmed_order_value[ 'zoneId' ];
                         $seats                                = $confirmed_order_value[ 'seats' ];
                         $zone_arr[ 'zoneName' ]               = $zoneName;
                         $zone_arr[ 'zoneId' ]                 = $zoneId;
                         $zone_arr[ 'seats' ]                  = $seats;
-                        $confirmed_order_arr[ $ticketName ][] = $zone_arr;                    
+                        $confirmed_order_arr[ $ticketName ][] = $zone_arr;             
                     }
                 }
             }
@@ -377,19 +379,16 @@ function stcTickets_spettacolo_thankyou_callback() {
         $cart = WC()->cart;
         if( ! empty( $cart ) && ! empty( $addToCartObject ) ) {
             
-            /** MOD SARAH **/
-            // nascondo ciò che non serve
-            // $checkout            = WC()->checkout();
-            // $order_id            = $checkout->create_order( array('customer_id'=>$current_user_id,'billing_email'=>$current_user_email,'payment_method' => 'online') );
-            // $order               = wc_get_order( $order_id );
+            $checkout = WC()->checkout();
+            $order_id = $checkout->create_order( array('customer_id'=>$current_user_id,'billing_email'=>$current_user_email,'payment_method' => 'online') );
+            $order = wc_get_order( $order_id );
+            if ( ! $order ) return false;
 
-            // Creo un nuovo ordine
-            $order = wc_create_order();
+            $order = wc_get_order( $order->get_id() );
             $order->set_customer_id( $current_user_id );
             $order->set_billing_email( $current_user_email );
             $order->set_payment_method( 'online' );
             $order_id = $order->get_id();
-            // fine mod sarah
             
             update_post_meta( $order_id, '_customer_user', get_current_user_id() );
             $order->set_address( $address, 'billing' );
@@ -408,6 +407,24 @@ function stcTickets_spettacolo_thankyou_callback() {
             update_user_meta( $user_id, 'transactionIds', array () );
             update_user_meta( $user_id, 'subscriptionSeatList', array () );
             update_user_meta( $user_id, 'subscriptionOrderId', array () );
+
+            // 2024-11-18 mailchimp subscription start
+            if(!empty($user_email)) {
+                $subscribe_user = stc_mailchimp_subscribe_user($user_email);
+                error_log("Subscribe USer to mailchimp for orderid - $order_id.");
+    //            error_log("response for Subscribe User to mailchimp for orderid - $order_id - " . json_encode( $subscribe_user));
+                update_post_meta( $order_id, '_mailchimp_subscribe_attempt', 1 );
+                update_post_meta( $order_id, '_mailchimp_subscribe_email', $user_email );
+                if($subscribe_user['code'] == '200') {
+                    update_post_meta( $order_id, '_mailchimp_subscribe_response', $subscribe_user['data'] );                
+                } else if($subscribe_user['code'] == '201') {
+                    update_post_meta( $order_id, '_mailchimp_subscribe_already', 1 );
+                    update_post_meta( $order_id, '_mailchimp_subscribe_response', $subscribe_user['data'] );
+                } else {
+                    update_post_meta( $order_id, '_mailchimp_subscribe_error', $subscribe_user['message'] );                
+                }
+            }
+            // 2024-11-18 mailchimp subscription end
 
             if ($subscriptionOrderId) {
                 // Get the previous order
@@ -442,12 +459,25 @@ function stcTickets_spettacolo_thankyou_callback() {
                     <div class="spettacolo-tickets">
                         <?php
                         if( ! empty( $confirmedOrderObject ) ) {
+                            // test
+                            if(isset($_GET['print']) && $_GET['print'] == '1'){
+                                echo '<pre>';
+                                print_r($order);
+                                echo '</pre>';
+                                echo '<pre>';
+                                print_r($confirmedOrderObject);
+                                echo '</pre>';
+                            }
                             foreach ( $confirmedOrderObject as $meta_key => $meta_value ) {
                                 $ticket_title = $meta_key;
+                                $showDate     = isset($meta_value[ 'showDate' ]) ? $meta_value[ 'showDate' ] : '';
                                 ?>
                                 <div class="events-wrapper">
                                     <div class="ticket-title">
                                         <h2><?php echo $ticket_title; ?></h2>
+                                        <div class="data">
+                                            <p><?php echo $showDate; ?></p>
+                                        </div>
                                     </div>
                                     <?php
                                     if( ! empty( $meta_value ) ) {
@@ -1184,6 +1214,8 @@ function get_confirmed_order_arr_fun($confirmed_order_array) {
                 foreach ( $confirmed_order_arr_value as $confirmed_order_arr_k => $confirmed_order_arr_v ) {
                     $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'zoneName' ] = $confirmed_order_arr_v[ 'zoneName' ];
                     $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'zoneId' ]   = $confirmed_order_arr_v[ 'zoneId' ];
+                    // Add the show date
+                    $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'showDate' ] = isset($confirmed_order_arr_v[ 'showDate' ]) ? $confirmed_order_arr_v[ 'showDate' ] : '';
                     if( ! empty( $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'seats' ] ) ) {
                         $temp_zone_arr                                                 = array_merge( $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'seats' ], $confirmed_order_arr_v[ 'seats' ] );
                         $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'seats' ] = $temp_zone_arr;

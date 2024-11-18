@@ -7,19 +7,145 @@ add_shortcode ( 'developer_test', 'stcTickets_developer_test_callback' );
 function stcTickets_developer_test_callback() {
     ob_start ();
 
-        // $order_id = '11142';
-        // require_once WP_PLUGIN_DIR . '/woocommerce-mailchimp/includes/class-ss-wc-mailchimp-handler.php';    
-    //    if (class_exists('SS_WC_MailChimp_Handler')) {        
-    //        // Instantiate or use the existing class
-    //        $mailchimp_handler = new SS_WC_MailChimp_Handler();
-    ////
-    ////        // Now you can call the method
-    ////        $mailchimp_handler->maybe_subscribe($order_id);            
-    //        $list = $mailchimp_handler->ajax_get_lists();            
-    //        echo "<pre>";
-    //        print_r($list);
-    //        echo "</pre>";
-    //    }   
+//    $data = unsubscribe_user_from_mailchimp($email);
+//    echo "<pre>";
+//    print_r($data);
+//    echo "</pre>";
+    // Your Mailchimp API credentials
+//        $api_key   = mc4wp_get_api_key();        
+//        $list_id = 'de09090ea2';  // Replace with your Mailchimp list ID
+//
+//        // Mailchimp API endpoint
+//        $url = "https://<dc>.api.mailchimp.com/3.0/lists/$list_id/members/";
+//
+//        // Set the Mailchimp datacenter prefix (replace <dc> with your Mailchimp datacenter)
+//        $datacenter = substr($api_key, strpos($api_key, '-') + 1);
+//        
+//        // First, check if the user is already subscribed
+//        $check_url = "https://$datacenter.api.mailchimp.com/3.0/lists/$list_id/members/" . md5(strtolower($email));
+//
+//        $response = wp_remote_get(
+//            $check_url,
+//            [
+//                'headers' => [
+//                    'Authorization' => 'Basic ' . base64_encode('user:' . $api_key),
+//                ]
+//            ]
+//        );
+//
+//        if (is_wp_error($response)) {
+//            // Handle error in the API request (could be a network error or invalid request)
+//            error_log('Mailchimp API Error (checking subscription): ' . $response->get_error_message());
+//        } else {
+////            echo "<pre>";
+////            print_r($response);
+////            echo "</pre>";
+//            $response_body = wp_remote_retrieve_body($response);
+//            $data = json_decode($response_body, true);
+//
+//            // Check if the user is already subscribed
+//            if (isset($data['status']) && $data['status'] === 'subscribed') {
+//                // If the user is already subscribed, don't re-add them
+//                echo "<pre>";
+//                print_r('subscribed');
+//                echo "</pre>";
+//            } else {
+//                
+//                echo "<pre>";
+//                print_r('unsubscribed');
+//                echo "</pre>";
+//                // User is not subscribed, proceed with adding them to Mailchimp
+//                $data_to_send = [
+//                    'email_address' => $email,
+//                    'status'        => 'subscribed',  // 'subscribed' to add user to the list
+//                ];
+//
+//                // Make the API request to add the user to Mailchimp
+//                $add_response = wp_remote_post(
+//                    "https://$datacenter.api.mailchimp.com/3.0/lists/$list_id/members",
+//                    [
+//                        'method'    => 'POST',
+//                        'body'      => json_encode($data_to_send),
+//                        'headers'   => [
+//                            'Authorization' => 'Basic ' . base64_encode('user:' . $api_key),
+//                            'Content-Type'  => 'application/json',
+//                        ]
+//                    ]
+//                );
+//
+//                // Handle the response if needed
+//                if (is_wp_error($add_response)) {
+//                    // Log error or handle failure
+//                    error_log('Mailchimp API Error (adding user): ' . $add_response->get_error_message());
+//                } else {
+//                    // Optionally log success or process the response
+//                    $add_response_body = wp_remote_retrieve_body($add_response);
+//                    echo "<pre>";
+//                    print_r('EMail Subscribed SUccessfully.....');
+//                    echo "</pre>";
+//                    echo "<pre>";
+//                    print_r($add_response_body);
+//                    echo "</pre>";
+//                    // Log or process $add_response_body if necessary
+//                }
+////                $MC4WP_WooCommerce_Integration = new MC4WP_WooCommerce_Integration();
+////                $sub_response = $MC4WP_WooCommerce_Integration->subscribe_from_woocommerce_checkout( $order_id );
+////                echo "<pre>";
+////                print_r($sub_response);
+////                echo "</pre>";
+//            }
+//        }
+        
+    // Check if the Mailchimp API v3 function exists
+//    if ( function_exists( 'mc4wp_get_api_v3' ) ) {
+//        $api = mc4wp_get_api_v3();
+//        $opts      = mc4wp_get_options();
+//        // get api key
+//        $api_key   = mc4wp_get_api_key();
+//        // get lists
+//        $MC4WP_MailChimp = new MC4WP_MailChimp();
+//        $lists =  $MC4WP_MailChimp->get_lists();
+//        
+//        // Prepare the subscriber data
+//        $subscriber_data = array(
+//            'email_address' => $email,
+//            'status'        => 'subscribed',
+//            'merge_fields'  => array(
+//                'FNAME' => $first_name,
+//                'LNAME' => $last_name
+//            )
+//        );
+//        
+//        $MC4WP_WooCommerce_Integration = new MC4WP_WooCommerce_Integration();
+////        $MC4WP_WooCommerce_Integration->subscribe_from_woocommerce_checkout( $order_id );
+//
+//        // Replace 'YOUR_LIST_ID' with the actual Mailchimp List ID
+////        $api->add_list_member( 'de09090ea2', $subscriber_data );
+//    }
+//    $defaults = require SS_WC_MAILCHIMP_DIR . 'config/default-settings.php';
+//    $SS_WC_MailChimp_Plugin = new SS_WC_MailChimp_Plugin();
+//$defaults = apply_filters( 'ss_wc_mailchimp_default_settings', $defaults );
+//echo "<pre>";
+//print_r($defaults);
+//echo "</pre>";
+//        // $order_id = '11142';
+//         require_once WP_PLUGIN_DIR . '/woocommerce-mailchimp/includes/class-ss-wc-mailchimp-handler.php';    
+//        if (class_exists('SS_WC_MailChimp_Handler')) {        
+//            // Instantiate or use the existing class
+//            $mailchimp_handler = new SS_WC_MailChimp_Handler();
+//    //
+//    //        // Now you can call the method
+//    //        $mailchimp_handler->maybe_subscribe($order_id);            
+////            $list = $mailchimp_handler->ajax_get_lists();            
+////            echo "<pre>";
+////            print_r($list);
+////            echo "</pre>";
+//            $order_id = '11142';
+////            $subscribe_options = $SS_WC_MailChimp_Plugin->get_subscribe_options_for_order( $order_id );
+////            echo "<pre>";
+////            print_r($subscribe_options);
+////            echo "</pre>";
+//        }   
     //    maybe_subscribe();
 
     //    echo "<pre>";
@@ -339,7 +465,7 @@ function stcTickets_developer_test_callback() {
     //       string(1) "1"
     //     }
     //   }
-    $json_data = '{"id":16231,"parent_id":0,"status":"completed","currency":"EUR","version":"8.8.5","prices_include_tax":false,"date_created":{"date":"2024-10-09 07:17:23.000000","timezone_type":3,"timezone":"Europe\/Rome"},"date_modified":{"date":"2024-10-09 14:53:19.000000","timezone_type":3,"timezone":"Europe\/Rome"},"discount_total":"0","discount_tax":"0","shipping_total":"0","shipping_tax":"0","cart_tax":"0","total":"300.00","total_tax":"0","customer_id":44319,"order_key":"wc_order_ybnLHLf7vsElp","billing":{"first_name":"Maria Pia","last_name":"Comunale","company":"","address_1":"","address_2":"","city":"","state":"","postcode":"","country":"","email":"piamat@me.com","phone":"3498765628"},"shipping":{"first_name":"","last_name":"","company":"","address_1":"","address_2":"","city":"","state":"","postcode":"","country":"","phone":""},"payment_method":"online","payment_method_title":"","transaction_id":"","customer_ip_address":"151.25.43.189","customer_user_agent":"Mozilla\/5.0 (iPhone; CPU iPhone OS 18_0_1 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/18.0.1 Mobile\/15E148 Safari\/604.1","created_via":"checkout","customer_note":"","date_completed":{"date":"2024-10-09 07:17:24.000000","timezone_type":3,"timezone":"Europe\/Rome"},"date_paid":{"date":"2024-10-09 07:17:23.000000","timezone_type":3,"timezone":"Europe\/Rome"},"cart_hash":"01b71eddd5db1849bbd46e26ec2cecb3","order_stock_reduced":true,"download_permissions_granted":true,"new_order_email_sent":false,"recorded_sales":true,"recorded_coupon_usage_counts":true,"number":"16231","meta_data":[{"id":665194,"key":"articolo_in_evidenza","value":""},{"id":665219,"key":"is_vat_exempt","value":"no"},{"id":665220,"key":"_mc4wp_optin","value":""},{"id":665232,"key":"confirmedOrderObject","value":{"LO SCHIACCIANOCI FOR FAMILIES":[{"zoneName":"POLTRONISSIMA ORO","zoneId":"125304","seats":[{"reductionName":"INTERO","reductionId":"30741","reductionQuantity":"4","reductionPrice":"30"}]},{"zoneName":"POLTRONISSIMA","zoneId":"125305","seats":[{"reductionName":"INTERO","reductionId":"30741","reductionQuantity":"6","reductionPrice":"30"}]}]}},{"id":665233,"key":"transactionIds","value":{"12530411726863":{"transaction_qty":4,"seatId":[],"ticketName":"LO SCHIACCIANOCI FOR FAMILIES","timestamp":1728451182,"transaction_id":"TLITE0122982399270","transaction_amount":"12732","regData":"1","zoneName":"POLTRONISSIMA ORO","zoneId":"125304","pcode":"11726863","vcode":"vt0001012","seats":{"30741":{"reductionName":"INTERO","reductionId":"30741","reductionPrice":"30","reductionQuantity":"4","seatId":["17806935","17806936","17806950","17806951"]}},"seatObject":[{"@attributes":{"id":"346416539","scode":"17806935"},"description":"POLTRONISSIMA ORO PLATEA Fila 4 Posto 1","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"LUQG6SWFNB","zone":"125304","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416540","scode":"17806936"},"description":"POLTRONISSIMA ORO PLATEA Fila 4 Posto 3","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"PP7ETWWY83","zone":"125304","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416541","scode":"17806950"},"description":"POLTRONISSIMA ORO PLATEA Fila 3 Posto 1","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"10E8GTUIZY","zone":"125304","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416542","scode":"17806951"},"description":"POLTRONISSIMA ORO PLATEA Fila 3 Posto 3","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"9YW80IW4O6","zone":"125304","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}}],"subscription":"0"},"12530511726863":{"transaction_qty":6,"seatId":[],"ticketName":"LO SCHIACCIANOCI FOR FAMILIES","timestamp":1728451182,"transaction_id":"TLITE0122982400072","transaction_amount":"19098","regData":"1","zoneName":"POLTRONISSIMA","zoneId":"125305","pcode":"11726863","vcode":"vt0001012","seats":{"30741":{"reductionName":"INTERO","reductionId":"30741","reductionPrice":"30","reductionQuantity":"6","seatId":["17806937","17806952","17806938","17806940","17806954","17806955"]}},"seatObject":[{"@attributes":{"id":"346416543","scode":"17806937"},"description":"POLTRONISSIMA PLATEA Fila 4 Posto 5","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"PU72TOWZX6","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416544","scode":"17806952"},"description":"POLTRONISSIMA PLATEA Fila 3 Posto 5","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"9VNDMVW4HO","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416545","scode":"17806938"},"description":"POLTRONISSIMA PLATEA Fila 4 Posto 7","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"XGH1BUUW8X","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416546","scode":"17806940"},"description":"POLTRONISSIMA PLATEA Fila 4 Posto 9","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"PI18XYWM8Z","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416547","scode":"17806954"},"description":"POLTRONISSIMA PLATEA Fila 3 Posto 7","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"UVJ907WDNM","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416548","scode":"17806955"},"description":"POLTRONISSIMA PLATEA Fila 3 Posto 9","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"UTJBLFWDXU","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}}],"subscription":"0"}}},{"id":665234,"key":"orderTransactionCodeArr","value":["TLITE0122982399270","TLITE0122982400072"]},{"id":665235,"key":"booked_subs_seats","value":[]},{"id":665236,"key":"subscriptionOrderId","value":""}],"line_items":{"6491":{"legacy_values":null,"legacy_cart_item_key":null,"legacy_package_key":null}},"tax_lines":[],"shipping_lines":[],"fee_lines":[],"coupon_lines":[]}';
+    $json_data = '{"id":16231,"parent_id":0,"status":"completed","currency":"EUR","version":"8.8.5","prices_include_tax":false,"date_created":{"date":"2024-10-09 07:17:23.000000","timezone_type":3,"timezone":"Europe\/Rome"},"date_modified":{"date":"2024-10-09 14:53:19.000000","timezone_type":3,"timezone":"Europe\/Rome"},"discount_total":"0","discount_tax":"0","shipping_total":"0","shipping_tax":"0","cart_tax":"0","total":"300.00","total_tax":"0","customer_id":'.get_current_user_id().',"order_key":"wc_order_ybnLHLf7vsElp","billing":{"first_name":"Guest","last_name":"Prova","company":"","address_1":"","address_2":"","city":"","state":"","postcode":"","country":"","email":"sarah@befamily.it","phone":"3498765628"},"shipping":{"first_name":"","last_name":"","company":"","address_1":"","address_2":"","city":"","state":"","postcode":"","country":"","phone":""},"payment_method":"online","payment_method_title":"","transaction_id":"","customer_ip_address":"151.25.43.189","customer_user_agent":"Mozilla\/5.0 (iPhone; CPU iPhone OS 18_0_1 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/18.0.1 Mobile\/15E148 Safari\/604.1","created_via":"checkout","customer_note":"","date_completed":{"date":"2024-10-09 07:17:24.000000","timezone_type":3,"timezone":"Europe\/Rome"},"date_paid":{"date":"2024-10-09 07:17:23.000000","timezone_type":3,"timezone":"Europe\/Rome"},"cart_hash":"01b71eddd5db1849bbd46e26ec2cecb3","order_stock_reduced":true,"download_permissions_granted":true,"new_order_email_sent":false,"recorded_sales":true,"recorded_coupon_usage_counts":true,"number":"16231","meta_data":[{"id":665194,"key":"articolo_in_evidenza","value":""},{"id":665219,"key":"is_vat_exempt","value":"no"},{"id":665220,"key":"_mc4wp_optin","value":""},{"id":665232,"key":"confirmedOrderObject","value":{"LO SCHIACCIANOCI FOR FAMILIES":[{"zoneName":"POLTRONISSIMA ORO","zoneId":"125304","seats":[{"reductionName":"INTERO","reductionId":"30741","reductionQuantity":"4","reductionPrice":"30"}]},{"zoneName":"POLTRONISSIMA","zoneId":"125305","seats":[{"reductionName":"INTERO","reductionId":"30741","reductionQuantity":"6","reductionPrice":"30"}]}]}},{"id":665233,"key":"transactionIds","value":{"12530411726863":{"transaction_qty":4,"seatId":[],"ticketName":"LO SCHIACCIANOCI FOR FAMILIES","showDate":"sabato 28 dicembre 2024 20:00","timestamp":1728451182,"transaction_id":"TLITE0122982399270","transaction_amount":"12732","regData":"1","zoneName":"POLTRONISSIMA ORO","zoneId":"125304","pcode":"11726863","vcode":"vt0001012","seats":{"30741":{"reductionName":"INTERO","reductionId":"30741","reductionPrice":"30","reductionQuantity":"4","seatId":["17806935","17806936","17806950","17806951"]}},"seatObject":[{"@attributes":{"id":"346416539","scode":"17806935"},"description":"POLTRONISSIMA ORO PLATEA Fila 4 Posto 1","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"LUQG6SWFNB","zone":"125304","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416540","scode":"17806936"},"description":"POLTRONISSIMA ORO PLATEA Fila 4 Posto 3","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"PP7ETWWY83","zone":"125304","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416541","scode":"17806950"},"description":"POLTRONISSIMA ORO PLATEA Fila 3 Posto 1","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"10E8GTUIZY","zone":"125304","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416542","scode":"17806951"},"description":"POLTRONISSIMA ORO PLATEA Fila 3 Posto 3","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"9YW80IW4O6","zone":"125304","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}}],"subscription":"0"},"12530511726863":{"transaction_qty":6,"seatId":[],"ticketName":"LO SCHIACCIANOCI FOR FAMILIES","showDate":"sabato 28 dicembre 2024 20:00","timestamp":1728451182,"transaction_id":"TLITE0122982400072","transaction_amount":"19098","regData":"1","zoneName":"POLTRONISSIMA","zoneId":"125305","pcode":"11726863","vcode":"vt0001012","seats":{"30741":{"reductionName":"INTERO","reductionId":"30741","reductionPrice":"30","reductionQuantity":"6","seatId":["17806937","17806952","17806938","17806940","17806954","17806955"]}},"seatObject":[{"@attributes":{"id":"346416543","scode":"17806937"},"description":"POLTRONISSIMA PLATEA Fila 4 Posto 5","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"PU72TOWZX6","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416544","scode":"17806952"},"description":"POLTRONISSIMA PLATEA Fila 3 Posto 5","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"9VNDMVW4HO","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416545","scode":"17806938"},"description":"POLTRONISSIMA PLATEA Fila 4 Posto 7","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"XGH1BUUW8X","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416546","scode":"17806940"},"description":"POLTRONISSIMA PLATEA Fila 4 Posto 9","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"PI18XYWM8Z","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416547","scode":"17806954"},"description":"POLTRONISSIMA PLATEA Fila 3 Posto 7","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"UVJ907WDNM","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}},{"@attributes":{"id":"346416548","scode":"17806955"},"description":"POLTRONISSIMA PLATEA Fila 3 Posto 9","price":"3000","presale":"0","commission":"150","iva":"33","barcode":"UTJBLFWDXU","zone":"125305","reduction":{"@attributes":{"id":"30741"},"description":"INTERO"}}],"subscription":"0"}}},{"id":665234,"key":"orderTransactionCodeArr","value":["TLITE0122982399270","TLITE0122982400072"]},{"id":665235,"key":"booked_subs_seats","value":[]},{"id":665236,"key":"subscriptionOrderId","value":""}],"line_items":{"6491":{"legacy_values":null,"legacy_cart_item_key":null,"legacy_package_key":null}},"tax_lines":[],"shipping_lines":[],"fee_lines":[],"coupon_lines":[]}';
 
     //    $json_data = '{
     //    "id": 10641,
@@ -1436,14 +1562,3 @@ function add_order_from_live_to_preprod_func($attr) {
 //    }
     
 
-// Shortcode for testing orders
-function test_order_sc($order_id) {
-    // add attributes
-
-    $order = wc_get_order( $order_id );
-
-    echo '<pre>';
-    echo get_confirmed_order_arr_fun($order);
-    echo '</pre>';
-}
-add_shortcode( 'test_order', 'test_order_sc' );
