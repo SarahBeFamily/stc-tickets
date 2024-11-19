@@ -412,7 +412,7 @@ function stcTickets_spettacolo_thankyou_callback() {
             if(!empty($user_email)) {
                 $subscribe_user = stc_mailchimp_subscribe_user($user_email);
                 error_log("Subscribe USer to mailchimp for orderid - $order_id.");
-    //            error_log("response for Subscribe User to mailchimp for orderid - $order_id - " . json_encode( $subscribe_user));
+                // error_log("response for Subscribe User to mailchimp for orderid - $order_id - " . json_encode( $subscribe_user));
                 update_post_meta( $order_id, '_mailchimp_subscribe_attempt', 1 );
                 update_post_meta( $order_id, '_mailchimp_subscribe_email', $user_email );
                 if($subscribe_user['code'] == '200') {
@@ -461,9 +461,9 @@ function stcTickets_spettacolo_thankyou_callback() {
                         if( ! empty( $confirmedOrderObject ) ) {
                             // test
                             if(isset($_GET['print']) && $_GET['print'] == '1'){
-                                echo '<pre>';
-                                print_r($order);
-                                echo '</pre>';
+                                // echo '<pre>';
+                                // print_r($order);
+                                // echo '</pre>';
                                 echo '<pre>';
                                 print_r($confirmedOrderObject);
                                 echo '</pre>';

@@ -17,9 +17,9 @@ function fun_getBookingCart (){
     $transaction_ids_before = !empty(get_user_meta( $user_id, 'transactionIds' )[0]) ? get_user_meta( $user_id, 'transactionIds' )[0] : array();
     $pcode                  = $_POST[ 'pcode' ];
     $show_date              = isset($_POST[ 'show_date' ]) ? $_POST[ 'show_date' ] : '';
-//    echo "<pre>";
-//    print_r($transaction_ids_before);
-//    echo "</pre>";
+    // echo "<pre>";
+    // print_r($subscription_list);
+    // echo "</pre>";
     
     $final_cart_obj = array ();
     $current_cart_obj = array ();
@@ -33,10 +33,16 @@ function fun_getBookingCart (){
 //    print_r($addToCartObject);
 //    echo "</pre>";
 
-    if(is_array($subscription_list) && !empty( $subscription_list )) {
+    if(is_array($subscription_list) && !empty( $subscription_list ) && is_array($addToCartObject) && !empty( $addToCartObject )){
         foreach ( $addToCartObject as $addToCartObject_key => $addToCartObject_value ) {
+            // $ticketName = $addToCartObject_key != '0' ? $addToCartObject_key : ''; 
             $first_addToCartObject = array_map( function ($addToCartObject_val){
                 $addToCartObject_val['doBooking'] = 1;
+                // MOD SARAH
+                // Add tiket name and date to subscription object
+                $addToCartObject_val['showDate'] = isset($_POST[ 'show_date' ]) ? $_POST[ 'show_date' ] : '';
+                $addToCartObject_val['ticketName'] = isset($addToCartObject_key) ? $addToCartObject_key : '';
+
                 return $addToCartObject_val;
             }, $addToCartObject_value );
             if( empty( $subscription_cart_obj[ $addToCartObject_key ] ) ) {
@@ -147,7 +153,7 @@ function fun_getBookingCart (){
                             $zoneNameArray = array_column( $final_cart_obj[ $get_key ], 'zoneName' );
                             if( ! in_array( $addToCartZone_value[ 'zoneName' ], $zoneNameArray ) ) {
                                 $addToCartZone_value[ 'doBooking' ] = 1;
-                                // $addToCartZone_value[ 'showDate' ] = $show_date;
+                                $addToCartZone_value[ 'showDate' ] = $show_date;
                                 array_push( $final_cart_obj[ $get_key ], $addToCartZone_value );
                             }
                         }
@@ -166,10 +172,10 @@ function fun_getBookingCart (){
             }
         }
     } else {
+        // 
         foreach ( $addToCartObject as $addToCartObject_key => $addToCartObject_value ) {
             $first_addToCartObject = array_map( function ($addToCartObject_val){
                 $addToCartObject_val['doBooking'] = 1;
-                // $addToCartObject_val['showDate'] = $_POST[ 'show_date' ];
                 return $addToCartObject_val;
             }, $addToCartObject_value );
             if( empty( $final_cart_obj[ $addToCartObject_key ] ) ) {
@@ -179,12 +185,12 @@ function fun_getBookingCart (){
         $final_cart_obj_before = $final_cart_obj;
     }
 
-//    echo "<pre>";
-//    print_r($final_cart_obj);
-//    echo "</pre>";
-//    if(!empty($current_cart_obj)){
-//        $addToCartObject = $current_cart_obj;
-//    }
+    //    echo "<pre>";
+    //    print_r($final_cart_obj);
+    //    echo "</pre>";
+    //    if(!empty($current_cart_obj)){
+    //        $addToCartObject = $current_cart_obj;
+    //    }
 
     if(!empty($subscription_cart_obj_final)){
         $addToCartObject = $subscription_cart_obj_final;
@@ -192,25 +198,26 @@ function fun_getBookingCart (){
         $addToCartObject = $final_cart_obj;        
     }
     
-//    echo "<pre>";
-//    print_r($get_user_meta_after);
-//    echo "</pre>";
-//    $bestseatapi = 'gfh';
+    //    echo "<pre>";
+    //    print_r($get_user_meta_after);
+    //    echo "</pre>";
+    //    $bestseatapi = 'gfh';
 
-//    echo "<pre>";
-//    print_r($addToCartObject);
-//    print_r($transaction_ids_to_remove);
-//    echo "</pre>";
-//    die();
+    //    echo "<pre>";
+    //    print_r($addToCartObject);
+    //    print_r($transaction_ids_to_remove);
+    //    echo "</pre>";
+    //    die();
+
     if(!empty($transaction_ids_to_remove)){
         $transactions_str = "";
         foreach($transaction_ids_to_remove as $transaction_remove_key => $transaction_remove_val){
             $transactions_str .= "transactionCode[]=".$transaction_remove_val."&";
         }
         $transactions_str = rtrim($transactions_str,"&");
-//        echo "<pre>";
-//        print_r($transactions_str);
-//        echo "</pre>";
+        // echo "<pre>";
+        // print_r($transactions_str);
+        // echo "</pre>";
         $curl_url = API_HOST . 'backend/backend.php?id=' . APIKEY . '&cmd=setExpiry&' . $transactions_str . '&timeout=-1000&preserveOnError=1';
         $empty_cart_cookie = tempnam ("/tmp", "CURLCOOKIE");
 
@@ -240,22 +247,22 @@ function fun_getBookingCart (){
         $set_expiry_json        = isset($set_expiry_xml) && !empty($set_expiry_xml) ?  json_encode ( $set_expiry_xml ) : '';
         $set_expiry_response    = isset($set_expiry_json) && !empty($set_expiry_json) ?  json_decode ( $set_expiry_json, TRUE ) : array();
     }
-//    echo "<pre>";
-//    print_r($set_expiry_response);
-//    echo "</pre>";
-//    die();
+    //    echo "<pre>";
+    //    print_r($set_expiry_response);
+    //    echo "</pre>";
+    //    die();
     
     
     $transaction_ids  = array ();
     $transaction_list = array ();
     $final_seats      = array ();
-    $booked_seats      = array ();
+    $booked_seats     = array ();
     $subs_seat_list   = get_user_meta( $user_id, 'subscriptionSeatList', true );
     $subs_seat_list   = !empty($subs_seat_list) ? $subs_seat_list : array ();
     
 
     $vcode            = $_POST[ 'vcode' ];
-//    $pcode            = $_POST[ 'pcode' ];
+    // $pcode            = $_POST[ 'pcode' ];
     $regData          = $_POST[ 'regData' ];
     $manualSelection  = $_POST[ 'manualSelection' ];
     $subscription     = $_POST[ 'subscription' ];
@@ -310,12 +317,13 @@ function fun_getBookingCart (){
         $timeout          = '600';
     }
     $loop_counter = 0;
-//    if($_GET['print'] == 1){
-//        echo "<pre>";
-//        print_r($addToCartObject);
-//        echo "</pre>";        
-//    }
-    
+
+    //    if(isset($_GET['print']) && $_GET['print'] == 1){
+    //        echo "<pre>";
+    //        print_r($addToCartObject);
+    //        echo "</pre>";        
+    //    }
+        
     foreach ( $addToCartObject as $addToCartObject_key => $addToCartObject_value ) {
         $ticketName = $addToCartObject_key;
         foreach ( $addToCartObject_value as $addToCartObject_k => $addToCartObject_v ) {
@@ -329,7 +337,7 @@ function fun_getBookingCart (){
                 $zoneIds                               = '';
                 $seatId                                = '';
                 $transaction_list[ 'transaction_qty' ] = 0;
-                $transaction_list[ 'seatId' ] = array();
+                $transaction_list[ 'seatId' ]          = array();
                 foreach ( $addToCartReductions as $addToCartReductions_key => $addToCartReductions_value ) {
 //                    echo "<pre>";
 //                    print_r($addToCartReductions_value);
@@ -348,9 +356,6 @@ function fun_getBookingCart (){
                 }
                 if($manualSelection == 'true'){
                         $seatId = rtrim($seatId, ',');
-//                        echo "<pre>";
-//                        print_r($seatId);
-//                        echo "</pre>";
                         $manualReductions = rtrim($manualReductions,',');
                         $zoneIds = rtrim($zoneIds,',');
                     if( $regData == 1 ) {
@@ -420,6 +425,7 @@ function fun_getBookingCart (){
                     $transaction_list[ 'seats' ]              = $addToCartReductions;
                     $transaction_list[ 'seatObject' ]         = $transactions[ 'seat' ];
                     $transaction_list[ 'subscription' ]       = $subscription;
+                    $transaction_list[ 'showDate' ]           = $show_date;
                     if(!empty( $subscription_list )) {
                         $transaction_ids_before[$zoneId.$pcode]['subscription_seat'][] = $transaction_list;
                     }else{
@@ -498,9 +504,9 @@ function fun_getBookingCart (){
                         $subsCode_html .= '&subsCode='.$subsCode;
 //                    }
                     $subscription_curl_url = API_HOST . 'backend/backend.php?id='.APIKEY.'&cmd=xmlChangeLock&tranCode='.$transcode.$seat_html.$oldRedId_html.$newRedId_html.$subsCode_html;
-//                    echo "<pre>";
-//                    print_r($subscription_curl_url);
-//                    echo "</pre>";
+                    // echo "<pre>";
+                    // print_r($subscription_curl_url);
+                    // echo "</pre>";
                     $subs_cookie = tempnam ("/tmp", "CURLCOOKIE");
                     $subscription_curl = curl_init();
 
@@ -645,7 +651,7 @@ function fun_getCheckout (){
     $user_id = get_current_user_id();
     $transactions = get_user_meta($user_id,'transactionIds');
     $tranIp = '102.129.166.20';
-//    $tranIp = $_SERVER['REMOTE_ADDR'];
+    // $tranIp = $_SERVER['REMOTE_ADDR'];
     foreach($transactions as $transaction_key => $transaction_value){
         foreach($transaction_value as $transaction_k => $transaction_v){
             if( is_array( $transaction_v ) && array_key_first( $transaction_v ) == 'subscription_seat' ) {
@@ -663,22 +669,19 @@ function fun_getCheckout (){
             }
         }
     }
-//    echo "<pre>";
-//    print_r($transaction_id);
-//    print_r(' '.$amount);
-//    print_r(' '.$total_qty);
-//    echo "</pre>";
-//    if($regData == 1){
 
-//      INTERESSE SARAH CONTROLLARE SE URL CORRETTO
-        $curl_url = API_HOST.'backend/backend.php?cmd=extXmlPrepareTransToPay&id='.APIKEY.$transaction_id.'&tNumSeats='.$total_qty.'&tAmount='.$amount.'&language=1&tranIp='.$tranIp.'&transaction_receipt_url[preprod]=https%3A%2F%2Fpreprod.teatrosancarlo.it%2Fthank-you%2F%3F&transaction_ser_notify[preprod]=https%3A%2F%2Fpreprod.teatrosancarlo.it%2Fthank-you%2F%3F';
+ 
+    // INTERESSE SARAH CONTROLLARE SE URL CORRETTO
+    // $curl_url = API_HOST.'backend/backend.php?cmd=extXmlPrepareTransToPay&id='.APIKEY.$transaction_id.'&tNumSeats='.$total_qty.'&tAmount='.$amount.'&language=1&tranIp='.$tranIp.'&transaction_receipt_url[preprod]=https%3A%2F%2Fpreprod.teatrosancarlo.it%2Fthank-you%2F%3F&transaction_ser_notify[preprod]=https%3A%2F%2Fpreprod.teatrosancarlo.it%2Fthank-you%2F%3F';
 
-//    }else{
-//        $curl_url = API_HOST.'backend/backend.php?cmd=extXmlPrepareTransToPay&id='.APIKEY.$transaction_id.'&tNumSeats='.$total_qty.'&tAmount='.$amount.'&language=1';
-//    }
-//        echo "<pre>";
-//        print_r($curl_url);
-//        echo "</pre>";
+    // Check if the user is in preprod and redirect thank you page to preprod
+    $urlKey = '';
+    if (strpos($_SERVER['HTTP_HOST'], 'preprod') !== false || strpos($_SERVER['HTTP_HOST'], '-dev') !== false) {
+        $urlKey = '&urlKey=preprod';
+    }
+
+    $curl_url = API_HOST.'backend/backend.php?cmd=extXmlPrepareTransToPay&id='.APIKEY.$transaction_id.'&tNumSeats='.$total_qty.'&tAmount='.$amount.'&language=1&tranIp='.$tranIp.$urlKey;
+
     $ext_cookie = tempnam ("/tmp", "CURLCOOKIE");
     $curl = curl_init();
 
@@ -703,16 +706,15 @@ function fun_getCheckout (){
     $xml                = simplexml_load_string( $transactionResponse);
     $json               = json_encode( $xml );
     $transactionArr     = json_decode( $json, TRUE );
-//    echo "<pre>";
-//    print_r($transactionArr);
-//    echo "</pre>";
+
     $responseArr = array();
     $responseArr['paym_code'] = isset($transactionArr['paym_code']) ? $transactionArr['paym_code'] : '';
     $responseArr['redirecturl'] = isset($transactionArr['redirecturl']) ? $transactionArr['redirecturl'] : '';
     $errcode = $transactionArr['@attributes']['errcode'];
-//    echo "<pre>";
-//    print_r($transactionArr);
-//    echo "</pre>";
+
+    // test
+    $responseArr['regData'] = $regData;
+    $responseArr['urlKey'] = $urlKey;
 
     if( ! $errcode ) {
         $response[ 'message' ] = $responseArr;

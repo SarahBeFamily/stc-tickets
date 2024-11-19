@@ -28,21 +28,19 @@ jQuery(document).ready(function ($) {
             if(typeof remainingSeats == 'string' && remainingSeats != ''){
                 // Check for remeining selections for the subscription
                 remainingSeats = JSON.parse(remainingSeats);
-                console.log(remainingSeats);
-                var remainingSeatsVal = remainingSeats[barcode];
+                let remainingSeatsVal = typeof remainingSeats == 'object' ? remainingSeats[barcode] : '';
 
-                console.log(remainingSeatsVal);
-                if(typeof remainingSeatsVal != 'undefined' && remainingSeatsVal.hasOwnProperty('remaining') && Number($n.val()) < Number(max)){
-                //    if(remainingSeatsVal.remaining == 0){
-                //        jQuery(document).find(".cart-qty-plus").attr("disabled","disabled");
-                //     //  remainingSeatsVal.remaining = remainingSeatsVal.remaining - 1;
-                //     //  remainingSeats[barcode] = remainingSeatsVal;
-                //    }else{
-                //        remainingSeatsVal.remaining = remainingSeatsVal.remaining - 1;
-                //        remainingSeats[barcode] = remainingSeatsVal;
-                //    }
-                    
-                    remainingSeatsVal.remaining = remainingSeatsVal.remaining - 1;
+                if(remainingSeatsVal != '' && remainingSeatsVal.hasOwnProperty('remaining') && Number($n.val()) < Number(max)){
+                    //    if(remainingSeatsVal.remaining == 0){
+                    //        jQuery(document).find(".cart-qty-plus").attr("disabled","disabled");
+                    //     //  remainingSeatsVal.remaining = remainingSeatsVal.remaining - 1;
+                    //     //  remainingSeats[barcode] = remainingSeatsVal;
+                    //    }else{
+                    //        remainingSeatsVal.remaining = remainingSeatsVal.remaining - 1;
+                    //        remainingSeats[barcode] = remainingSeatsVal;
+                    //    }
+                        
+                    remainingSeatsVal.remaining = remainingSeatsVal.remaining > 0 ? remainingSeatsVal.remaining - 1 : 0;
                     if(remainingSeatsVal.remaining == 0){
                         jQuery(document).find(".cart-qty-plus").attr("disabled","disabled");
                     }
@@ -55,7 +53,7 @@ jQuery(document).ready(function ($) {
             }
         }
         
-        // console.log(typeof max,max,typeof $n.val(),$n.val());
+        console.log(typeof max,max,typeof $n.val(),$n.val());
         if (Number($n.val()) < Number(max)) {
             $n.val(Number($n.val()) + 1);
         }
@@ -74,11 +72,11 @@ jQuery(document).ready(function ($) {
             if(typeof remainingSeats == 'string' && remainingSeats != ''){
                 // Check for remeining selections for the subscription
                 remainingSeats = JSON.parse(remainingSeats);
-                console.log(remainingSeats);
-                var remainingSeatsVal = remainingSeats[barcode];
+                // console.log(remainingSeats);
+                var remainingSeatsVal = typeof remainingSeats == 'object' ? remainingSeats[barcode] : '';
                 console.log(remainingSeatsVal);
-    //            var totalRemainingSeats = remainingSeatsVal.total;
-                if(typeof remainingSeatsVal != 'undefined' && remainingSeatsVal.hasOwnProperty('remaining')){
+
+                if(typeof remainingSeatsVal != '' && remainingSeatsVal.hasOwnProperty('remaining')){
                     if(remainingSeatsVal.total > remainingSeatsVal.remaining && amount != 0){
                         remainingSeatsVal.remaining = remainingSeatsVal.remaining + 1;
                     }
@@ -354,6 +352,7 @@ jQuery(document).ready(function ($) {
         console.log(addToCart);
         
         if(selection_error){
+            alert('Error in selection');
             return false;
         }
         let ajax_data = {
@@ -522,34 +521,34 @@ jQuery(document).ready(function ($) {
             recaptcha = jQuery(document).find('#g-recaptcha-response').val();
         }
         
-        jQuery.ajax({
-            url: STCTICKETSPUBLIC.ajaxurl,
-            method: 'post',
-            beforeSend: function () {
-                jQuery( "body" ).css('opacity', '0.2');
-            },
-            data: {
-                action: 'checkRecaptcha',
-                recaptcha:recaptcha
-            },
-            success: function (data) {
-                jQuery( "body" ).css('opacity', '1');
-                var responseData = JSON.parse(data);
-                if (responseData.status) {
-                    console.log(responseData.message);
-                    var valid = true;
-                    jQuery(document).find('input').each(function () {
-                        if (jQuery(this).parents('.form-row').hasClass('validate-required')) {
-                            if (jQuery(this).val() == '') {
-                                valid = false;
-                            }
-                        }
-                    });
-                    if (valid == false) {
-            //            alert('per favore inserisci i tuoi dati');
-                        jQuery(document).find('#order_review').append('<p style="color:red;">per favore inserisci i tuoi dati</p>');
-                        jQuery(document).find('#order_review .checkout-error').hide();
-                    } else {
+        // jQuery.ajax({
+        //     url: STCTICKETSPUBLIC.ajaxurl,
+        //     method: 'post',
+        //     beforeSend: function () {
+        //         jQuery( "body" ).css('opacity', '0.2');
+        //     },
+        //     data: {
+        //         action: 'checkRecaptcha',
+        //         recaptcha:recaptcha
+        //     },
+        //     success: function (data) {
+        //         jQuery( "body" ).css('opacity', '1');
+        //         var responseData = JSON.parse(data);
+        //         if (responseData.status) {
+        //             console.log(responseData.message);
+        //             var valid = true;
+        //             jQuery(document).find('input').each(function () {
+        //                 if (jQuery(this).parents('.form-row').hasClass('validate-required')) {
+        //                     if (jQuery(this).val() == '') {
+        //                         valid = false;
+        //                     }
+        //                 }
+        //             });
+        //             if (valid == false) {
+        //     //            alert('per favore inserisci i tuoi dati');
+        //                 jQuery(document).find('#order_review').append('<p style="color:red;">per favore inserisci i tuoi dati</p>');
+        //                 jQuery(document).find('#order_review .checkout-error').hide();
+        //             } else {
                         jQuery.ajax({
                             url: STCTICKETSPUBLIC.ajaxurl,
                             method: 'post',
@@ -562,13 +561,15 @@ jQuery(document).ready(function ($) {
                             success: function (data) {
                                 jQuery( "body" ).css('opacity', '1');
                                 var responseData = JSON.parse(data);
+                                console.log(responseData);
                                 if (responseData.status) {
                                     console.log(responseData.message);
                                     var responseArr = responseData.message;
                                     var redirecturl = responseArr.redirecturl
+                                    // ATTENZIONE SARAH - redirecturl
                                     console.log(redirecturl);
                                     if (redirecturl) {
-                                        window.location.href = redirecturl;
+                                        // window.location.href = redirecturl;
                                     }
                                 } else {
                                     console.log(responseData.message['@attributes']);
@@ -586,23 +587,23 @@ jQuery(document).ready(function ($) {
                                 console.log(error);
                             }
                         });
-                    }
-                } else {
-                    console.log(responseData.message);
-                    let responseError = responseData.message;
-                    if(responseError){
-                        if(jQuery(document).find('#order_review .checkout-error').length > 0){
-                            jQuery(document).find('#order_review .checkout-error').text(responseError);                            
-                        }else{
-                            jQuery(document).find('#order_review').append('<p class="checkout-error" style="color:red;">'+ responseError +'</p>');                            
-                        }
-                    }
-                }
-            },
-            error: function (request, status, error) {
-                console.log(error);
-            }
-        });
+                    // }
+                // } else {
+                //     console.log(responseData.message);
+                //     let responseError = responseData.message;
+                //     if(responseError){
+                //         if(jQuery(document).find('#order_review .checkout-error').length > 0){
+                //             jQuery(document).find('#order_review .checkout-error').text(responseError);                            
+                //         }else{
+                //             jQuery(document).find('#order_review').append('<p class="checkout-error" style="color:red;">'+ responseError +'</p>');                            
+                //         }
+                //     }
+                // }
+        //     },
+        //     error: function (request, status, error) {
+        //         console.log(error);
+        //     }
+        // });
         
 //        var first_name = jQuery('#customer_details').find('input#billing_first_name').val();
 //        var last_name = jQuery('#customer_details').find('input#billing_last_name').val();
@@ -1569,7 +1570,7 @@ jQuery(document).ready(function ($) {
             },
             success: function (data) {
                 jQuery( "body" ).css('opacity', '1');
-//                    console.log(data);
+                // console.log(data);
                 var responseData = JSON.parse(data);
                 if (responseData.status) {
                     console.log(responseData.message);

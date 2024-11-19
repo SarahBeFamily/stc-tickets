@@ -35,11 +35,14 @@ function stcTickets_spettacolo_prices_callback() {
     $xml             = simplexml_load_string( $response, 'SimpleXMLElement', LIBXML_NOCDATA );
     $pricesJson      = json_encode( $xml );
     $pricesArr       = json_decode( $pricesJson, TRUE );
-//    if($_GET['print'] == 1) { 
-//        echo "<pre>";
-//        print_r($pricesArr);
-//        echo "</pre>";
-//    }
+
+    // testing: print the array of prices
+    if(isset($_GET['print']) && $_GET['print'] == 1) { 
+        echo "<pre>";
+        print_r($pricesArr);
+        echo "</pre>";
+    }
+    
     if(isset($pricesArr['@attributes']['errcode']) && isset($pricesArr['@attributes']['errstring'])){
 //        echo "<pre>";
 //        print_r(API_HOST . 'backend/backend.php?cmd=prices&id=' . APIKEY . '&vcode=' . $vcode . '&pcode=' . $pcode);
@@ -161,7 +164,6 @@ function stcTickets_spettacolo_prices_callback() {
         // Testing: print the array of map_zones
         // by adding ?print=1 to the URL
         if(isset($_GET['print']) && $_GET['print'] == 1) {
-
             echo "<pre>";
             print_r($map_zones);
             echo "</pre>";
