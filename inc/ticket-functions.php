@@ -286,16 +286,16 @@ function stcticket_spettacolo_add_update_callback() {
                         );
                         $spt_post_id = wp_insert_post( $org_cpt );
                     }
-//                    echo "<pre>";
-//                    print_r( $spt_post_id . ' : ' . $title_infoAtts[ 'name' ] );
-//                    echo "</pre>";
+
+                    $spt_numPerf = isset( $title_infoAtts[ 'numPerf' ] ) ? $title_infoAtts[ 'numPerf' ] : 0;
+
                     update_post_meta( $spt_post_id, 'spt_vcode', $vCode );
                     update_post_meta( $spt_post_id, 'spt_id_show', $id_show );
                     update_post_meta( $spt_post_id, 'spt_name', $title_infoAtts[ 'name' ] );
                     update_post_meta( $spt_post_id, 'spt_location', '' );
                     update_post_meta( $spt_post_id, 'spt_startDate', $title_infoAtts[ 'primaData' ] );
                     update_post_meta( $spt_post_id, 'spt_endDate', $title_infoAtts[ 'ultimaData' ] );
-                    update_post_meta( $spt_post_id, 'spt_numPerf', $title_infoAtts[ 'numPerf' ] );
+                    update_post_meta( $spt_post_id, 'spt_numPerf', $spt_numPerf );
                     update_post_meta( $spt_post_id, 'spt_tit_info_title', $ti_value );
                     $subscripton_show = 0;                    
                     if( array_key_first( $tit_info_perform ) == '0' ) {
@@ -415,6 +415,18 @@ function stcticket_spettacolo_add_update_callback() {
         }
     }
 }
+
+/**
+ * Shortcode for getting spettacolo
+ * @param type $atts
+ * @return string
+ */
+function stcticket_get_vivaticket_shows_from_api_sc( ) {
+    stcticket_spettacolo_add_update_callback();
+}
+add_shortcode( 'get_vt_shows', 'stcticket_get_vivaticket_shows_from_api_sc' );
+
+
 /*
  * delete old spettacolo
  */

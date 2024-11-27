@@ -879,7 +879,9 @@ p:not(.bf-title).upd-phone-msg {
       box-shadow: 0 0 1px rgba(255, 255, 255, .5);
     }
 }
-
+#loginform .g-recaptcha-wrap {
+    order: 3;
+  }
 .wc-empty-cart-message {
     margin: 5% auto 0;
     width: 75%;

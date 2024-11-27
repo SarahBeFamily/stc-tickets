@@ -496,6 +496,7 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
 //                                }
                                 
                                 if(!empty($pricesArr[ 'macrozone' ])){
+                                    $reduction_maxbuy = 0;
                                     $macrozone = $pricesArr[ 'macrozone' ];                                
                                     if( isset( $macrozone[ '@attributes' ] ) ) {
                                         $macrozoneArray[] = $macrozone;

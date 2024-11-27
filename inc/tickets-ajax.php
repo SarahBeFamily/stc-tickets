@@ -339,20 +339,19 @@ function fun_getBookingCart (){
                 $transaction_list[ 'transaction_qty' ] = 0;
                 $transaction_list[ 'seatId' ]          = array();
                 foreach ( $addToCartReductions as $addToCartReductions_key => $addToCartReductions_value ) {
-//                    echo "<pre>";
-//                    print_r($addToCartReductions_value);
-//                    echo "</pre>";
-                    $transaction_list[ 'transaction_qty' ] = isset( $transaction_list[ 'transaction_qty' ] ) ? $transaction_list[ 'transaction_qty' ] + $addToCartReductions_value[ 'reductionQuantity' ] : $addToCartReductions_value[ 'reductionQuantity' ];
-//                    $transaction_list[ 'seatId' ] = isset( $transaction_list[ 'seatId' ] ) ? $transaction_list[ 'seatId' ] + $addToCartReductions_value[ 'seatId' ] : $addToCartReductions_value[ 'seatId' ];
-                    if($manualSelection == 'true'){
-                        $seatId .= rtrim(implode(",",$addToCartReductions_value['seatId']), ',').',';
-                        for($i = 0; $i < count($addToCartReductions_value['seatId']); $i++){
-                            $manualReductions .= $addToCartReductions_value[ 'reductionId' ].',';
-                            $zoneIds .= $zoneId.',';
+                    if (is_array($addToCartReductions_value)):
+                        $transaction_list[ 'transaction_qty' ] = isset( $transaction_list[ 'transaction_qty' ] ) ? $transaction_list[ 'transaction_qty' ] + $addToCartReductions_value[ 'reductionQuantity' ] : $addToCartReductions_value[ 'reductionQuantity' ];
+    //                    $transaction_list[ 'seatId' ] = isset( $transaction_list[ 'seatId' ] ) ? $transaction_list[ 'seatId' ] + $addToCartReductions_value[ 'seatId' ] : $addToCartReductions_value[ 'seatId' ];
+                        if($manualSelection == 'true'){
+                            $seatId .= rtrim(implode(",",$addToCartReductions_value['seatId']), ',').',';
+                            for($i = 0; $i < count($addToCartReductions_value['seatId']); $i++){
+                                $manualReductions .= $addToCartReductions_value[ 'reductionId' ].',';
+                                $zoneIds .= $zoneId.',';
+                            }
+                        }else{
+                            $reductionTicket .= '&reduction[]=' . $addToCartReductions_value[ 'reductionId' ] . '&nTickets[]=' . $addToCartReductions_value[ 'reductionQuantity' ];
                         }
-                    }else{
-                        $reductionTicket .= '&reduction[]=' . $addToCartReductions_value[ 'reductionId' ] . '&nTickets[]=' . $addToCartReductions_value[ 'reductionQuantity' ];
-                    }
+                    endif;
                 }
                 if($manualSelection == 'true'){
                         $seatId = rtrim($seatId, ',');

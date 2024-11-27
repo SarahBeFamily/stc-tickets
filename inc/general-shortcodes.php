@@ -96,13 +96,15 @@ function stcTickets_spettacolo_cart_callback() {
     $user_id        = get_current_user_id();
     $get_user_meta  = get_user_meta( $user_id, 'addToCartObject' );
     $transactionIds = get_user_meta( $user_id, 'transactionIds' );
+    $subscriptionOrderId = get_user_meta ( $user_id, 'subscriptionOrderId',true );
     $totalPrice     = 0;
     $totalQty       = 0;
+    $subclass       = $subscriptionOrderId ? ' subid-'.$subscriptionOrderId : '';
 //    echo "<pre>";
 //    print_r($get_user_meta);
 //    echo "</pre>";
     ?>
-    <div class="spettacolo-cart-wrapper">
+    <div class="spettacolo-cart-wrapper<?php echo $subclass;?>">
         <div class="container">
             <div class="spettacolo-cart-inner">
                 <div class="spettacolo-tickets">
@@ -185,13 +187,14 @@ function stcTickets_spettacolo_checkout_callback() {
     ob_start();
     $user_id       = get_current_user_id();
     $get_user_meta = get_user_meta( $user_id, 'addToCartObject' );
+    $subscriptionOrderId = get_user_meta ( $user_id, 'subscriptionOrderId',true );
     $totalPrice    = 0;
     $totalQty      = 0;
 //    echo "<pre>";
 //    print_r($get_user_meta);
 //    echo "</pre>";
     ?>
-    <div class="spettacolo-cart-wrapper spettacolo-checkout-wrapper">
+    <div class="spettacolo-cart-wrapper spettacolo-checkout-wrapper subid-<?php echo $subscriptionOrderId;?>">
         <div class="container">
             <div class="spettacolo-cart-inner spettacolo-checkout-inner">
                 <div class="spettacolo-tickets">
@@ -283,12 +286,7 @@ function stcTickets_spettacolo_thankyou_callback() {
         $confirmed_order_new        = array ();
         $final_confirmed_order_arr  = array ();
         $confirmedOrderObjectBefore = get_user_meta( $user_id, 'finalConfirmedOrder', true );
-    //    echo "<pre>";
-    //    print_r($addToCartObject);
-    //    echo "</pre>";
-    //    echo "<pre>";
-    //    print_r($transactionIds);
-    //    echo "</pre>";
+
         if( ! empty( $transactionCodeArr ) || ! empty( $confirmedOrderObjectBefore ) ) {
             if( ! empty( $transactionIds ) ) {
                 $confirmed_order = $transactionIds;
@@ -379,53 +377,7 @@ function stcTickets_spettacolo_thankyou_callback() {
         $cart = WC()->cart;
         if( ! empty( $cart ) && ! empty( $addToCartObject ) ) {
             
-            $checkout = WC()->checkout();
-            $order_id = $checkout->create_order( array('customer_id'=>$current_user_id,'billing_email'=>$current_user_email,'payment_method' => 'online') );
-            $order = wc_get_order( $order_id );
-            if ( ! $order ) return false;
-
-            $order = wc_get_order( $order->get_id() );
-            $order->set_customer_id( $current_user_id );
-            $order->set_billing_email( $current_user_email );
-            $order->set_payment_method( 'online' );
-            $order_id = $order->get_id();
-            
-            update_post_meta( $order_id, '_customer_user', get_current_user_id() );
-            $order->set_address( $address, 'billing' );
-            $order->calculate_totals();
-            $order->payment_complete();
-            update_user_meta( $user_id, 'confirmedOrder', $get_confirmed_order_arr );
-            $finalTransactionIds = get_user_meta( $user_id, 'finalTransactionIds', true );
-            $order->add_meta_data( 'confirmedOrderObject', $get_confirmed_order_arr, true );
-            $order->add_meta_data( 'transactionIds', $transactionIds, true );
-            $order->add_meta_data( 'orderTransactionCodeArr', $transactionCodeArr, true );
-            $order->add_meta_data( 'booked_subs_seats', $subscriptionSeatList, true );
-            $order->add_meta_data( 'subscriptionOrderId', $subscriptionOrderId, true );
-            $order->update_status( "completed" );
-            $cart->empty_cart();
-            update_user_meta( $user_id, 'addToCartObject', array () );
-            update_user_meta( $user_id, 'transactionIds', array () );
-            update_user_meta( $user_id, 'subscriptionSeatList', array () );
-            update_user_meta( $user_id, 'subscriptionOrderId', array () );
-
-            // 2024-11-18 mailchimp subscription start
-            if(!empty($user_email)) {
-                $subscribe_user = stc_mailchimp_subscribe_user($user_email);
-                error_log("Subscribe USer to mailchimp for orderid - $order_id.");
-                // error_log("response for Subscribe User to mailchimp for orderid - $order_id - " . json_encode( $subscribe_user));
-                update_post_meta( $order_id, '_mailchimp_subscribe_attempt', 1 );
-                update_post_meta( $order_id, '_mailchimp_subscribe_email', $user_email );
-                if($subscribe_user['code'] == '200') {
-                    update_post_meta( $order_id, '_mailchimp_subscribe_response', $subscribe_user['data'] );                
-                } else if($subscribe_user['code'] == '201') {
-                    update_post_meta( $order_id, '_mailchimp_subscribe_already', 1 );
-                    update_post_meta( $order_id, '_mailchimp_subscribe_response', $subscribe_user['data'] );
-                } else {
-                    update_post_meta( $order_id, '_mailchimp_subscribe_error', $subscribe_user['message'] );                
-                }
-            }
-            // 2024-11-18 mailchimp subscription end
-
+            $order_id = '';
             if ($subscriptionOrderId) {
                 // Get the previous order
                 $subscription_order = wc_get_order($subscriptionOrderId);
@@ -449,7 +401,69 @@ function stcTickets_spettacolo_thankyou_callback() {
 
                 // Save the changes to the previous order
                 $subscription_order->save();
+                $order_id = $subscriptionOrderId;
+            } else {
+                // Crate a new order
+                $checkout = WC()->checkout();
+                $order_id = $checkout->create_order( array('customer_id'=>$current_user_id,'billing_email'=>$current_user_email,'payment_method' => 'online') );
+                $order = wc_get_order( $order_id );
+                if ( ! $order ) return false;
+
+                $order = wc_get_order( $order->get_id() );
+                $order->set_customer_id( $current_user_id );
+                $order->set_billing_email( $current_user_email );
+                $order->set_payment_method( 'online' );
+                $order_id = $order->get_id();
+                
+                update_post_meta( $order_id, '_customer_user', get_current_user_id() );
+                $order->set_address( $address, 'billing' );
+                $order->calculate_totals();
+                $order->payment_complete();
+                update_user_meta( $user_id, 'confirmedOrder', $get_confirmed_order_arr );
+                $finalTransactionIds = get_user_meta( $user_id, 'finalTransactionIds', true );
+                $order->add_meta_data( 'confirmedOrderObject', $get_confirmed_order_arr, true );
+                $order->add_meta_data( 'transactionIds', $transactionIds, true );
+                $order->add_meta_data( 'orderTransactionCodeArr', $transactionCodeArr, true );
+                $order->add_meta_data( 'booked_subs_seats', $subscriptionSeatList, true );
+                $order->add_meta_data( 'subscriptionOrderId', $subscriptionOrderId, true );
+                $order->update_status( "completed" );
+                $order->save();
+                $order_id = $order->get_id();
+
+                // Save usermeta with order id and barcode
+                // $order_barcode = get_order_barcode($order_id);
+                // $subscription_order_barcode = get_user_meta( $user_id, 'subscription_order_barcode', true ) ? get_user_meta( $user_id, 'subscription_order_barcode', true ) : array();
+
+                // $subscription_order_barcode[$order_barcode] = array(
+                //     'order_id' => $order_id,
+                //     'order_date' => date('Y-m-d H:i:s'),
+                //     'order_products' => $get_confirmed_order_arr,
+                // );
             }
+
+            $cart->empty_cart();
+            update_user_meta( $user_id, 'addToCartObject', array () );
+            update_user_meta( $user_id, 'transactionIds', array () );
+            update_user_meta( $user_id, 'subscriptionSeatList', array () );
+            update_user_meta( $user_id, 'subscriptionOrderId', array () );
+
+            // 2024-11-18 mailchimp subscription start
+            if(!empty($user_email)) {
+                $subscribe_user = stc_mailchimp_subscribe_user($user_email);
+                error_log("Subscribe USer to mailchimp for orderid - $order_id.");
+                // error_log("response for Subscribe User to mailchimp for orderid - $order_id - " . json_encode( $subscribe_user));
+                update_post_meta( $order_id, '_mailchimp_subscribe_attempt', 1 );
+                update_post_meta( $order_id, '_mailchimp_subscribe_email', $user_email );
+                if($subscribe_user['code'] == '200') {
+                    update_post_meta( $order_id, '_mailchimp_subscribe_response', $subscribe_user['data'] );                
+                } else if($subscribe_user['code'] == '201') {
+                    update_post_meta( $order_id, '_mailchimp_subscribe_already', 1 );
+                    update_post_meta( $order_id, '_mailchimp_subscribe_response', $subscribe_user['data'] );
+                } else {
+                    update_post_meta( $order_id, '_mailchimp_subscribe_error', $subscribe_user['message'] );                
+                }
+            }
+            // 2024-11-18 mailchimp subscription end
         }
         $confirmedOrderObject = get_user_meta( $user_id, 'confirmedOrder', true );
         ?>

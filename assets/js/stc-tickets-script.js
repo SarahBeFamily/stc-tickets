@@ -2,6 +2,9 @@ var mouseX = '';
 var mouseY = '';
 var cart_counter_flag = true;
 var cart_count = 0;
+const developmentMode = (STCTICKETSPUBLIC.siteurl).includes('-dev') ? true : false;
+
+console.log(developmentMode);
 jQuery(document).ready(function ($) {
     
     var widgetId;
@@ -199,7 +202,7 @@ jQuery(document).ready(function ($) {
                 zoneArr.showDate = showDate;
                 zoneArr.ticketName = ticketTitle;
 
-                // If there is a barcode, add an evidenca of the subscription
+                // If there is a barcode, add an evidence of the subscription
                 if(barcode != ''){
                     zoneArr.abbonamento = barcode;
                 }
@@ -521,89 +524,131 @@ jQuery(document).ready(function ($) {
             recaptcha = jQuery(document).find('#g-recaptcha-response').val();
         }
         
-        // jQuery.ajax({
-        //     url: STCTICKETSPUBLIC.ajaxurl,
-        //     method: 'post',
-        //     beforeSend: function () {
-        //         jQuery( "body" ).css('opacity', '0.2');
-        //     },
-        //     data: {
-        //         action: 'checkRecaptcha',
-        //         recaptcha:recaptcha
-        //     },
-        //     success: function (data) {
-        //         jQuery( "body" ).css('opacity', '1');
-        //         var responseData = JSON.parse(data);
-        //         if (responseData.status) {
-        //             console.log(responseData.message);
-        //             var valid = true;
-        //             jQuery(document).find('input').each(function () {
-        //                 if (jQuery(this).parents('.form-row').hasClass('validate-required')) {
-        //                     if (jQuery(this).val() == '') {
-        //                         valid = false;
-        //                     }
-        //                 }
-        //             });
-        //             if (valid == false) {
-        //     //            alert('per favore inserisci i tuoi dati');
-        //                 jQuery(document).find('#order_review').append('<p style="color:red;">per favore inserisci i tuoi dati</p>');
-        //                 jQuery(document).find('#order_review .checkout-error').hide();
-        //             } else {
-                        jQuery.ajax({
-                            url: STCTICKETSPUBLIC.ajaxurl,
-                            method: 'post',
-                            beforeSend: function () {
-                                jQuery( "body" ).css('opacity', '0.2');
-                            },
-                            data: {
-                                action: 'getCheckout',
-                            },
-                            success: function (data) {
-                                jQuery( "body" ).css('opacity', '1');
-                                var responseData = JSON.parse(data);
-                                console.log(responseData);
-                                if (responseData.status) {
-                                    console.log(responseData.message);
-                                    var responseArr = responseData.message;
-                                    var redirecturl = responseArr.redirecturl
-                                    // ATTENZIONE SARAH - redirecturl
-                                    console.log(redirecturl);
-                                    if (redirecturl) {
-                                        // window.location.href = redirecturl;
-                                    }
-                                } else {
-                                    console.log(responseData.message['@attributes']);
-                                    let responseError = responseData.message['@attributes'];
-                                    if(responseError.errcode){
-                                        if(jQuery(document).find('#order_review .checkout-error').length > 0){
-                                            jQuery(document).find('#order_review .checkout-error').text(stcTicketsText.str_8 + (responseError.hasOwnProperty ? ' : '+responseError.errstring : ''));                            
-                                        }else{
-                                            jQuery(document).find('#order_review').append('<p class="checkout-error" style="color:red;">'+ stcTicketsText.str_8 + (responseError.hasOwnProperty ? ' : '+responseError.errstring : '') +'</p>');                            
-                                        }
-                                    }
+        // If is not developer test mode then check for recaptcha
+        if(!developmentMode){
+            jQuery.ajax({
+                url: STCTICKETSPUBLIC.ajaxurl,
+                method: 'post',
+                beforeSend: function () {
+                    jQuery( "body" ).css('opacity', '0.2');
+                },
+                data: {
+                    action: 'checkRecaptcha',
+                    recaptcha:recaptcha
+                },
+                success: function (data) {
+                    jQuery( "body" ).css('opacity', '1');
+                    var responseData = JSON.parse(data);
+                    if (responseData.status) {
+                        console.log(responseData.message);
+                        var valid = true;
+                        jQuery(document).find('input').each(function () {
+                            if (jQuery(this).parents('.form-row').hasClass('validate-required')) {
+                                if (jQuery(this).val() == '') {
+                                    valid = false;
                                 }
-                            },
-                            error: function (request, status, error) {
-                                console.log(error);
                             }
                         });
-                    // }
-                // } else {
-                //     console.log(responseData.message);
-                //     let responseError = responseData.message;
-                //     if(responseError){
-                //         if(jQuery(document).find('#order_review .checkout-error').length > 0){
-                //             jQuery(document).find('#order_review .checkout-error').text(responseError);                            
-                //         }else{
-                //             jQuery(document).find('#order_review').append('<p class="checkout-error" style="color:red;">'+ responseError +'</p>');                            
-                //         }
-                //     }
-                // }
-        //     },
-        //     error: function (request, status, error) {
-        //         console.log(error);
-        //     }
-        // });
+                        if (valid == false) {
+                //            alert('per favore inserisci i tuoi dati');
+                            jQuery(document).find('#order_review').append('<p style="color:red;">per favore inserisci i tuoi dati</p>');
+                            jQuery(document).find('#order_review .checkout-error').hide();
+                        } else {
+                            jQuery.ajax({
+                                url: STCTICKETSPUBLIC.ajaxurl,
+                                method: 'post',
+                                beforeSend: function () {
+                                    jQuery( "body" ).css('opacity', '0.2');
+                                },
+                                data: {
+                                    action: 'getCheckout',
+                                },
+                                success: function (data) {
+                                    jQuery( "body" ).css('opacity', '1');
+                                    var responseData = JSON.parse(data);
+                                    console.log(responseData);
+                                    if (responseData.status) {
+                                        console.log(responseData.message);
+                                        var responseArr = responseData.message;
+                                        var redirecturl = responseArr.redirecturl
+                                        // ATTENZIONE SARAH - redirecturl
+                                        console.log(redirecturl);
+                                        if (redirecturl) {
+                                            window.location.href = redirecturl;
+                                        }
+                                    } else {
+                                        console.log(responseData.message['@attributes']);
+                                        let responseError = responseData.message['@attributes'];
+                                        if(responseError.errcode){
+                                            if(jQuery(document).find('#order_review .checkout-error').length > 0){
+                                                jQuery(document).find('#order_review .checkout-error').text(stcTicketsText.str_8 + (responseError.hasOwnProperty ? ' : '+responseError.errstring : ''));                            
+                                            }else{
+                                                jQuery(document).find('#order_review').append('<p class="checkout-error" style="color:red;">'+ stcTicketsText.str_8 + (responseError.hasOwnProperty ? ' : '+responseError.errstring : '') +'</p>');                            
+                                            }
+                                        }
+                                    }
+                                },
+                                error: function (request, status, error) {
+                                    console.log(error);
+                                }
+                            });
+                        }
+                    } else {
+                        console.log(responseData.message);
+                        let responseError = responseData.message;
+                        if(responseError){
+                            if(jQuery(document).find('#order_review .checkout-error').length > 0){
+                                jQuery(document).find('#order_review .checkout-error').text(responseError);                            
+                            }else{
+                                jQuery(document).find('#order_review').append('<p class="checkout-error" style="color:red;">'+ responseError +'</p>');                            
+                            }
+                        }
+                    }
+                },
+                error: function (request, status, error) {
+                    console.log(error);
+                }
+            });
+        } else {
+            jQuery.ajax({
+                url: STCTICKETSPUBLIC.ajaxurl,
+                method: 'post',
+                beforeSend: function () {
+                    jQuery( "body" ).css('opacity', '0.2');
+                },
+                data: {
+                    action: 'getCheckout',
+                },
+                success: function (data) {
+                    jQuery( "body" ).css('opacity', '1');
+                    var responseData = JSON.parse(data);
+                    console.log(responseData);
+                    if (responseData.status) {
+                        console.log(responseData.message);
+                        var responseArr = responseData.message;
+                        var redirecturl = responseArr.redirecturl
+                        // ATTENZIONE SARAH - redirecturl
+                        console.log(redirecturl);
+                        if (redirecturl) {
+                            window.location.href = redirecturl;
+                        }
+                    } else {
+                        console.log(responseData.message['@attributes']);
+                        let responseError = responseData.message['@attributes'];
+                        if(responseError.errcode){
+                            if(jQuery(document).find('#order_review .checkout-error').length > 0){
+                                jQuery(document).find('#order_review .checkout-error').text(stcTicketsText.str_8 + (responseError.hasOwnProperty ? ' : '+responseError.errstring : ''));                            
+                            }else{
+                                jQuery(document).find('#order_review').append('<p class="checkout-error" style="color:red;">'+ stcTicketsText.str_8 + (responseError.hasOwnProperty ? ' : '+responseError.errstring : '') +'</p>');                            
+                            }
+                        }
+                    }
+                },
+                error: function (request, status, error) {
+                    console.log(error);
+                }
+            });
+        }
         
 //        var first_name = jQuery('#customer_details').find('input#billing_first_name').val();
 //        var last_name = jQuery('#customer_details').find('input#billing_last_name').val();
@@ -1801,7 +1846,25 @@ function makeTimer() {
     }else{
         if(jQuery(document).find("#timer_count").length > 0){
             jQuery(document).find("#timer_count").remove();
-            window.location.reload();
+            // window.location.reload();
+
+            // empty the cart throught ajax
+            jQuery.ajax({
+                url: STCTICKETSPUBLIC.ajaxurl,
+                method: 'post',
+                dataType: 'json',
+                data: {
+                    action: 'emptyCart',
+                },
+                success: function (data) {
+                    console.log('Cart emptied');
+                    // refresh the page
+                    location.reload();
+                },
+                error: function (request, status, error) {
+                    console.log(error);
+                }
+            });
         }
     }
 }
