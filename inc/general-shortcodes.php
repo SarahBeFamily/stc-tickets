@@ -450,7 +450,7 @@ function stcTickets_spettacolo_thankyou_callback() {
             // 2024-11-18 mailchimp subscription start
             if(!empty($user_email)) {
                 $subscribe_user = stc_mailchimp_subscribe_user($user_email);
-                error_log("Subscribe USer to mailchimp for orderid - $order_id.");
+                // error_log("Subscribe USer to mailchimp for orderid - $order_id.");
                 // error_log("response for Subscribe User to mailchimp for orderid - $order_id - " . json_encode( $subscribe_user));
                 update_post_meta( $order_id, '_mailchimp_subscribe_attempt', 1 );
                 update_post_meta( $order_id, '_mailchimp_subscribe_email', $user_email );

@@ -683,7 +683,7 @@ function woocommerce_order_details_fun($order) {
 
                                                             if( ! empty( $subscriptionArr ) && ! isset($subscriptionArr['@attributes']['errcode']) ) {
                                                                 $accruals      = $subscriptionArr[ 'subscriptiondata' ][ 'accruals' ];
-                                                                $totalaccruals = $subscriptionArr[ 'subscriptiondata' ][ '@attributes' ][ 'numaccruals' ];
+                                                                $totalaccruals = (int)$subscriptionArr[ 'subscriptiondata' ][ '@attributes' ][ 'numaccruals' ];
                                                             }
 
                                                             if( isset($subscriptionArr['@attributes']['errcode']) && $subscriptionArr['@attributes']['errcode'] == '-1' ){
@@ -722,17 +722,17 @@ function woocommerce_order_details_fun($order) {
 
                                                                     // Show the button and count here only if the order isn't a subscription with barcode
                                                                     if (!$abbonamento_barcode) {
-                                                                    if ($seat_count - $totalaccruals > 0) {
-                                                                        echo "<p>" . sprintf(_n('Hai ancora %s posto disponibile', 'Hai ancora %s posti disponibili', $seat_count - $totalaccruals, 'stc-tickets'), $seat_count - $totalaccruals) . "</p>";
+                                                                    if ($totalaccruals - $seat_count > 0) {
+                                                                        echo '<p>'.sprintf(_n('Hai ancora %s posto disponibile', 'Hai ancora %s posti disponibili', $totalaccruals - $seat_count, 'stc-tickets'), $totalaccruals - $seat_count) . '</p>';
+                                                                        // echo '<div class="go-to-subscription">';
                                                                         ?>
-                                                                        <div class="go-to-subscription">
                                                                             <a class="go-to-subscription-btn" href="<?php echo (is_plugin_active('sitepress-multilingual-cms/sitepress.php') ? rtrim(apply_filters( 'wpml_home_url', get_option( 'home' ) ), '/') : get_site_url()) . "/subscription/?barcode=" . $barcode . "&order_id=" . $order->get_id(); ?>"><?php _e('Seleziona Spettacoli','stc-tickets'); ?></a>
-                                                                        </div>
                                                                         <?php
-                                                                    } ?>
-                                                                        <p><?php echo sprintf(_n('Hai selezionato %s spettacolo dei %s disponibili', 'Hai selezionato %s spettacoli dei %s disponibili', $seat_count, 'stc-tickets'), $seat_count, $totalaccruals); ?></p>
+                                                                        // echo '</div>';
+                                                                    } 
+                                                                    
+                                                                    echo '<p>'.sprintf(_n('Hai selezionato %s spettacolo dei %s disponibili', 'Hai selezionato %s spettacoli dei %s disponibili', $seat_count, 'stc-tickets'), $seat_count, $totalaccruals) .'</p>';
 
-                                                                    <?php 
                                                                     }
                                                                     // Show subscription seats only if the order is a subscription
                                                                     // don't show the subscription seats if user is adding shows to the subscription with barcode
@@ -821,7 +821,7 @@ function woocommerce_order_details_fun($order) {
 
                                                 if( ! empty( $subscriptionArr ) && ! isset($subscriptionArr['@attributes']['errcode']) ) {
                                                     $accruals      = $subscriptionArr[ 'subscriptiondata' ][ 'accruals' ];
-                                                    $totalaccruals = $subscriptionArr[ 'subscriptiondata' ][ '@attributes' ][ 'numaccruals' ];
+                                                    $totalaccruals = (int)$subscriptionArr[ 'subscriptiondata' ][ '@attributes' ][ 'numaccruals' ];
                                                 }
 
                                                 if( isset($subscriptionArr['@attributes']['errcode']) && $subscriptionArr['@attributes']['errcode'] == '-1' ){
@@ -2336,7 +2336,7 @@ function update_previous_order_meta_from_current_order($order_id) {
     // Get the previous order ID from the current order's meta
     $subscription_order_id = $current_order->get_meta( 'subscriptionOrderId' );
     // Get data from the current order
-    $transactionIds = $current_order->get_meta( 'transactionIds', true, 'view' );
+    $transactionIds = $current_order->get_meta( 'transactionIds', true, 'view' ) !== null ? $current_order->get_meta( 'transactionIds', true, 'view' ) : array();
     // Merge order data for log
     $order_array = array();
     $order_array[$order_id]['transactionIds'] = $transactionIds;
