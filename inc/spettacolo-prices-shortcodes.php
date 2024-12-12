@@ -39,18 +39,17 @@ function stcTickets_spettacolo_prices_callback() {
     // testing: print the array of prices
     if(isset($_GET['print']) && $_GET['print'] == 1) { 
         echo "<pre>";
+        print_r($pricesJson);
         print_r($pricesArr);
         echo "</pre>";
     }
     
-    if(isset($pricesArr['@attributes']['errcode']) && isset($pricesArr['@attributes']['errstring'])){
-//        echo "<pre>";
-//        print_r(API_HOST . 'backend/backend.php?cmd=prices&id=' . APIKEY . '&vcode=' . $vcode . '&pcode=' . $pcode);
-//        echo "</pre>";
-    }
-//        echo "<pre style='color:red;'>";
-//        print_r($pricesArr);
-//        echo "</pre>";
+    // if(isset($pricesArr['@attributes']['errcode']) && isset($pricesArr['@attributes']['errstring'])){
+    //     echo "<pre>";
+    //     print_r(API_HOST . 'backend/backend.php?cmd=prices&id=' . APIKEY . '&vcode=' . $vcode . '&pcode=' . $pcode);
+    //     echo "</pre>";
+    // }
+
     $title           = ! empty( $pricesArr[ 'title' ] ) ? $pricesArr[ 'title' ] : '';
     $info_date       = ! empty( $pricesArr[ 'date' ] ) ? $pricesArr[ 'date' ] : '';
     $info_curr_date  = ! empty( $info_date ) ? explode( "/", $info_date ) : '';
@@ -65,10 +64,18 @@ function stcTickets_spettacolo_prices_callback() {
     } else {
         $subscription = "0";
     }
+    
+    $jsonTitle = json_encode($title);
+    $cleanedTitle = str_replace('\"', '&quot;', $jsonTitle);
+    $cleanedTitle = str_replace("'", '&apos;', $cleanedTitle);
+
+    // search and replace the title with the cleaned title
+    $pricesJson = str_replace($jsonTitle, $cleanedTitle, $pricesJson);
     $globalJsPricing = $pricesJson;
+    
     ?>
     <script type="text/javascript">
-        var globalJsPricing = '<?php echo isset( $globalJsPricing ) ? $globalJsPricing : ""; ?>';
+        var globalJsPricing = '<?php echo isset( $globalJsPricing ) ? $globalJsPricing : '';?>';
     </script>
     <?php
 //    echo "<pre>";
@@ -98,15 +105,27 @@ function stcTickets_spettacolo_prices_callback() {
 
     $map_response = curl_exec( $map_curl );
     $err          = curl_error( $map_curl );
-//    echo "<pre>";
-//    print_r($err);
-//    echo "</pre>";
+    // echo "<pre>";
+    // print_r($err);
+    // echo "</pre>";
     curl_close( $map_curl );
 
     $xmlNode       = simplexml_load_string( $map_response );
     $arrayData     = xmlToArray( $xmlNode );
     $json_en       = json_encode( $arrayData );
     $extGetMapDataPricing = str_replace("'", "\'", $json_en);
+
+    // echo "<pre>";
+    // print_r($arrayData);
+    // echo "</pre>";
+    // Extract the title from the array
+    $jsonTitle = isset($arrayData['reply']['performance']['@attribute']['title']) ? json_encode($arrayData['reply']['performance']['@attribute']['title']) : '';
+    $cleanedTitle = str_replace('\"', '&quot;', $jsonTitle);
+    $cleanedTitle = str_replace("\'", '&apos;', $cleanedTitle);
+
+    // search and replace the title with the cleaned title
+    $extGetMapDataPricing = str_replace($jsonTitle, $cleanedTitle, $extGetMapDataPricing);
+
     ?>
     <script type="text/javascript">
         var extGetMapDataPricing = '<?php echo isset( $extGetMapDataPricing ) ? $extGetMapDataPricing : ""; ?>';        
@@ -115,8 +134,8 @@ function stcTickets_spettacolo_prices_callback() {
     $extGetMapData = json_decode( $json_en, true );
 
     // Testing: print the array of extGetMapData
-    // by adding ?print=1 to the URL
-    if(isset($_GET['print']) && $_GET['print'] == 1) {
+    // by adding ?print=2 to the URL
+    if(isset($_GET['print']) && $_GET['print'] == 2) {
         echo "<pre>";
         print_r($extGetMapData);
         echo "</pre>";
@@ -163,7 +182,7 @@ function stcTickets_spettacolo_prices_callback() {
 
         // Testing: print the array of map_zones
         // by adding ?print=1 to the URL
-        if(isset($_GET['print']) && $_GET['print'] == 1) {
+        if(isset($_GET['print']) && $_GET['print'] == 3) {
             echo "<pre>";
             print_r($map_zones);
             echo "</pre>";
@@ -322,11 +341,17 @@ function stcTickets_spettacolo_prices_callback() {
         endif;
         foreach ( $seatFromXml as $seatFromXml_key => $seatFromXml_value ) {
             $currentSeat = $seatFromXml_value;
-//            if($_GET['print'] == 1) {
-//                echo "<pre>";
-//                print_r($currentSeat);
-//                echo "</pre>";
-//            }
+
+            /**
+             * Testing: print the current seat
+             * by adding ?print=4 to the URL
+             */
+            if(isset($_GET['print']) && $_GET['print'] == 4) {
+                echo "<pre>";
+                print_r($currentSeat);
+                echo "</pre>";
+            }
+
             $id          = $currentSeat[ '@attributes' ][ 'id' ];
             $x           = $currentSeat[ '@attributes' ][ 'x' ];
             $y           = $currentSeat[ '@attributes' ][ 'y' ];
@@ -371,7 +396,7 @@ function stcTickets_spettacolo_prices_callback() {
 <!--    <div class="tooltip">
         <div class="tooltip__content"></div>
     </div>-->
-    <div class="spettacolo-prices-wrapper dev" data-vcode="<?php echo $vcode; ?>" data-pcode="<?php echo $pcode; ?>" data-regData="<?php echo $regData; ?>" data-subscription="<?php echo $subscription; ?>"  data-barcode="<?php echo $barcode; ?>">
+    <div class="spettacolo-prices-wrapper" data-vcode="<?php echo $vcode; ?>" data-pcode="<?php echo $pcode; ?>" data-regData="<?php echo $regData; ?>" data-subscription="<?php echo $subscription; ?>"  data-barcode="<?php echo $barcode; ?>">
         <div class="">
             <div class="showheader">
                 <a href="<?php echo $spe_permalink; ?>" class="backtoshow"><?php _e('Torna alla scheda evento','stc-tickets'); ?></a>
@@ -428,41 +453,37 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                         <?php } ?>
                         <div class="spettacolo-prices-img">
                             <svg id="svgSeatSvg" height="<?php echo $svgHeight; ?>" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" viewBox="0 0 1280 960" style="width: 100%;" draggable="false">
-                                    <g draggable="false">
-                                <image id="svgSeatImage" xlink:href="<?php echo API_HOST.'/map_room_data/' . $vcode . '_w.gif'; ?>" height="<?php echo $svgHeight; ?>" data-id="svg-back"></image>
-                                <rect id="svgSeatRect" width="1280" height="960" fill="transparent" x="0" y="0" data-id="svg-layer"></rect>
-                                <?php
-                                foreach ( $circles_arr as $circles_arr_key => $circles_arr_value ) {
-                                    $seat_ind_status = $circles_arr_value[ 'index-status' ];
-                                    $clickable       = (($seat_ind_status == 0 || empty( $seat_ind_status )) && !empty($circles_arr_value[ 'zone-id' ])) ? 1 : 0;
-                                    $circle_color    = (($seat_ind_status == 0 || empty( $seat_ind_status )) && !empty($circles_arr_value[ 'zone-id' ])) ? $circles_arr_value[ 'data-color' ] : '#000';
-                                    $circle_hover    = (($seat_ind_status == 0 || empty( $seat_ind_status )) && !empty($circles_arr_value[ 'zone-id' ])) ? 'cursor: pointer' : 'cursor: default';
-                                    $circle_class    = (($seat_ind_status == 0 || empty( $seat_ind_status )) && !empty($circles_arr_value[ 'zone-id' ])) ? 'active' : '';
-                                    ?>
-                                        <circle title="<?php echo $circles_arr_value[ 'seat-description' ]; ?>" class="<?php echo $circle_class; ?>" id="<?php echo 'seat_' . $circles_arr_value[ 'seat-index' ]; ?>" r="<?php echo $circles_arr_value[ 'circle-width' ]; ?>" cx="<?php echo $circles_arr_value[ 'seat-x' ]; ?>" cy="<?php echo $circles_arr_value[ 'seat-y' ]; ?>" cxd="<?php echo $circles_arr_value[ 'seat-x' ]; ?>" cyd="<?php echo $circles_arr_value[ 'seat-y' ]; ?>" fill="<?php echo $circle_color; ?>" data-index="<?php echo $circles_arr_value[ 'seat-index' ]; ?>" data-id="<?php echo $circles_arr_value[ 'seat-id' ]; ?>" data-zone-id="<?php echo $circles_arr_value[ 'zone-id' ]; ?>" data-seat-desc="<?php echo $circles_arr_value[ 'seat-description' ]; ?>" data-zone-desc="<?php echo $circles_arr_value[ 'zone-desc' ]; ?>" data-price="<?php echo $circles_arr_value[ 'price' ]; ?>" data-color="<?php echo $circle_color; ?>" data-status="<?php echo $clickable; ?>" style="<?php echo $circle_hover; ?>;"></circle>
+                                <g draggable="false">
+                                    <image id="svgSeatImage" xlink:href="<?php echo API_HOST.'/map_room_data/' . $vcode . '_w.gif'; ?>" height="<?php echo $svgHeight; ?>" data-id="svg-back"></image>
+                                    <rect id="svgSeatRect" width="1280" height="960" fill="transparent" x="0" y="0" data-id="svg-layer"></rect>
                                     <?php
-                                }
-                                ?>
-        <!--                            <rect id="svgSeatRectTooltip" width="300" height="60" fill="#404040" x="1002" y="850" rx="10" ry="10"></rect>
-                        <text id="svgSeatTextTooltip" font-family="arial" font-size="25" size="25" family="arial" x="1012" y="880" fill="white">I love SVG!</text>-->
+                                    foreach ( $circles_arr as $circles_arr_key => $circles_arr_value ) {
+                                        $seat_ind_status = $circles_arr_value[ 'index-status' ];
+                                        $clickable       = (($seat_ind_status == 0 || empty( $seat_ind_status )) && !empty($circles_arr_value[ 'zone-id' ])) ? 1 : 0;
+                                        $circle_color    = (($seat_ind_status == 0 || empty( $seat_ind_status )) && !empty($circles_arr_value[ 'zone-id' ])) ? $circles_arr_value[ 'data-color' ] : '#000';
+                                        $circle_hover    = (($seat_ind_status == 0 || empty( $seat_ind_status )) && !empty($circles_arr_value[ 'zone-id' ])) ? 'cursor: pointer' : 'cursor: default';
+                                        $circle_class    = (($seat_ind_status == 0 || empty( $seat_ind_status )) && !empty($circles_arr_value[ 'zone-id' ])) ? 'active' : '';
+                                        ?>
+                                            <circle title="<?php echo $circles_arr_value[ 'seat-description' ]; ?>" class="<?php echo $circle_class; ?>" id="<?php echo 'seat_' . $circles_arr_value[ 'seat-index' ]; ?>" r="<?php echo $circles_arr_value[ 'circle-width' ]; ?>" cx="<?php echo $circles_arr_value[ 'seat-x' ]; ?>" cy="<?php echo $circles_arr_value[ 'seat-y' ]; ?>" cxd="<?php echo $circles_arr_value[ 'seat-x' ]; ?>" cyd="<?php echo $circles_arr_value[ 'seat-y' ]; ?>" fill="<?php echo $circle_color; ?>" data-index="<?php echo $circles_arr_value[ 'seat-index' ]; ?>" data-id="<?php echo $circles_arr_value[ 'seat-id' ]; ?>" data-zone-id="<?php echo $circles_arr_value[ 'zone-id' ]; ?>" data-seat-desc="<?php echo $circles_arr_value[ 'seat-description' ]; ?>" data-zone-desc="<?php echo $circles_arr_value[ 'zone-desc' ]; ?>" data-price="<?php echo $circles_arr_value[ 'price' ]; ?>" data-color="<?php echo $circle_color; ?>" data-status="<?php echo $clickable; ?>" style="<?php echo $circle_hover; ?>;"></circle>
+                                        <?php
+                                    }
+                                    ?>
+                                    <!-- <rect id="svgSeatRectTooltip" width="300" height="60" fill="#404040" x="1002" y="850" rx="10" ry="10"></rect>
+                                        <text id="svgSeatTextTooltip" font-family="arial" font-size="25" size="25" family="arial" x="1012" y="880" fill="white">I love SVG!</text>-->
                                 </g>
                             </svg>
                             <div class="tooltip" <?php echo $selectionMode == 0 ? 'style="display:none;"' : '' ?>>
                                 <div class="tooltip-title"></div>
                                 <div class="tooltip-subtitle"></div>
                                 <div class="tooltip-price-wrap">
-                                    <div class="tooltip-price-title">
-                                    </div>
-                                    <div class="tooltip-price">
-                                    </div>
+                                    <div class="tooltip-price-title"></div>
+                                    <div class="tooltip-price"></div>
                                 </div>
                             </div>                            
                         </div>
                         <?php
                     } else {
-                        if( ! empty( $errstring ) ) {
-                            echo $errstring;
-                        }
+                        if( ! empty( $errstring ) ) echo $errstring;
                     }
                     ?>
                 </div>
@@ -489,15 +510,21 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                             <div class="price-table tab-content">
                                 <?php
                                 
-//                                if($_GET['print'] == '1'){
-//                                    echo "<pre>";
-//                                    print_r($pricesArr);
-//                                    echo "</pre>";
-//                                }
+                                /**
+                                 * Testing: print the array of prices
+                                 * by adding ?print=5 to the URL
+                                 */
+                                if(isset($_GET['print']) && $_GET['print'] == '5'){
+                                    echo "<pre>";
+                                    print_r($pricesArr);
+                                    echo "</pre>";
+                                }
                                 
                                 if(!empty($pricesArr[ 'macrozone' ])){
                                     $reduction_maxbuy = 0;
-                                    $macrozone = $pricesArr[ 'macrozone' ];                                
+                                    $macrozone = $pricesArr[ 'macrozone' ];
+                                    $macrozoneArray = array();
+
                                     if( isset( $macrozone[ '@attributes' ] ) ) {
                                         $macrozoneArray[] = $macrozone;
                                     } else {
@@ -505,11 +532,23 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                             $macrozoneArray[] = $macrozone_value;
                                         }
                                     }
+
+                                    /**
+                                     * Testing: print the array of macrozone
+                                     * by adding ?print=5 to the URL
+                                     */
+                                    if(isset($_GET['print']) && $_GET['print'] == '5'){
+                                        echo "<pre>";
+                                        print_r($macrozoneArray);
+                                        echo "</pre>";
+                                    }
+
                                     if(!empty($macrozoneArray)){
                                         foreach ( $macrozoneArray as $macrozoneArray_key => $macrozoneArray_value ) {
                                             $description = $macrozoneArray_value[ 'description' ];
                                             $zone        = $macrozoneArray_value[ 'zone' ];
                                             $reduction   = $zone[ 'reduction' ];
+                                            $reductionArr = array();
                                             if( isset( $reduction[ '@attributes' ] ) ) {
                                                 $reductionArr[] = $reduction;
                                             } else {
@@ -517,20 +556,12 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                                     $reductionArr[] = $reduction_value;
                                                 }
                                             }
-    //                                        if($_GET['print'] == '1'){
-    //                                            echo "<pre>";
-    //                                            print_r($reductionArr);
-    //                                            echo "</pre>";
-    //                                        }
 
                                             $pricesArr = array_column( $reductionArr, 'price' );
                                             $min_reduction_price = !empty($pricesArr) ? (min( $pricesArr ) / 100) : 0;
+
                                             ob_start();
-    //                                        if($_GET['print'] == '1'){
-    //                                            echo "<pre>";
-    //                                            print_r($reductionArr);
-    //                                            echo "</pre>";
-    //                                        }
+
                                             $show_list_row = false;
                                             if( ! empty( $reductionArr ) ) {
                                                 foreach ( $reductionArr as $reductionArr_key => $reductionArr_value ) {
@@ -545,14 +576,14 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                                                 $reduction_flag = true;
                                                             }
                                                         }else{
-    //                                                        if( preg_match("/INTERO/i", $reductionArr_value[ 'description' ])) {
-            //                                                if( $reductionArr_value[ 'description' ] == 'RIDOTTO 1' ) {
+                                                        //    if( preg_match("/INTERO/i", $reductionArr_value[ 'description' ])) {
+                                                        //    if( $reductionArr_value[ 'description' ] == 'RIDOTTO 1' ) {
                                                                 $reduction_desc   = $reductionArr_value[ 'description' ];
                                                                 $reduction_price  = ((int) $reductionArr_value[ 'price' ] / 100);
                                                                 $reduction_maxbuy = $reductionArr_value[ 'maxbuy' ];
                                                                 $reduction_id     = $reductionArr_value[ '@attributes' ][ 'id' ];
                                                                 $reduction_flag = true;
-    //                                                        }
+                                                        //    }
                                                         }
                                                         if(!empty($barcode)){
                                                             $reduction_price = '0.00';
@@ -580,7 +611,7 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                                             </div>                        
                                                         <?php
                                                         }
-                                                    } else if( ! is_user_logged_in() && $reductionArr_value[ 'description' ] == 'INTERO' ) {
+                                                    } else if( ! is_user_logged_in() && strpos($reductionArr_value[ 'description' ], 'INTERO' ) !== false ) {
                                                         $reduction_desc   = $reductionArr_value[ 'description' ];
                                                         $reduction_price  = ((int) $reductionArr_value[ 'price' ] / 100);
                                                         $reduction_maxbuy = $reductionArr_value[ 'maxbuy' ];

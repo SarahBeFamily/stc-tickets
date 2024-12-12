@@ -932,7 +932,7 @@ jQuery(document).ready(function ($) {
                     jQuery(document).find(".tooltip .tooltip-price").html(tooltip_price+' &euro;');
                     var mouseX = event.pageX;
                     var mouseY = event.pageY;
-                    console.log(mouseX,mouseY,jQuery(document).find(".tooltip").outerHeight(),Number(jQuery(document).find(".spettacolo-prices-img").outerWidth()) + Number(jQuery(document).find(".spettacolo-prices-img").offset().left))
+                    // console.log(mouseX,mouseY,jQuery(document).find(".tooltip").outerHeight(),Number(jQuery(document).find(".spettacolo-prices-img").outerWidth()) + Number(jQuery(document).find(".spettacolo-prices-img").offset().left))
                     if(mouseX + 100 > Number(jQuery(document).find(".spettacolo-prices-img").outerWidth()) + Number(jQuery(document).find(".spettacolo-prices-img").offset().left)){
                         jQuery(document).find(".tooltip").css({
                             top: mouseY - jQuery(document).find(".spettacolo-prices-img").offset().top - jQuery(document).find(".tooltip").outerHeight() - 10, // Adjust for the tooltip's height
@@ -1051,7 +1051,7 @@ jQuery(document).ready(function ($) {
                         var currentextGetMapData = JSON.parse(extGetMapDataPricing);
                         macrozones = currentPricing.macrozone;
                     }
-                    console.log(currentextGetMapData);
+                    // console.log(currentextGetMapData);
                     if (Object.keys(macrozones)[0] == '0') {
                         macrozones.forEach(function (macrozone) {
                             zone = macrozone.zone;
@@ -1080,13 +1080,14 @@ jQuery(document).ready(function ($) {
                     curr_reduction_name = '',
                     curr_reduction_price = '',
                     curr_reduction_id = '';
-//                    console.log(reductions);
+                    // console.log(reductions);
                     if(reductions.hasOwnProperty(0)){
                         reductions.forEach(function (reduction, index) {
                             let reduction_flag = false;
                             var temp_reduction_name = reduction.description;
                             if(user_logged_in){
-                                if(temp_reduction_name != "INTERO"){
+                                // if(temp_reduction_name != "INTERO"){
+                                if(temp_reduction_name.indexOf("INTERO") > -1){
                                     reduction_html = '';
                                     curr_reduction_name = reduction.description;
                                     curr_reduction_price = (reduction.price) / 100;
@@ -1095,21 +1096,23 @@ jQuery(document).ready(function ($) {
                                     }
                                     curr_reduction_id = reduction['@attributes'].id;
                                     reduction_html += '<option value="' + index + '" data-price="' + curr_reduction_price + '" data-reduction-name="' + curr_reduction_name + '" data-reduction-id="' + curr_reduction_id + '">' + curr_reduction_name + ' ' + curr_reduction_price + ' &euro;' + '</option>';
-                                    reduction_flag = true;                                    
+                                    reduction_flag = true;
                                 } else{
-                                    if(temp_reduction_name == "INTERO"){
+                                    // if(temp_reduction_name == "INTERO"){
                                         curr_reduction_name = reduction.description;
                                         curr_reduction_price = (reduction.price) / 100;
                                         if(typeof barcode != "undefined" && barcode != ""){
-                                            curr_reduction_price = 0.00;                                        
+                                            curr_reduction_price = 0.00;
                                         }
                                         curr_reduction_id = reduction['@attributes'].id;
                                         reduction_html += '<option value="' + index + '" data-price="' + curr_reduction_price + '" data-reduction-name="' + curr_reduction_name + '" data-reduction-id="' + curr_reduction_id + '">' + curr_reduction_name + ' ' + curr_reduction_price + ' &euro;' + '</option>';
                                         reduction_flag = true;
-                                    }
+                                    // }
                                 }
                             }else{
-                                if(temp_reduction_name == "INTERO"){
+                                console.log(temp_reduction_name);
+                                console.log(temp_reduction_name.indexOf("INTERO"));
+                                if(temp_reduction_name.indexOf("INTERO") > -1){
                                     curr_reduction_name = reduction.description;
                                     curr_reduction_price = (reduction.price) / 100;
                                     if(typeof barcode != "undefined" && barcode != ""){
@@ -1148,7 +1151,7 @@ jQuery(document).ready(function ($) {
                                 }
                             }
                         } else{
-                            if(temp_reduction_name == "INTERO"){
+                            if(temp_reduction_name.indexOf("INTERO") > -1){
                                 curr_reduction_name = reductions.description;
                                 curr_reduction_price = (reductions.price) / 100;
                                 if(typeof barcode != "undefined" && barcode != ""){
