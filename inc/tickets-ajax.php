@@ -11,31 +11,21 @@ function fun_getBookingCart (){
     );
     $addToCartObject        = $_POST['addToCart'];
     $subscription_list      = isset($_POST[ 'subscription_list' ]) ? $_POST[ 'subscription_list' ] : '';
-    $orderId                = $_POST[ 'orderId' ];    
+    $orderId                = $_POST[ 'orderId' ];
     $user_id                = get_current_user_id();
     $get_user_meta_before   = get_user_meta( $user_id, 'addToCartObject' );
     $transaction_ids_before = !empty(get_user_meta( $user_id, 'transactionIds' )[0]) ? get_user_meta( $user_id, 'transactionIds' )[0] : array();
     $pcode                  = $_POST[ 'pcode' ];
     $show_date              = isset($_POST[ 'show_date' ]) ? $_POST[ 'show_date' ] : '';
-    // echo "<pre>";
-    // print_r($subscription_list);
-    // echo "</pre>";
-    
-    $final_cart_obj = array ();
-    $current_cart_obj = array ();
+    $final_cart_obj         = array ();
+    $current_cart_obj       = array ();
     $subscription_cart_obj = array ();
     $subscription_cart_obj_final = array ();
     $transaction_ids_to_remove = array ();
-//    echo "<pre>";
-//    print_r($get_user_meta_before);
-//    echo "</pre>";
-//    echo "<pre>";
-//    print_r($addToCartObject);
-//    echo "</pre>";
 
     if(is_array($subscription_list) && !empty( $subscription_list ) && is_array($addToCartObject) && !empty( $addToCartObject )){
         foreach ( $addToCartObject as $addToCartObject_key => $addToCartObject_value ) {
-            // $ticketName = $addToCartObject_key != '0' ? $addToCartObject_key : ''; 
+            // $ticketName = $addToCartObject_key != '0' ? $addToCartObject_key : '';
             $first_addToCartObject = array_map( function ($addToCartObject_val){
                 $addToCartObject_val['doBooking'] = 1;
                 // MOD SARAH
@@ -51,7 +41,7 @@ function fun_getBookingCart (){
         }
         $subscription_cart_obj_final = $subscription_cart_obj;
     }
-    
+
     /**
      * if user has already added some tickets to cart
      * saved in user meta
@@ -60,13 +50,13 @@ function fun_getBookingCart (){
      */
     if( ! empty( $get_user_meta_before ) && ! empty( $get_user_meta_before[ 0 ] ) ) {
 //    if( ! empty( $get_user_meta_before ) && ! empty( $get_user_meta_before[ 0 ] ) && empty( $subscription_list ) ) {
-        
+
         $final_cart_obj = $get_user_meta_before[ 0 ];
-        
+
         foreach ( $get_user_meta_before[ 0 ] as $get_key => $get_value ) {
             if( isset($addToCartObject[ $get_key ]) ) {
                 $addToCartZone = $addToCartObject[ $get_key ];
-                
+
                 foreach ( $get_value as $zone_key => $zone_value ) {
                     $zoneName             = $zone_value[ 'zoneName' ];
                     $zoneId               = $zone_value[ 'zoneId' ];
@@ -104,8 +94,8 @@ function fun_getBookingCart (){
 //                                }
 //                            return $zone_reductions;
 //                            }, $addToCartZoneReductions );
-                            
-                            
+
+
                             foreach ( $addToCartZoneReductions as $zone_reductions_key => $zone_reductions ) {
                                 foreach ( $reductions as $reductions_key => $reductions_value ) {
                                     if( $zone_reductions[ 'reductionName' ] == $reductions_value[ 'reductionName' ] ) {
@@ -122,13 +112,13 @@ function fun_getBookingCart (){
                                 }
                                 $addToCartZoneReductions[$zone_reductions_key] = $zone_reductions;
                             }
-                            
+
                             $zone_array_filter = $addToCartZoneReductions;
-                            
+
                             foreach ( $reductions as $reductions_key => $reductions_value ) {
                                 foreach ( $zone_array_filter as $zone_array_filter_key => $zone_array_filter_value ) {
                                     $zone_reduction_name_array = array_column( $final_zone_reduction, 'reductionName' );
-                                
+
                                     if( $reductions_value[ 'reductionName' ] == $zone_array_filter_value[ 'reductionName' ] ) {
                                         $final_zone_reduction[ $reductions_key ] = $zone_array_filter_value;
                                     } else {
@@ -138,7 +128,7 @@ function fun_getBookingCart (){
                                     }
                                 }
                             }
-                            
+
                             foreach ( $final_cart_obj[ $get_key ] as $final_cart_obj_key => $final_cart_obj_value ) {
                                 if( $final_cart_obj_value[ 'zoneName' ] == $addToCartZone_value[ 'zoneName' ] ) {
                                     $final_cart_obj_value[ 'reductions' ] = $final_zone_reduction;
@@ -172,7 +162,7 @@ function fun_getBookingCart (){
             }
         }
     } else {
-        // 
+        //
         foreach ( $addToCartObject as $addToCartObject_key => $addToCartObject_value ) {
             $first_addToCartObject = array_map( function ($addToCartObject_val){
                 $addToCartObject_val['doBooking'] = 1;
@@ -195,9 +185,9 @@ function fun_getBookingCart (){
     if(!empty($subscription_cart_obj_final)){
         $addToCartObject = $subscription_cart_obj_final;
     }else{
-        $addToCartObject = $final_cart_obj;        
+        $addToCartObject = $final_cart_obj;
     }
-    
+
     //    echo "<pre>";
     //    print_r($get_user_meta_after);
     //    echo "</pre>";
@@ -242,7 +232,7 @@ function fun_getBookingCart (){
         }
         curl_close($set_expiry_curl);
 
-        
+
         $set_expiry_xml         = isset($set_expiry_response) && !empty($set_expiry_response) ?  simplexml_load_string ( $set_expiry_response ) : '';
         $set_expiry_json        = isset($set_expiry_xml) && !empty($set_expiry_xml) ?  json_encode ( $set_expiry_xml ) : '';
         $set_expiry_response    = isset($set_expiry_json) && !empty($set_expiry_json) ?  json_decode ( $set_expiry_json, TRUE ) : array();
@@ -251,15 +241,15 @@ function fun_getBookingCart (){
     //    print_r($set_expiry_response);
     //    echo "</pre>";
     //    die();
-    
-    
+
+
     $transaction_ids  = array ();
     $transaction_list = array ();
     $final_seats      = array ();
     $booked_seats     = array ();
     $subs_seat_list   = get_user_meta( $user_id, 'subscriptionSeatList', true );
     $subs_seat_list   = !empty($subs_seat_list) ? $subs_seat_list : array ();
-    
+
 
     $vcode            = $_POST[ 'vcode' ];
     // $pcode            = $_POST[ 'pcode' ];
@@ -288,7 +278,7 @@ function fun_getBookingCart (){
         $final_dob = $dob;
     }
 
-    if($_SERVER['REMOTE_ADDR'] == '103.215.158.90') {        
+    if($_SERVER['REMOTE_ADDR'] == '103.215.158.90') {
         $firstname        = $user_firstname;
         $lastname         = $user_lastname;
         $email            = $user_email;
@@ -311,7 +301,7 @@ function fun_getBookingCart (){
         $regDate          = $user_registered;
     }
     $idType           = 'OTP';
-    if($subscription){        
+    if($subscription){
         $timeout          = '1200';
     }else{
         $timeout          = '600';
@@ -321,9 +311,9 @@ function fun_getBookingCart (){
     //    if(isset($_GET['print']) && $_GET['print'] == 1){
     //        echo "<pre>";
     //        print_r($addToCartObject);
-    //        echo "</pre>";        
+    //        echo "</pre>";
     //    }
-        
+
     foreach ( $addToCartObject as $addToCartObject_key => $addToCartObject_value ) {
         $ticketName = $addToCartObject_key;
         foreach ( $addToCartObject_value as $addToCartObject_k => $addToCartObject_v ) {
@@ -434,7 +424,7 @@ function fun_getBookingCart (){
                     if(!empty( $subscription_list )) {
                         $transaction_ids_before[$zoneId.$pcode]['subscription_seat'][] = $transaction_list;
                     }else{
-                        $transaction_ids_before[$zoneId.$pcode] = $transaction_list;                        
+                        $transaction_ids_before[$zoneId.$pcode] = $transaction_list;
                     }
                     if(!empty($transactions[ '@attributes' ][ 'custref' ])){
                         $final_cart_obj = $final_cart_obj;
@@ -537,7 +527,7 @@ function fun_getBookingCart (){
                     $subscription_xml     = simplexml_load_string ( $subscription_response );
                     $subscription_json    = json_encode ( $subscription_xml );
                     $subscription_tickets = json_decode ( $subscription_json, TRUE );
-                    if(isset($subscription_tickets['@attributes']['errstring'])){                        
+                    if(isset($subscription_tickets['@attributes']['errstring'])){
                         $response[ 'message' ] = $subscription_tickets['@attributes']['errstring'];
                         $response[ 'subscription' ] = true;
                     }
@@ -560,7 +550,7 @@ function fun_getBookingCart (){
 //    echo "<pre>";
 //    print_r($final_cart_obj);
 //    echo "</pre>";
-    
+
     if(!empty($subs_seat_list)){
         $final_transaction_ids = array_map( function ($transaction_ids_val) use ($booked_seats){
             if(array_key_first($transaction_ids_val) == 'subscription_seat'){
@@ -570,20 +560,20 @@ function fun_getBookingCart (){
                         foreach($seatObject as $seatObject_key => $seatObject_value){
                             $seat_id = $seatObject_value['@attributes']['id'];
                             if (!in_array($seat_id, $booked_seats)){
-                                unset($seatObject[$seatObject_key]); 
+                                unset($seatObject[$seatObject_key]);
                             }
                         }
                         $subscription_seat_value['seatObject'] = $seatObject;
                     }else{
                         $seat_id = $seatObject['@attributes']['id'];
                         if(!in_array($seat_id,$booked_seats)){
-                            unset($subscription_seat_value['seatObject']); 
+                            unset($subscription_seat_value['seatObject']);
                         }
 
                     }
                 }
                 if(empty($subscription_seat_value['seatObject'])){
-                    unset($transaction_ids_val['subscription_seat'][$subscription_seat_key]); 
+                    unset($transaction_ids_val['subscription_seat'][$subscription_seat_key]);
                 }else{
                     $transaction_ids_val['subscription_seat'][$subscription_seat_key] = $subscription_seat_value;
                 }
@@ -633,7 +623,7 @@ function fun_getBookingCart (){
 //        print_r($response);
 //        echo "</pre>";
     }else if(empty($response[ 'message' ])){
-        $response[ 'message' ] = __("Qualcosa è andato storto!!", "stc-tickets");   
+        $response[ 'message' ] = __("Qualcosa è andato storto!!", "stc-tickets");
     }
     echo json_encode ( $response );
     wp_die ();
@@ -675,8 +665,6 @@ function fun_getCheckout (){
         }
     }
 
- 
-    // INTERESSE SARAH CONTROLLARE SE URL CORRETTO
     // $curl_url = API_HOST.'backend/backend.php?cmd=extXmlPrepareTransToPay&id='.APIKEY.$transaction_id.'&tNumSeats='.$total_qty.'&tAmount='.$amount.'&language=1&tranIp='.$tranIp.'&transaction_receipt_url[preprod]=https%3A%2F%2Fpreprod.teatrosancarlo.it%2Fthank-you%2F%3F&transaction_ser_notify[preprod]=https%3A%2F%2Fpreprod.teatrosancarlo.it%2Fthank-you%2F%3F';
 
     // Check if the user is in preprod and redirect thank you page to preprod
@@ -773,7 +761,7 @@ function fun_emptyCart (){
         $set_expiry_response = curl_exec ( $set_expiry_curl );
         $err      = curl_error ( $set_expiry_curl );
         curl_close($set_expiry_curl);
-        
+
         $xml         = simplexml_load_string ( $set_expiry_response );
         $json        = json_encode ( $xml );
         $set_expiry_response = json_decode ( $json, TRUE );
@@ -785,12 +773,12 @@ function fun_emptyCart (){
     // MOD SARAH
     // Empty cart with woo commerce
     WC()->cart->empty_cart();
-    
+
     update_user_meta($user_id,'addToCartObject',array());
     update_user_meta($user_id,'transactionIds',array());
     update_user_meta( $user_id, 'subscriptionSeatList', array () );
     update_user_meta( $user_id, 'subscriptionOrderId', array () );
-    
+
     echo json_encode ( $response );
     wp_die ();
 }
@@ -844,7 +832,7 @@ function fun_getUserLogin (){
             $response[ 'error' ]            = "Email già esistente!!";
             echo json_encode ( $response );
             wp_die ();
-        }else if(username_exists($username)){      
+        }else if(username_exists($username)){
             $response[ 'error' ]            = "Il nome utente esiste già!!";
             echo json_encode ( $response );
             wp_die ();
@@ -931,15 +919,15 @@ function fun_checkUserEmail (){
     );
     $username            = !empty($_POST[ 'username' ]) ? $_POST[ 'username' ] : '';
     $email               = $_POST[ 'email' ];
-    
+
     if(email_exists($email)){
         $response[ 'error' ]            = __("Email already exists!!","stc-tickets");
-    }else if(username_exists($username)){      
+    }else if(username_exists($username)){
         $response[ 'error' ]            = __("The username already exists!!","stc-tickets");
     }else{
         $response[ 'status' ]            = true;
     }
-    
+
     echo json_encode ( $response );
     wp_die ();
 }
@@ -1044,10 +1032,10 @@ function fun_UpdateUserPhone (){
         $genratedOtp = $_SESSION["$email"];
         if($registerOtp === $genratedOtp){
             $otpMatched = true;
-            if(isset($_POST[ 'country_code' ])) {                
+            if(isset($_POST[ 'country_code' ])) {
                 update_user_meta( $current_user_id, 'country_code', $_POST[ 'country_code' ] );
             }
-            if(isset($_POST[ 'billing_phone' ])) {                
+            if(isset($_POST[ 'billing_phone' ])) {
                 $phone_updated = update_user_meta( $current_user_id, 'billing_phone', $_POST[ 'billing_phone' ] );
             }
         }else{
@@ -1096,7 +1084,7 @@ function fun_UpdateUserProfile() {
     $update_res = update_user_meta($user_id,'user_ip',$_SERVER['REMOTE_ADDR']);
     if( ! empty( $get_billing_phone ) && ! empty( $email ) ) {
         $response[ 'message' ]          = array ( $billing_phone, $email );
-        $response[ 'status' ]           = true;       
+        $response[ 'status' ]           = true;
     }
     echo json_encode( $response );
     wp_die();
@@ -1116,7 +1104,7 @@ function get_customers_list_fun() {
     $gatStartDate = str_replace('/', '-', $gatStartDate);
     $getEndDate = isset($_POST['endDate']) ? $_POST['endDate'] : '' ;
     $getEndDate = str_replace('/', '-', $getEndDate);
-    $tempStartDate = date("YmdHis", strtotime($gatStartDate));  
+    $tempStartDate = date("YmdHis", strtotime($gatStartDate));
     $tempEndDate = date("YmdHis", strtotime($getEndDate));
     $privacy_cookie = tempnam ("/tmp", "CURLCOOKIE");
     $privacy_curl = curl_init();
@@ -1168,7 +1156,7 @@ function get_customers_list_fun() {
     $response_xml           = simplexml_load_string ( $get_customer_curl_response );
     $response_json          = json_encode ( $response_xml );
     $customersData          = json_decode ( $response_json, TRUE );
-    
+
     if( $get_customer_curl_response ) {
         $response[ 'message' ] = array ( 'customersData' => $customersData, 'privacyData' => $privacyData);
         $response[ 'statue' ]  = true;
@@ -1191,7 +1179,7 @@ function import_customers_list_fun() {
     $gatStartDate = str_replace('/', '-', $gatStartDate);
     $getEndDate = isset($_POST['endDate']) ? $_POST['endDate'] : '' ;
     $getEndDate = str_replace('/', '-', $getEndDate);
-    $tempStartDate = date("YmdHis", strtotime($gatStartDate));  
+    $tempStartDate = date("YmdHis", strtotime($gatStartDate));
     $tempEndDate = date("YmdHis", strtotime($getEndDate));
     $privacy_cookie = tempnam ("/tmp", "CURLCOOKIE");
     $privacy_curl = curl_init();
@@ -1256,7 +1244,7 @@ function import_customers_list_fun() {
     //        echo "<pre>";
     //        print_r($customersData['rows']['row']);
     //        echo "</pre>";
-        
+
         $customers = $customersData['rows']['row'];
         $user_ids = array();
         if(!empty($customers)){
@@ -1301,7 +1289,7 @@ function import_customers_list_fun() {
             $response[ 'statue' ]  = true;
         }
     }
-    
+
     if( $get_customer_curl_response ) {
         $response[ 'message' ] = array ( 'customersData' => $customersData, 'privacyData' => $privacyData);
         $response[ 'statue' ]  = true;
@@ -1333,47 +1321,39 @@ function print_order_fun() {
     $print_count++;
     update_user_meta( $current_user->ID, 'print_count', $print_count );
 
+    $trcode = $_POST['transactionCode'];
+
+    $pdfApiUrl = API_HOST.'backend/backend.php?id=' . APIKEY . '&cmd=printAtHome&trcode='.$trcode.'&xml=0';
+
     $response = array (
         'message' => '',
         'status'  => false,
         'user_email' => $user_email,
+        'pdf_url' => $pdfApiUrl,
     );
-    
-    $order_id = $_POST['order_id'];
 
-    $pdfApiUrl = API_HOST.'backend/backend.php?id=' . APIKEY . '&cmd=printAtHome&trcode='.$order_id.'&xml=0';
-
-    // Make a request to the API and create a pdf file
-    // Creo un file pdf dalla risposta api
-    $pdf = file_get_contents($pdfApiUrl);
-    $response[ 'message' ] = $pdf;
-    $response[ 'status' ]  = true;
-    
     /** MOD SARAH **/
     $api_response = file_get_contents($pdfApiUrl);
-    $errmsg = array();
-    // $response_xml           = isset($api_response) && !empty($api_response)? simplexml_load_string ( $api_response ) : '';
-    // $response_xml = isset($api_response) && !empty($api_response) ? simplexml_load_string(file_get_contents(API_HOST.'backend/backend.php?id=' . APIKEY . '&cmd=printAtHome&trcode='.$order_id.'&xml=0')) : '';
-    // $response_json          = isset($response_xml) && !empty($response_xml) ? json_encode ( $response_xml ) : '';
-    // $apiData          = isset($response_json) && !empty($response_json) ?  json_decode ( $response_json, TRUE ) : array();
-    // if(!empty($apiData['@attributes'])){
-    //     if(!empty($apiData['@attributes']['errstring'])){
-    //         $errmsg = $apiData['@attributes']['errstring'];
-    //     }
-    // }
+    $apiData = simplexml_load_string($api_response);
+
+    //Check if apiData starts with $amp;lt; which is a special character
+    // $clean_apiData = $apiData.indexOf('&amp;lt;') == -1 ? '&amp;lt;'.$apiData : $apiData;
+    // <!-- simplexml_load_string(): Entity: line 1: parser error : Start tag expected, '&amp;lt;' not found (500 Internal Server Error) -->
+
+    $errmsg = '';
 
     // Check if ApiData has error messages
-    // Controllo se ApiData ha messaggi di errore
-    $apiData = json_decode($api_response, true);
-    if(!empty($apiData['@attributes'])){
-        if(!empty($apiData['@attributes']['errstring'])){
-            $errmsg = $apiData['@attributes']['errstring'];
+    $apiData = json_decode(json_encode($apiData), true);
+    if(isset($apiData['@attributes']) && !empty($apiData['@attributes'])){
+        if(isset($apiData['@attributes']['errstring']) && !empty($apiData['@attributes']['errstring'])){
+            // Decode special characters
+            $errmsg = html_entity_decode($apiData['@attributes']['errstring']);
         }
     }
 
     // Check if the response is successful and the content type is PDF
-    if ($api_response !== false && strpos($http_response_header[0], '200') !== false && empty($errmsg)) {
-        $fileName = dirname(__dir__) .'/pdf/order_'.$order_id.'.pdf';
+    if ($api_response !== false && empty($errmsg)) {
+        $fileName = dirname(__dir__) .'/pdf/order_'.$trcode.'.pdf';
 
         // Set headers for PDF download
         header('Content-Type: application/pdf');
@@ -1384,12 +1364,23 @@ function print_order_fun() {
     // Output the PDF content directly to the user
     //    echo $response;
     //    readfile($fileName);
-        $response[ 'message' ] =  get_site_url().'/wp-content/plugins/stc-tickets/pdf/order_'.$order_id.'.pdf';
+        $response[ 'message' ] =  get_site_url().'/wp-content/plugins/stc-tickets/pdf/order_'.$trcode.'.pdf';
         $response[ 'status' ]  = true;
+
+        // Check order status and update the order status
+        $orderID = $_SERVER['HTTP_REFERER'];
+        $orderID = explode('view-order/', $orderID);
+        $orderID = $orderID[1];
+        $order = wc_get_order( $orderID );
+        if ( !empty($order) ) {
+            $order->update_status( 'completed' );
+        }
     } else if(!empty($errmsg)){
         $response[ 'message' ] = $errmsg;
+        $response[ 'status' ]  = false;
     } else {
         $response[ 'message' ] = __('Failed to get the PDF from the API.','stc-tickets');
+        $response[ 'status' ]  = false;
     }
 
     // Create a log file with the number of prints
@@ -1408,7 +1399,7 @@ function print_order_fun() {
     $log = fopen($logFile, 'a');
     fwrite($log, '['.date('d/m/Y H:i:s').'] User: '.$user_email.' - Birthdate: '.$birthdate.' - Prints: '.$print_count.' - Result: '.$response['message'].PHP_EOL);
     fclose($log);
-    
+
     echo json_encode ( $response );
 
     wp_die ();
@@ -1425,10 +1416,10 @@ function get_barcodes_fun() {
         'message' => '',
         'status'  => false,
     );
-    
+
     $barcodes = array();
     $cartObject = WC()->cart->get_cart();
-    
+
     if(!empty($cartObject)){
         foreach ( $cartObject as $cart_item_key => $cart_item ) {
             $transaction_ids = $cart_item['transaction_ids'];
@@ -1442,7 +1433,7 @@ function get_barcodes_fun() {
                                 }
                             } else {
                                 $barcodes[] = $transaction_v['seatObject']['barcode'];
-                            }                            
+                            }
                         }
                     }
                 }
@@ -1453,12 +1444,12 @@ function get_barcodes_fun() {
     }else{
         $response[ 'message' ] = __("cart is empty",'stc-tickets');
     }
-    
+
     if(!empty($cartObject) && !empty($barcodes)){
         $response[ 'message' ] = $barcodes;
         $response[ 'status' ]  = true;
     }
-    
+
     echo json_encode ( $response );
     wp_die ();
 }
@@ -1513,7 +1504,7 @@ function delete_cart_tickets_fun() {
         $xml                 = simplexml_load_string( $set_expiry_response );
         $json                = json_encode( $xml );
         $set_expiry_response = json_decode( $json, TRUE );
-        
+
         $final_transaction_ids = array_filter( $transactionIds, function ($transaction) use ($delete_transaction_ids) {
                                     if( is_array( $transaction ) && array_key_first( $transaction ) == 'subscription_seat' ) {
                                         foreach ( $transaction[ 'subscription_seat' ] as $subscription_seat_key => $subscription_seat_value ) {
@@ -1530,7 +1521,7 @@ function delete_cart_tickets_fun() {
                                         }
                                     }
                                 } );
-                                
+
         if( ! empty( $cart ) ) {
             foreach ( $cart as $cart_item_key => $cart_item ) {
 //                $final_addToCartObject = $cart_item[ 'selected_seat_price' ][ 0 ];
@@ -1574,15 +1565,15 @@ function delete_cart_tickets_fun() {
     }else{
         $response[ 'message' ] = __("cart is empty",'stc-tickets');
     }
-    
+
     WC()->cart->set_session();
-    
+
     if(!empty($delete_transaction_ids)){
         $response[ 'message' ] = $delete_transaction_ids;
         $response[ 'set_expiry' ] = $set_expiry_response;
         $response[ 'status' ]  = true;
     }
-    
+
     echo json_encode ( $response );
     wp_die ();
 }
@@ -1599,7 +1590,7 @@ function subscription_check_fun() {
         'status'  => false,
     );
     $barcode = !empty($_POST['barcode']) ? $_POST['barcode'] : "" ;
-    
+
     if(!empty($barcode)){
         $sub_check_cookie = tempnam ("/tmp", "CURLCOOKIE");
 
@@ -1625,23 +1616,23 @@ function subscription_check_fun() {
         $xml              = simplexml_load_string( $subscription_response, 'SimpleXMLElement', LIBXML_NOCDATA );
         $subscriptionJson = json_encode( $xml );
         $subscriptionArr  = json_decode( $subscriptionJson, TRUE );
-        
+
     }else{
         $response[ 'message' ] = __("Barcode is empty",'stc-tickets');
     }
-    
+
     if(isset($subscriptionArr['@attributes']['errcode']) && isset($subscriptionArr['@attributes']['errstring'])){
         $response[ 'message' ] = $subscriptionArr['@attributes']['errstring'];
     }
     if(!empty($error_msg)){
         $response[ 'message' ] = $error_msg;
     }
-    
+
     if(!empty($subscriptionArr) && empty($response[ 'message' ]) ){
         $response[ 'message' ] = $subscriptionArr;
         $response[ 'status' ]  = true;
     }
-    
+
     echo json_encode ( $response );
     wp_die ();
 }
@@ -1658,7 +1649,7 @@ function checkRecaptcha_fun() {
         'status'  => false,
     );
     $recaptcha = !empty($_POST['recaptcha']) ? $_POST['recaptcha'] : "" ;
-    
+
     // reCAPTCHA validation
     if(!empty($recaptcha)) {
 
@@ -1676,11 +1667,192 @@ function checkRecaptcha_fun() {
                 $response[ 'status' ] = true;
             } else {
                 $response[ 'message' ] = __("Robot verification failed, please try again.",'stc-tickets');
-            }       
+            }
     } else{
         $response[ 'message' ] = __("Please check on the reCAPTCHA box.",'stc-tickets');
-    } 
-    
+    }
+
     echo json_encode ( $response );
     wp_die ();
 }
+
+/**
+ * Create a preorder on payment button click
+ * MOD SARAH
+ * 
+ * @return void
+ */
+function createPreorder_fun() {
+    $preorder_nonce = $_POST['preorder_nonce'];
+
+    if ( ! wp_verify_nonce( $preorder_nonce, 'preorder_nonce' ) ) {
+        wp_send_json_error( 'Invalid nonce' );
+    }
+
+    $order_id                   = '';
+    $user_id                    = get_current_user_id();
+
+    if( $user_id == 'undefined' || $user_id == 0 ) {
+        $response = array (
+            'message' => 'User not logged in',
+            'status'  => false,
+        );
+        echo json_encode( $response );
+        wp_die();
+    }
+
+    $transactionCode            = isset( $_POST[ 'transactionCode' ] ) ? $_POST[ 'transactionCode' ] : '';
+    $addToCartObject            = get_user_meta( $user_id, 'addToCartObject', true );
+    $transactionIds             = get_user_meta( $user_id, 'transactionIds', true );
+    $transactionCodeArr         = explode( ",", $transactionCode );
+    $confirmed_order            = array ();
+    $confirmed_order_arr        = array ();
+    $confirmed_order_new        = array ();
+    $final_confirmed_order_arr  = array ();
+    $subscriptionOrderId        = get_user_meta ( $user_id, 'subscriptionOrderId',true );
+
+    $get_confirmed_preorder_arr    = array ();
+
+    $current_user      = wp_get_current_user();
+    $user_firstname    = $current_user->user_firstname;
+    $user_lastname     = $current_user->user_lastname;
+    $user_email        = $current_user->user_email;
+    $billing_address_1 = get_user_meta( $current_user->ID, 'billing_address_1', true );
+    $billing_address_2 = get_user_meta( $current_user->ID, 'billing_address_2', true );
+    $billing_city      = get_user_meta( $current_user->ID, 'billing_city', true );
+    $billing_postcode  = get_user_meta( $current_user->ID, 'billing_postcode', true );
+    $billing_country   = get_user_meta( $current_user->ID, 'billing_country', true );
+    $billing_state     = get_user_meta( $current_user->ID, 'billing_state', true );
+    $billing_phone     = get_user_meta( $current_user->ID, 'billing_phone', true );
+
+    global $woocommerce;
+    $address = array (
+        'first_name' => $user_firstname,
+        'last_name'  => $user_lastname,
+        'email'      => $user_email,
+        'phone'      => $billing_phone,
+        'address_1'  => $billing_address_1,
+        'address_2'  => $billing_address_2,
+        'city'       => $billing_city,
+        'state'      => $billing_state,
+        'postcode'   => $billing_postcode,
+        'country'    => $billing_country
+    );
+    $get_current_user = wp_get_current_user();
+    $current_user_email = $get_current_user->user_email;
+    $current_user_id = $get_current_user->ID;
+    $cart = WC()->cart;
+
+    if( ! empty( $cart ) && ! empty( $addToCartObject ) ) {
+        $get_confirmed_order_arr = array ();
+        $get_final_confirmed_order_arr = array ();
+        $finalTransactionIds = array ();
+
+        if (!$subscriptionOrderId) {
+            // Crate a new order
+            $checkout = WC()->checkout();
+            $order_id = $checkout->create_order( array('customer_id'=>$current_user_id,'billing_email'=>$current_user_email,'payment_method' => 'online') );
+            $order = wc_get_order( $order_id );
+            if ( ! $order ) return false;
+
+            $order = wc_get_order( $order->get_id() );
+            $order->set_customer_id( $current_user_id );
+            $order->set_billing_email( $current_user_email );
+            $order->set_payment_method( 'online' );
+            $order_id = $order->get_id();
+
+            update_post_meta( $order_id, '_customer_user', get_current_user_id() );
+            $order->set_address( $address, 'billing' );
+            $order->calculate_totals();
+
+            if( ! empty( $transactionCodeArr ) || ! empty( $confirmedOrderObjectBefore ) ) {
+                if( ! empty( $transactionIds ) ) {
+                    $confirmed_order = $transactionIds;
+                    foreach ( $confirmed_order as $confirmed_order_key => $confirmed_order_value ) {
+                        if( is_array( $confirmed_order_value ) && array_key_first( $confirmed_order_value ) == 'subscription_seat' ) {
+                            foreach($confirmed_order_value['subscription_seat'] as $subscription_seat_k => $subscription_seat_v){
+                                $zone_arr                             = array ();
+                                $ticketName                           = $subscription_seat_v[ 'ticketName' ];
+                                $showDate                             = $subscription_seat_v[ 'showDate' ];
+                                $zoneName                             = $subscription_seat_v[ 'zoneName' ];
+                                $zoneId                               = $subscription_seat_v[ 'zoneId' ];
+                                $seats                                = $subscription_seat_v[ 'seats' ];
+                                $zone_arr[ 'zoneName' ]               = $zoneName;
+                                $zone_arr[ 'zoneId' ]                 = $zoneId;
+                                $zone_arr[ 'seats' ]                  = $seats;
+                                $confirmed_order_arr[ $ticketName ][] = $zone_arr;
+                            }
+                        }else{
+                            $zone_arr                             = array ();
+                            $ticketName                           = $confirmed_order_value[ 'ticketName' ];
+                            $showDate                             = $confirmed_order_value[ 'showDate' ];
+                            $zoneName                             = $confirmed_order_value[ 'zoneName' ];
+                            $zoneId                               = $confirmed_order_value[ 'zoneId' ];
+                            $seats                                = $confirmed_order_value[ 'seats' ];
+                            $zone_arr[ 'zoneName' ]               = $zoneName;
+                            $zone_arr[ 'zoneId' ]                 = $zoneId;
+                            $zone_arr[ 'seats' ]                  = $seats;
+                            $confirmed_order_arr[ $ticketName ][] = $zone_arr;
+                        }
+                    }
+                }
+                if( ! empty( $confirmedOrderObjectBefore ) ) {
+                    $final_confirmed_order_arr = array_merge_recursive( $confirmedOrderObjectBefore, $confirmed_order_arr );
+                }
+                $get_confirmed_order_arr[$order_id]       = get_confirmed_order_arr_fun( $confirmed_order_arr );
+                $get_final_confirmed_order_arr[$order_id] = get_confirmed_order_arr_fun( $final_confirmed_order_arr );
+            }
+            if( ! empty( $beforeTransactionIds ) ) {
+                $get_filtered_transaction = array_filter( $beforeTransactionIds, function ($var) use ($transactionCodeArr) {
+                    if( in_array( $var, $transactionCodeArr ) ) {
+                        return($var);
+                    }
+                } );
+            } else {
+                $get_filtered_transaction = '';
+            }
+
+            if( ! empty( $get_filtered_transaction ) ) {
+                update_user_meta( $user_id, 'finalConfirmedOrder', $get_final_confirmed_order_arr );
+                $finalTransactionIds = array_merge( $beforeTransactionIds, $transactionCodeArr );
+                update_user_meta( $user_id, 'finalTransactionIds', $finalTransactionIds );
+            } else {
+                update_user_meta( $user_id, 'finalConfirmedOrder', $get_confirmed_order_arr );
+                update_user_meta( $user_id, 'finalTransactionIds', $transactionCodeArr );
+            }
+
+            update_user_meta( $user_id, 'preOrder', $get_confirmed_order_arr );
+            $order->add_meta_data( 'preOrderObject', $get_confirmed_order_arr, true );
+            $order->add_meta_data( 'transactionIds', $transactionIds, true );
+            $order->add_meta_data( 'orderTransactionCodeArr', $transactionCodeArr, true );
+            $order->save();
+            $order_id = $order->get_id();
+
+            $current_order = $order;
+
+            // Get data from the current order
+            $transactionIds = $current_order->get_meta( 'transactionIds', true, 'view' ) !== null ? $current_order->get_meta( 'transactionIds', true, 'view' ) : array();
+            // Merge order data for log
+            $order_array = array();
+            $order_array[$order_id]['transactionIds'] = $transactionIds;
+            $order_array[$order_id]['orderdata'] = $current_order;
+
+            $jsonOrderArray = json_encode($order_array);
+
+            $log_message = "current pre order : " . $current_order;
+            error_log( $log_message, 3, WP_CONTENT_DIR . '/pre_order_detail.log' );
+        }
+
+    }
+    $preOrderObject = get_user_meta( $user_id, 'preOrder', true );
+
+    // Send json ajax response
+    $response = array (
+        'order_id' => $order_id,
+        'status'  => true,
+    );
+
+    wp_send_json_success( $response );
+}
+add_action( 'wp_ajax_createPreorder', 'createPreorder_fun' );
+add_action( 'wp_ajax_nopriv_createPreorder', 'createPreorder_fun' );

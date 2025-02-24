@@ -22,14 +22,6 @@ function sptTicket_location_listing_callback() {
         )
     );
     $list_query = new WP_Query( $list_args );
-//    $r = get_option('start_cron_ticket');
-//    $rs = get_option('ticket_cur_page');
-//    echo "<pre>";
-//    print_r($r);
-//    echo "</pre>";
-//    echo "<pre>";
-//    print_r($rs);
-//    echo "</pre>";
     ?>
     <div class="show-listing-wrappper">
         <div class="show-listing-wrap">
@@ -100,9 +92,14 @@ function stcTickets_spettacolo_cart_callback() {
     $totalPrice     = 0;
     $totalQty       = 0;
     $subclass       = $subscriptionOrderId ? ' subid-'.$subscriptionOrderId : '';
-//    echo "<pre>";
-//    print_r($get_user_meta);
-//    echo "</pre>";
+
+    // test
+    if(isset($_GET['print']) && $_GET['print'] == '1'){
+        echo '<pre>';
+        print_r($get_user_meta);
+        print_r($transactionIds);
+        echo '</pre>';
+    }
     ?>
     <div class="spettacolo-cart-wrapper<?php echo $subclass;?>">
         <div class="container">
@@ -190,9 +187,7 @@ function stcTickets_spettacolo_checkout_callback() {
     $subscriptionOrderId = get_user_meta ( $user_id, 'subscriptionOrderId',true );
     $totalPrice    = 0;
     $totalQty      = 0;
-//    echo "<pre>";
-//    print_r($get_user_meta);
-//    echo "</pre>";
+
     ?>
     <div class="spettacolo-cart-wrapper spettacolo-checkout-wrapper subid-<?php echo $subscriptionOrderId;?>">
         <div class="container">
@@ -272,7 +267,9 @@ function stcTickets_spettacolo_thankyou_callback() {
     $transactionCode = isset( $_GET[ 'transactionCode' ] ) ? $_GET[ 'transactionCode' ] : '';
     $paym_code = isset( $_GET[ 'paym_code' ] ) ? $_GET[ 'paym_code' ] : '';
     $xpp_restat = isset( $_GET[ 'xpp_restat' ] ) ? $_GET[ 'xpp_restat' ] : '';
-    if($xpp_restat == 1){
+    $order_id = '';
+
+    if($xpp_restat == 1){ // payment success
         $user_id         = get_current_user_id();
         if( $user_id == 'undefined' || $user_id == 0 ) {
             return __("No user is looged in",'stc-tickets');
@@ -286,6 +283,14 @@ function stcTickets_spettacolo_thankyou_callback() {
         $confirmed_order_new        = array ();
         $final_confirmed_order_arr  = array ();
         $confirmedOrderObjectBefore = get_user_meta( $user_id, 'finalConfirmedOrder', true );
+        $preOrderObject             = array();
+
+        // test
+        if(isset($_GET['order_id'])){
+            $order_id = $_GET['order_id'];
+            $preOrderObject = get_post_meta( $order_id, 'preOrderObject', true );
+            $transactionIds = get_post_meta( $order_id, 'transactionIds', true );
+        }
 
         if( ! empty( $transactionCodeArr ) || ! empty( $confirmedOrderObjectBefore ) ) {
             if( ! empty( $transactionIds ) ) {
@@ -375,9 +380,9 @@ function stcTickets_spettacolo_thankyou_callback() {
         $current_user_email = $get_current_user->user_email;
         $current_user_id = $get_current_user->ID;
         $cart = WC()->cart;
+        
         if( ! empty( $cart ) && ! empty( $addToCartObject ) ) {
             
-            $order_id = '';
             if ($subscriptionOrderId) {
                 // Get the previous order
                 $subscription_order = wc_get_order($subscriptionOrderId);
@@ -402,43 +407,70 @@ function stcTickets_spettacolo_thankyou_callback() {
                 // Save the changes to the previous order
                 $subscription_order->save();
                 $order_id = $subscriptionOrderId;
+
+                $log_message = "subscription order : " . $subscription_order;
+                error_log( $log_message, 3, WP_CONTENT_DIR . '/subscription_order_detail.log' );
+
             } else {
-                // Crate a new order
-                $checkout = WC()->checkout();
-                $order_id = $checkout->create_order( array('customer_id'=>$current_user_id,'billing_email'=>$current_user_email,'payment_method' => 'online') );
-                $order = wc_get_order( $order_id );
-                if ( ! $order ) return false;
+                // retrieve order id from preorder customer meta
+                $preOrder   = get_user_meta( $current_user_id, 'preOrder', true );
+                $order_id   = is_array($preOrder) && !empty($preOrder) ? array_key_first($preOrder) : '';
+                $order      = !empty($order_id) ? wc_get_order( $order_id ) : '';
 
-                $order = wc_get_order( $order->get_id() );
-                $order->set_customer_id( $current_user_id );
-                $order->set_billing_email( $current_user_email );
-                $order->set_payment_method( 'online' );
-                $order_id = $order->get_id();
-                
-                update_post_meta( $order_id, '_customer_user', get_current_user_id() );
-                $order->set_address( $address, 'billing' );
-                $order->calculate_totals();
-                $order->payment_complete();
-                update_user_meta( $user_id, 'confirmedOrder', $get_confirmed_order_arr );
-                $finalTransactionIds = get_user_meta( $user_id, 'finalTransactionIds', true );
-                $order->add_meta_data( 'confirmedOrderObject', $get_confirmed_order_arr, true );
-                $order->add_meta_data( 'transactionIds', $transactionIds, true );
-                $order->add_meta_data( 'orderTransactionCodeArr', $transactionCodeArr, true );
-                $order->add_meta_data( 'booked_subs_seats', $subscriptionSeatList, true );
-                $order->add_meta_data( 'subscriptionOrderId', $subscriptionOrderId, true );
-                $order->update_status( "completed" );
-                $order->save();
-                $order_id = $order->get_id();
+                if ( ! $order ) {
 
-                // Save usermeta with order id and barcode
-                // $order_barcode = get_order_barcode($order_id);
-                // $subscription_order_barcode = get_user_meta( $user_id, 'subscription_order_barcode', true ) ? get_user_meta( $user_id, 'subscription_order_barcode', true ) : array();
+                    // Crate a new order
+                    $checkout = WC()->checkout();
+                    $order_id = $checkout->create_order( array('customer_id'=>$current_user_id,'billing_email'=>$current_user_email,'payment_method' => 'online') );
+                    $order = wc_get_order( $order_id );
+                    if ( ! $order ) return false;
 
-                // $subscription_order_barcode[$order_barcode] = array(
-                //     'order_id' => $order_id,
-                //     'order_date' => date('Y-m-d H:i:s'),
-                //     'order_products' => $get_confirmed_order_arr,
-                // );
+                    $order = wc_get_order( $order->get_id() );
+                    $order->set_customer_id( $current_user_id );
+                    $order->set_billing_email( $current_user_email );
+                    $order->set_payment_method( 'online' );
+                    $order_id = $order->get_id();
+                    
+                    update_post_meta( $order_id, '_customer_user', get_current_user_id() );
+                    $order->set_address( $address, 'billing' );
+                    $order->calculate_totals();
+                    $order->payment_complete();
+                    update_user_meta( $user_id, 'confirmedOrder', $get_confirmed_order_arr );
+                    $finalTransactionIds = get_user_meta( $user_id, 'finalTransactionIds', true );
+                    $order->add_meta_data( 'confirmedOrderObject', $get_confirmed_order_arr, true );
+                    $order->add_meta_data( 'transactionIds', $transactionIds, true );
+                    $order->add_meta_data( 'orderTransactionCodeArr', $transactionCodeArr, true );
+                    $order->add_meta_data( 'booked_subs_seats', $subscriptionSeatList, true );
+                    $order->add_meta_data( 'subscriptionOrderId', $subscriptionOrderId, true );
+                    $order->update_status( "completed" );
+                    $order->save();
+                    $order_id = $order->get_id();
+
+                    $current_order = $order;
+
+                    $subscription_order_id = $current_order->get_meta( 'subscriptionOrderId' );
+                    // Get data from the current order
+                    $transactionIds = $current_order->get_meta( 'transactionIds', true, 'view' ) !== null ? $current_order->get_meta( 'transactionIds', true, 'view' ) : array();
+                    // Merge order data for log
+                    $order_array = array();
+                    $order_array[$order_id]['transactionIds'] = $transactionIds;
+                    $order_array[$order_id]['orderdata'] = $current_order;
+                    $order_array[$order_id]['subscription_order_id'] = $subscription_order_id;
+
+                    $jsonOrderArray = json_encode($order_array);
+
+                    $log_message = "current order : " . $current_order;
+                    error_log( $log_message, 3, WP_CONTENT_DIR . '/order_detail.log' );
+                    $log_message_2 = "data order : " . $jsonOrderArray;
+                    error_log( $log_message_2, 3, WP_CONTENT_DIR . '/data_order_detail.log' );
+                } 
+                else // there is a preOrder so I update that order
+                {
+                    $order->payment_complete();
+                    $order->update_status( "completed" );
+                    $order->save();
+                    $preOrderObject = get_post_meta( $order_id, 'preOrderObject', true );
+                }
             }
 
             $cart->empty_cart();
@@ -446,6 +478,7 @@ function stcTickets_spettacolo_thankyou_callback() {
             update_user_meta( $user_id, 'transactionIds', array () );
             update_user_meta( $user_id, 'subscriptionSeatList', array () );
             update_user_meta( $user_id, 'subscriptionOrderId', array () );
+            update_user_meta( $user_id, 'preOrder', array () );
 
             // 2024-11-18 mailchimp subscription start
             if(!empty($user_email)) {
@@ -472,58 +505,68 @@ function stcTickets_spettacolo_thankyou_callback() {
                 <div class="spettacolo-cart-inner spettacolo-thank-you-inner">
                     <div class="spettacolo-tickets">
                         <?php
-                        if( ! empty( $confirmedOrderObject ) ) {
+                        if( ! empty( $preOrderObject ) ) {
                             // test
                             if(isset($_GET['print']) && $_GET['print'] == '1'){
                                 // echo '<pre>';
                                 // print_r($order);
                                 // echo '</pre>';
                                 echo '<pre>';
-                                print_r($confirmedOrderObject);
+                                print_r($preOrderObject);
+                                print_r($transactionIds);
                                 echo '</pre>';
                             }
-                            foreach ( $confirmedOrderObject as $meta_key => $meta_value ) {
-                                $ticket_title = $meta_key;
-                                $showDate     = isset($meta_value[ 'showDate' ]) ? $meta_value[ 'showDate' ] : '';
+                            
+                            foreach ( $transactionIds as $key => $value ) {
+                                $ticket_title = $value[ 'ticketName' ];
+                                $showDate = $value[ 'showDate' ];
+                                $zoneId = $value[ 'zoneId' ];
+                                $zoneName = $value[ 'zoneName' ];
+                                $reductions = $value[ 'seats' ];
                                 ?>
+                                
                                 <div class="events-wrapper">
-                                    <div class="ticket-title">
-                                        <h2><?php echo $ticket_title; ?></h2>
-                                        <div class="data">
-                                            <p><?php echo $showDate; ?></p>
-                                        </div>
-                                    </div>
-                                    <?php
-                                    if( ! empty( $meta_value ) ) {
-                                        foreach ( $meta_value as $meta_k => $meta_v ) {
-                                            $zoneName   = $meta_v[ 'zoneName' ];
-                                            $zoneId     = $meta_v[ 'zoneId' ];
-                                            $reductions = $meta_v[ 'seats' ];
-                                            ?>
-                                            <div class="ticket-zone">
-                                                <div class="zone-title" data-zoneId="<?php echo $zoneId; ?>">
-                                                    <h4><?php echo $zoneName; ?></h4>
-                                                </div>
-                                                <ul>
-                                                    <?php
-                                                    foreach ( $reductions as $reductions_key => $reductions_value ) {
-                                                        $reductionName     = $reductions_value[ 'reductionName' ];
-                                                        $reductionId       = $reductions_value[ 'reductionId' ];
-                                                        $reductionQuantity = $reductions_value[ 'reductionQuantity' ];
-                                                        $reductionPrice    = $reductions_value[ 'reductionPrice' ];
-                                                        ?>
 
-                                                        <li><?php echo $reductionName; ?> <span>(x<?php echo $reductionQuantity; ?>)</span> </li>                                                    
-                                                        <?php
-                                                    }
-                                                    ?>
-                                                </ul>
-                                            </div>
+                                <div class="ticket-title">
+                                    <h2><?php echo $ticket_title; ?></h2>
+                                    <p><?php echo $showDate; ?></p>
+                                </div>
+                                <div class="ticket-zone">
+                                    <div class="zone-title" data-zoneId="<?php echo $zoneId; ?>">
+                                        <h4><?php echo $zoneName; ?></h4>
+                                    </div>
+                                    <ul>
+                                        <?php
+                                        foreach ( $reductions as $reductions_key => $reductions_value ) {
+                                            $reductionName     = $reductions_value[ 'reductionName' ];
+                                            $reductionId       = $reductions_value[ 'reductionId' ];
+                                            $reductionQuantity = $reductions_value[ 'reductionQuantity' ];
+                                            $reductionPrice    = $reductions_value[ 'reductionPrice' ];
+                                            ?>
+
+                                            <li><?php echo $reductionName; ?> <span>(x<?php echo $reductionQuantity; ?>)</span> </li>                                                    
                                             <?php
                                         }
-                                    }
-                                    ?>
+                                        ?>
+                                    </ul>
                                 </div>
+                                </div>
+                                <?php
+                            }
+                                        
+
+                            // Add button to go to my account page with order details
+                            if ($order_id) {
+                                $redirect_url = wc_get_endpoint_url( 'view-order', $order_id, wc_get_page_permalink( 'myaccount' ) );
+                                ?>
+                                <div class="my-account-btn">
+                                    <a href="#" onclick="gotoOrder()" class="woocommerce-button button view"><?php _e('View order details & print tickets','stc-tickets'); ?></a>
+                                </div>
+                                <script>
+                                    function gotoOrder(){
+                                        window.location.href = '<?php echo $redirect_url; ?>';
+                                    }
+                                </script>
                                 <?php
                             }
                         }
@@ -1226,15 +1269,17 @@ function get_confirmed_order_arr_fun($confirmed_order_array) {
             if(!empty($confirmed_order_arr_value)) {                
                 $zone_arr_new = array ();
                 foreach ( $confirmed_order_arr_value as $confirmed_order_arr_k => $confirmed_order_arr_v ) {
-                    $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'zoneName' ] = $confirmed_order_arr_v[ 'zoneName' ];
-                    $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'zoneId' ]   = $confirmed_order_arr_v[ 'zoneId' ];
-                    // Add the show date
-                    $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'showDate' ] = isset($confirmed_order_arr_v[ 'showDate' ]) ? $confirmed_order_arr_v[ 'showDate' ] : '';
-                    if( ! empty( $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'seats' ] ) ) {
-                        $temp_zone_arr                                                 = array_merge( $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'seats' ], $confirmed_order_arr_v[ 'seats' ] );
-                        $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'seats' ] = $temp_zone_arr;
-                    } else {
-                        $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'seats' ] = $confirmed_order_arr_v[ 'seats' ];
+                    if (isset($confirmed_order_arr_v[ 'zoneId' ])) {
+                        $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'zoneName' ] = isset($confirmed_order_arr_v[ 'zoneName' ]) ? $confirmed_order_arr_v[ 'zoneName' ] : '';
+                        $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'zoneId' ]   = isset($confirmed_order_arr_v[ 'zoneId' ]) ? $confirmed_order_arr_v[ 'zoneId' ] : '';
+                        // Add the show date
+                        $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'showDate' ] = isset($confirmed_order_arr_v[ 'showDate' ]) ? $confirmed_order_arr_v[ 'showDate' ] : '';
+                        if( ! empty( $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'seats' ] ) ) {
+                            $temp_zone_arr                                                 = array_merge( $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'seats' ], $confirmed_order_arr_v[ 'seats' ] );
+                            $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'seats' ] = $temp_zone_arr;
+                        } else {
+                            $zone_arr_new[ $confirmed_order_arr_v[ 'zoneId' ] ][ 'seats' ] = $confirmed_order_arr_v[ 'seats' ];
+                        }
                     }
                 }
                 $confirmed_order_array[ $confirmed_order_arr_key ] = array_values( $zone_arr_new );
@@ -1419,7 +1464,8 @@ function stcTickets_get_country_code_options_fun() {
     <option data-countryCode="PF" value="689">French Polynesia (+689)</option>
     <option data-countryCode="GA" value="241">Gabon (+241)</option>
     <option data-countryCode="GM" value="220">Gambia (+220)</option>
-    <option data-countryCode="GE" value="7880">Georgia (+7880)</option>
+    <?php //<option data-countryCode="GE" value="7880">Georgia (+7880)</option> ?>
+    <option data-countryCode="GE" value="995">Georgia (+995)</option>
     <option data-countryCode="DE" value="49">Germany (+49)</option>
     <option data-countryCode="GH" value="233">Ghana (+233)</option>
     <option data-countryCode="GI" value="350">Gibraltar (+350)</option>

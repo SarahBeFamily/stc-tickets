@@ -3,6 +3,9 @@ var mouseY = '';
 var cart_counter_flag = true;
 var cart_count = 0;
 const developmentMode = (STCTICKETSPUBLIC.siteurl).includes('-dev') ? true : false;
+let loadingArray = {},
+	id_var = 0,
+    language = document.documentElement.lang;
 
 console.log(developmentMode);
 jQuery(document).ready(function ($) {
@@ -359,29 +362,29 @@ jQuery(document).ready(function ($) {
             return false;
         }
         let ajax_data = {
-                    action: 'getBookingCart',
-                    addToCart: addToCart,
-                    vcode: vcode,
-                    pcode: pcode,
-                    regData: regData,
-                    manualSelection: manualSelection,
-                    subscription: subscription,
-                    barcode: barcode,
-                    subscription_list: subscription_list,
-                    orderId:orderId,
-                    show_date:showDate,
-                };
+            action: 'getBookingCart',
+            addToCart: addToCart,
+            vcode: vcode,
+            pcode: pcode,
+            regData: regData,
+            manualSelection: manualSelection,
+            subscription: subscription,
+            barcode: barcode,
+            subscription_list: subscription_list,
+            orderId:orderId,
+            show_date:showDate,
+        };
         if (profile_status == 'complete') {
                 
             jQuery.ajax({
                 url: STCTICKETSPUBLIC.ajaxurl,
                 method: 'post',
                 beforeSend: function () {
-                    jQuery( "body" ).css('opacity', '0.2');
+                    jQuery('body').addClass('loading');
+                    progressLoading(0, 100);
                 },
                 data: ajax_data,
                 success: function (data) {
-                    jQuery( "body" ).css('opacity', '1');
                     var responseData = JSON.parse(data);
                     if (responseData.status) {
                         console.log(responseData.message);
@@ -390,10 +393,10 @@ jQuery(document).ready(function ($) {
                         }
                         updateCookie('remainingSeats', encodeURIComponent(remainingSeats), 1);
                         window.location.href = STCTICKETSPUBLIC.siteurl + "/" + STCTICKETSPUBLIC.cartSlug;
-
-//                        window.location.href = STCTICKETSPUBLIC.siteurl + "/cart";
-                        //                    window.location.href = STCTICKETSPUBLIC.siteurl + "/spettacolo-cart";
                     }else{
+                        jQuery('body').removeClass('loading');
+                        progressLoading('clear');
+
                         addToCart = {};
                         if(jQuery(document).find('.selected-seat-row').length > 0){
                             jQuery(document).find('.selected-seat-row').each(function () {
@@ -431,62 +434,21 @@ jQuery(document).ready(function ($) {
         }
     });
     
-//    jQuery(document).on('click', '.cart-buy-btn-extra', function () {
-//        var subscription_list = [];
-//        if(jQuery(document).find('.select-box-form').length > 0){
-//            jQuery(document).find('.select-box-form .event-ticketlist').each(function(){
-//                var reduction_detail = new Object();
-//                reduction_detail.reductionId = jQuery(this).find('.seat-name').attr('data-reductionId');
-//                reduction_detail.zoneId = jQuery(this).find('.seat-name').attr('data-zoneId');
-//                reduction_detail.zoneName = jQuery(this).find('.seat-name').attr('data-zoneName');
-//                reduction_detail.subscription = jQuery(this).find("#subscription-code option:selected").val();
-//                subscription_list.push(reduction_detail);
-//            });
-//            console.log(subscription_list);            
-//        }
-//    });
-//    jQuery(document).on('click','.checkout-btn',function(){
-//        var totalPrice = jQuery('.ticket-total-wrap .total-price').attr('data-price');
-//        var totalQuantity = jQuery('.ticket-total-wrap .total-qty').attr('data-qty');
-//        
-//        jQuery.ajax({
-//            url: STCTICKETSPUBLIC.ajaxurl,
-//            method: 'post',
-//            data: {
-//                action: 'getCheckout',
-//                totalPrice : totalPrice,
-//                totalQuantity : totalQuantity
-//            },
-//            success: function (data) {
-////                    console.log(data);
-//                var responseData = JSON.parse(data);
-//                if(responseData.statue){
-//                    console.log(responseData.message);
-//                    var responseArr = responseData.message;
-//                    var redirecturl = responseArr.redirecturl
-//                    console.log(redirecturl);
-//                    if(redirecturl){
-//                        window.location.href = redirecturl;
-//                    }
-//                }
-//            },
-//            error: function (request, status, error) {
-//                console.log(error);
-//            }
-//        });
-//    });
     jQuery(document).on('click', '.empty-cart-btn', function () {
         jQuery.ajax({
             url: STCTICKETSPUBLIC.ajaxurl,
             method: 'post',
             beforeSend: function () {
-                jQuery( "body" ).css('opacity', '0.2');
+                jQuery('body').addClass('loading');
+                progressLoading(0, 50);
             },
             data: {
                 action: 'emptyCart'
             },
             success: function (data) {
-                jQuery( "body" ).css('opacity', '1');
+                jQuery('body').removeClass('loading');
+                progressLoading('clear');
+
                 var responseData = JSON.parse(data);
                 if (responseData.status) {
                     console.log(responseData.message);
@@ -500,9 +462,7 @@ jQuery(document).ready(function ($) {
         });
     });
     jQuery(document).on('click', '.woocommerce-cart-form .cart_item .product-remove a', function () {
-//        jQuery('.empty-cart-btn').click();
         jQuery(document).find('.empty-cart-btn').trigger("click");
-//        console.log('empty-cart-btn clicked');
     });
     if (jQuery('.wc-spettacolo-cart-wrapper').length > 0) {
         jQuery('body').addClass('wc-spettacolo-cart-body');
@@ -530,14 +490,17 @@ jQuery(document).ready(function ($) {
                 url: STCTICKETSPUBLIC.ajaxurl,
                 method: 'post',
                 beforeSend: function () {
-                    jQuery( "body" ).css('opacity', '0.2');
+                    jQuery('body').addClass('loading');
+                    progressLoading(0, 100);
                 },
                 data: {
                     action: 'checkRecaptcha',
                     recaptcha:recaptcha
                 },
                 success: function (data) {
-                    jQuery( "body" ).css('opacity', '1');
+                    // jQuery('body').removeClass('loading');
+                    // progressLoading('clear');
+
                     var responseData = JSON.parse(data);
                     if (responseData.status) {
                         console.log(responseData.message);
@@ -550,36 +513,58 @@ jQuery(document).ready(function ($) {
                             }
                         });
                         if (valid == false) {
-                //            alert('per favore inserisci i tuoi dati');
+                            jQuery('body').removeClass('loading');
+                            progressLoading('clear');
+
                             jQuery(document).find('#order_review').append('<p style="color:red;">per favore inserisci i tuoi dati</p>');
                             jQuery(document).find('#order_review .checkout-error').hide();
                         } else {
                             jQuery.ajax({
                                 url: STCTICKETSPUBLIC.ajaxurl,
                                 method: 'post',
-                                beforeSend: function () {
-                                    jQuery( "body" ).css('opacity', '0.2');
-                                },
+                                // beforeSend: function () {
+                                //     jQuery( "body" ).css('opacity', '0.2');
+                                // },
                                 data: {
                                     action: 'getCheckout',
                                 },
                                 success: function (data) {
-                                    jQuery( "body" ).css('opacity', '1');
+                                    
                                     var responseData = JSON.parse(data);
                                     console.log(responseData);
                                     if (responseData.status) {
                                         console.log(responseData.message);
                                         var responseArr = responseData.message;
                                         var redirecturl = responseArr.redirecturl
-                                        // ATTENZIONE SARAH - redirecturl
-                                        console.log(redirecturl);
-                                        if (redirecturl) {
-                                            window.location.href = redirecturl;
-                                        }
+                                        // First create the preorder
+                                        jQuery.ajax({
+                                            url: STCTICKETSPUBLIC.ajaxurl,
+                                            method: 'post',
+                                            data: {
+                                                action: 'createPreorder',
+                                                preorder_nonce: STCTICKETSPUBLIC.preorder_nonce,
+                                                transactionCode: responseArr.paym_code,
+                                            },
+                                            success: function (data) {
+                                                // jQuery( "body" ).css('opacity', '1');
+                                                // console.log(redirecturl);
+                                                if (redirecturl) {
+                                                    console.log('redirecting to payment page');
+                                                    window.location.href = redirecturl;
+                                                }
+                                                
+                                            },
+                                            error: function (request, status, error) {
+                                                console.log(error);
+                                            }
+                                        });
                                     } else {
                                         console.log(responseData.message['@attributes']);
                                         let responseError = responseData.message['@attributes'];
                                         if(responseError.errcode){
+                                            jQuery('body').removeClass('loading');
+                                            progressLoading('clear');
+
                                             if(jQuery(document).find('#order_review .checkout-error').length > 0){
                                                 jQuery(document).find('#order_review .checkout-error').text(stcTicketsText.str_8 + (responseError.hasOwnProperty ? ' : '+responseError.errstring : ''));                            
                                             }else{
@@ -594,6 +579,9 @@ jQuery(document).ready(function ($) {
                             });
                         }
                     } else {
+                        jQuery('body').removeClass('loading');
+                        progressLoading('clear');
+
                         console.log(responseData.message);
                         let responseError = responseData.message;
                         if(responseError){
@@ -614,24 +602,52 @@ jQuery(document).ready(function ($) {
                 url: STCTICKETSPUBLIC.ajaxurl,
                 method: 'post',
                 beforeSend: function () {
-                    jQuery( "body" ).css('opacity', '0.2');
+                    // jQuery( "body" ).css('opacity', '0.2');
+                    jQuery('body').addClass('loading');
+                    progressLoading(0, 100);
                 },
                 data: {
                     action: 'getCheckout',
                 },
                 success: function (data) {
-                    jQuery( "body" ).css('opacity', '1');
                     var responseData = JSON.parse(data);
                     console.log(responseData);
                     if (responseData.status) {
                         console.log(responseData.message);
                         var responseArr = responseData.message;
                         var redirecturl = responseArr.redirecturl
-                        // ATTENZIONE SARAH - redirecturl
-                        console.log(redirecturl);
-                        if (redirecturl) {
-                            window.location.href = redirecturl;
-                        }
+                        // First create the preorder
+                        jQuery.ajax({
+                            url: STCTICKETSPUBLIC.ajaxurl,
+                            method: 'post',
+                            data: {
+                                action: 'createPreorder',
+                                preorder_nonce: STCTICKETSPUBLIC.preorder_nonce,
+                                transactionCode: responseArr.paym_code,
+                            },
+                            success: function (data) {
+                                jQuery('body').removeClass('loading');
+                                progressLoading('clear');
+                                
+                                console.log(data);
+                                console.log(redirecturl);
+                                if (redirecturl) {
+                                    console.log('redirecting to payment page');
+                                    // window.location.href = redirecturl;
+                                }
+                            },
+                            error: function (request, status, error) {
+                                console.log(error);
+                                jQuery('body').removeClass('loading');
+                                progressLoading('clear');
+
+                                if(jQuery(document).find('#order_review .checkout-error').length > 0){
+                                    jQuery(document).find('#order_review .checkout-error').text(error);                            
+                                }else{
+                                    jQuery(document).find('#order_review').append('<p class="checkout-error" style="color:red;">'+ error +'</p>');                            
+                                }
+                            }
+                        });
                     } else {
                         console.log(responseData.message['@attributes']);
                         let responseError = responseData.message['@attributes'];
@@ -1076,37 +1092,41 @@ jQuery(document).ready(function ($) {
                             reduction_id = reductions.hasOwnProperty(0) ? reductions[0]['@attributes'].id : reductions['@attributes'].id;
                         }
                     }
-                    var reduction_html = '',
-                    curr_reduction_name = '',
-                    curr_reduction_price = '',
-                    curr_reduction_id = '';
+                    let reduction_html = '',
+                        curr_reduction_name = '',
+                        curr_reduction_price = '',
+                        curr_reduction_id = '',
+                        first_price = '';
                     // console.log(reductions);
                     if(reductions.hasOwnProperty(0)){
                         reductions.forEach(function (reduction, index) {
                             let reduction_flag = false;
-                            var temp_reduction_name = reduction.description;
+                            let temp_reduction_name = reduction.description,
+                                curr_reduction_price = (reduction.price) / 100;
+                            
+                            first_price = first_price == '' ? curr_reduction_price : first_price;
                             if(user_logged_in){
                                 // if(temp_reduction_name != "INTERO"){
                                 if(temp_reduction_name.indexOf("INTERO") > -1){
                                     reduction_html = '';
                                     curr_reduction_name = reduction.description;
-                                    curr_reduction_price = (reduction.price) / 100;
+                                    // curr_reduction_price = (reduction.price) / 100;
                                     if(typeof barcode != "undefined" && barcode != ""){
                                         curr_reduction_price = 0.00;                                        
                                     }
                                     curr_reduction_id = reduction['@attributes'].id;
                                     reduction_html += '<option value="' + index + '" data-price="' + curr_reduction_price + '" data-reduction-name="' + curr_reduction_name + '" data-reduction-id="' + curr_reduction_id + '">' + curr_reduction_name + ' ' + curr_reduction_price + ' &euro;' + '</option>';
                                     reduction_flag = true;
-                                } else{
+                                } else {
                                     // if(temp_reduction_name == "INTERO"){
-                                        curr_reduction_name = reduction.description;
-                                        curr_reduction_price = (reduction.price) / 100;
-                                        if(typeof barcode != "undefined" && barcode != ""){
-                                            curr_reduction_price = 0.00;
-                                        }
-                                        curr_reduction_id = reduction['@attributes'].id;
-                                        reduction_html += '<option value="' + index + '" data-price="' + curr_reduction_price + '" data-reduction-name="' + curr_reduction_name + '" data-reduction-id="' + curr_reduction_id + '">' + curr_reduction_name + ' ' + curr_reduction_price + ' &euro;' + '</option>';
-                                        reduction_flag = true;
+                                    curr_reduction_name = reduction.description;
+                                    // curr_reduction_price = (reduction.price) / 100;
+                                    if(typeof barcode != "undefined" && barcode != ""){
+                                        curr_reduction_price = 0.00;
+                                    }
+                                    curr_reduction_id = reduction['@attributes'].id;
+                                    reduction_html += '<option value="' + index + '" data-price="' + curr_reduction_price + '" data-reduction-name="' + curr_reduction_name + '" data-reduction-id="' + curr_reduction_id + '">' + curr_reduction_name + ' ' + curr_reduction_price + ' &euro;' + '</option>';
+                                    reduction_flag = true;
                                     // }
                                 }
                             }else{
@@ -1114,7 +1134,7 @@ jQuery(document).ready(function ($) {
                                 console.log(temp_reduction_name.indexOf("INTERO"));
                                 if(temp_reduction_name.indexOf("INTERO") > -1){
                                     curr_reduction_name = reduction.description;
-                                    curr_reduction_price = (reduction.price) / 100;
+                                    // curr_reduction_price = (reduction.price) / 100;
                                     if(typeof barcode != "undefined" && barcode != ""){
                                         curr_reduction_price = 0.00;                                        
                                     }
@@ -1168,7 +1188,7 @@ jQuery(document).ready(function ($) {
                             reduction_html +
                             '</select>' +
                             '</div>'
-                    jQuery(document).find('.selected-seats-table').append("<div class='selected-seat-row' data-seat='" + currentSeat + "' data-seat-id='" + currentSeatId + "' data-zone-id='" + zone_id + "' data-zone-name='" + zone_name + "'><div class='seat-desc'>" + jQuery(this).attr('data-seat-desc') + "</div>" + html + "<div class='seat-price-wrap'><div class='seat-price' data-price='" + curr_reduction_price + "' data-reduction-name='" + curr_reduction_name + "' data-reduction-id='" + curr_reduction_id + "'>" + curr_reduction_price + ' &euro;' + "</div><div class='seat-delete' data-seat-id='" + currentSeatId + "'><svg width='800px' height='800px' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M10 12V17' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><path d='M14 12V17' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><path d='M4 7H20' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><path d='M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><path d='M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg></div></div></div>");
+                    jQuery(document).find('.selected-seats-table').append("<div class='selected-seat-row' data-seat='" + currentSeat + "' data-seat-id='" + currentSeatId + "' data-zone-id='" + zone_id + "' data-zone-name='" + zone_name + "'><div class='seat-desc'>" + jQuery(this).attr('data-seat-desc') + "</div>" + html + "<div class='seat-price-wrap'><div class='seat-price' data-price='" + first_price + "' data-reduction-name='" + first_price + "' data-reduction-id='" + curr_reduction_id + "'>" + first_price + ' &euro;' + "</div><div class='seat-delete' data-seat-id='" + currentSeatId + "'><svg width='800px' height='800px' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M10 12V17' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><path d='M14 12V17' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><path d='M4 7H20' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><path d='M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><path d='M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg></div></div></div>");
                     
                     jQuery(document).find('.seat-selection-error').remove();
                 }
@@ -1308,28 +1328,30 @@ jQuery(document).ready(function ($) {
     
     jQuery(document).on('click', '.order-print .order-print-btn', function (e) {
         e.preventDefault();
-        var $this = jQuery(this);
-        var order_id = jQuery(this).attr('data-order-id');
+        let $this = jQuery(this);
+        let transactionCode = $this.attr('data-order-id');
         jQuery.ajax({
             url: STCTICKETSPUBLIC.ajaxurl,
             method: 'post',
             dataType: 'json',
             beforeSend: function () {
-                jQuery( "body" ).css('opacity', '0.2');
+                // jQuery( "body" ).css('opacity', '0.2');
+                $('body').addClass('loading');
+		        progressLoading(0, 80); // Mostra la barra di caricamento allo 0%
             },
             data: {
                 action: 'printOrder',
-                order_id: order_id
+                transactionCode: transactionCode
             },
-            success: function (data) {
-                jQuery( "body" ).css('opacity', '1');
-                console.log('data', data);
-                var responseData = data;
-//                var responseData = JSON.parse(data);
-                if (responseData.status) {
-                    console.log(responseData.message);
+            success: function (responseData) {
+                // jQuery( "body" ).css('opacity', '1');
+                $('body').removeClass('loading');
+					progressLoading('clear');
+
+                console.log('data', responseData);
+                if (responseData.status == true) {
                     jQuery(document).find('.print-error-msg').hide();
-                //    window.open(responseData.message, '_blank');
+                    // window.open(responseData.message, '_blank');
                     // var pdf_a = document.createElement('a');
                     // pdf_a.href = responseData.message;
                     // pdf_a.setAttribute('target', '_blank');
@@ -1337,15 +1359,14 @@ jQuery(document).ready(function ($) {
                     // pdf_a.remove();
                     window.location.href = responseData.message;
                 }else{
-                    console.log(responseData.message);
+                    console.log(responseData);
                     let data_tran_id = $this.parents(".order-print-row-wrap").attr("data-tran-id");
-                    jQuery(document).find(".print-error-msg-wrap[data-tran-id='"+data_tran_id+"'] .print-error-msg").show().text(responseData.message);
-//                    jQuery(document).find('.print-error-msg').show().text(responseData.message);
+                    jQuery(document).find(`.print-error-msg-wrap[data-tran-id=${data_tran_id}] .print-error-msg`).show().text(responseData.message);
                 }
             },
             error: function (request, status, error) {
                 console.log(error);
-                console.log(request);
+                console.log(request.responseText);
                 console.log(status);
             }
         });
@@ -2077,4 +2098,39 @@ function checkOtpAttemptsBlocked() {
         updateCookie('otpAttempts', '1', 1);
     }
     return userBlocked;
+}
+
+function progressLoading(time, speed = 5) {
+    let text = language == 'it-IT' ? 'Attendere prego...' : 'Please wait...';
+    $('#loading-progress p#loading-text').html(text);
+    const animate = () => {
+        time++;
+        let timeInt = parseInt(time);
+        $('#loading-progress .progress-bar').width(`${time}%`);
+        $('#loading-progress .progress-bar').html(`${timeInt}%`);
+    };
+
+    
+    loadingArray[++id_var] = setInterval(intLoading, speed);
+
+    if (time === 0) {
+        $('#loading-progress').removeClass('hidden');
+    }
+    else if (time === 'clear') {
+        for( var id in loadingArray ){
+            clearInterval( loadingArray[id] );
+        }
+        $('#loading-progress').addClass('hidden');
+    }
+
+    function intLoading() {
+        if (time === 100) {
+            for( var id in loadingArray ){
+                clearInterval( loadingArray[id] );
+            }
+            $('#loading-progress').addClass('hidden');
+        } else {
+            animate();
+        }
+    }
 }

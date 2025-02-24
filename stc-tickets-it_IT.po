@@ -1,14 +1,13 @@
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Tickets\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-16 07:49+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: \n"
-"Language: \n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"PO-Revision-Date: 2023-11-16 07:50+0000\n"
+"Last-Translator: \n"
+"Language-Team: Italiano\n"
+"Language: it_IT\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -21,6 +20,8 @@ msgid ""
 "ARE YOU IN OUR COMMUNITY?\n"
 "Log in and discover your reserved fees for this event."
 msgstr ""
+"SEI ISCRITTO ALLA NOSTRA COMMUNITY?\n"
+"Accedi e scopri le tariffe a te riservate per questo spettacolo."
 
 #. Description of the plugin
 msgid "Display the Shows list from vivaticket"
@@ -54,10 +55,3 @@ msgstr ""
 #. Name of the plugin
 msgid "Tickets"
 msgstr ""
-
-#. translators: %s are places available from subscription barcode
-#: inc/custom-functions.php:286
-msgid "You still have %s seat available"
-msgid_plural "You still have %s seats available"
-msgstr[0] "Hai ancora %s posto disponibile"
-msgstr[1] "Hai ancora %s posti disponibili"

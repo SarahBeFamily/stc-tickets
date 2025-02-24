@@ -2,6 +2,11 @@
     box-sizing: border-box;
 }
 
+body.loading-block {
+    opacity: 0.2;
+    pointer-events: none;
+}
+
 .show-listing-wrappper {
     padding: 0 16px;
 }
@@ -257,6 +262,7 @@ overflow: scroll;
 .spettacolo-prices-wrapper .list-row button {
     border-radius: 0;
     background: #343a40;
+    appearance: button !important;
     -webkit-appearance: button !important;
     box-shadow: 0px 0px 0px -7px rgba(0,0,0,0);
     padding: 0.4em 1em;

@@ -46,6 +46,7 @@ function get_item_data($other_data, $cart_item) {
             $seatObject          = isset($transaction_ids_value[ 'seatObject' ]) ?  $transaction_ids_value[ 'seatObject' ] : '';
             $subscription        = isset($transaction_ids_value[ 'subscription' ]) ?  $transaction_ids_value[ 'subscription' ] : '';
             $transaction_id      = isset($transaction_ids_value[ 'transaction_id' ]) ?  $transaction_ids_value[ 'transaction_id' ] : '';
+            $showData            = isset($transaction_ids_value['showDate']) ? $transaction_ids_value['showDate'] : '';
             if($subscription){
                 $abbonamento     = true;
             }
@@ -56,7 +57,7 @@ function get_item_data($other_data, $cart_item) {
                 'seatObject'        => $seatObject,
                 'subscription'      => $subscription,
                 'transaction_id'    => $transaction_id,
-                'showDate'          => isset($selected_seats[0][$ticketName][0]['showDate']) ? $selected_seats[0][$ticketName][0]['showDate'] : "",
+                'showDate'          => isset($selected_seats[0][$ticketName][0]['showDate']) ? $selected_seats[0][$ticketName][0]['showDate'] : $showData,
             );
         } else if( isset( $transaction_ids_value[ 'subscription_seat' ] ) && ! empty( $subs_seat_list ) ) {
             // dd($transaction_ids_value[ 'subscription_seat' ]);
@@ -69,6 +70,8 @@ function get_item_data($other_data, $cart_item) {
                 }
                 $zoneName       = $subscription_seat_value[ 'zoneName' ];
                 $seatObject     = $subscription_seat_value[ 'seatObject' ];
+                $seatObject[ 'showName' ] = $subscription_seat_value[ 'ticketName' ];
+                $seatObject[ 'showDate' ] = isset($subscription_seat_value['showDate']) ? $subscription_seat_value['showDate'] : '';
                 $subscription   = $subscription_seat_value[ 'subscription' ];
                 $transaction_id = $subscription_seat_value[ 'transaction_id' ];
 
@@ -79,7 +82,7 @@ function get_item_data($other_data, $cart_item) {
                     'subscription'       => $subscription,
                     'under_subscription' => true,
                     'transaction_id'     => $transaction_id,
-                    'showDate'           => isset($selected_seats[0][$ticketName][0]['showDate']) ? $selected_seats[0][$ticketName][0]['showDate'] : "",
+                    'showDate'           => isset($selected_seats[0][$ticketName][0]['showDate']) ? $selected_seats[0][$ticketName][0]['showDate'] : $showData,
                 );
             }
         }
@@ -93,13 +96,19 @@ function get_item_data($other_data, $cart_item) {
             <div class="spettacolo-cart-inner">
                 <div class="spettacolo-tickets">
                     <?php
-                    if( ! empty( $tickets_array ) ) {
+                    
+                    if( ! empty( $tickets_array ) ) {                        
                         $counter = 1;
                         foreach ( $tickets_array as $tickets_array_key => $tickets_array_value ) {
                             $extra_class = $counter < count( $tickets_array ) ? 'border-bot' : '';
                             $ticketName  = $tickets_array_key;
                             $showData = isset($tickets_array_value[0]['showDate']) ? $tickets_array_value[0]['showDate'] : '';
                             $counter ++;
+                            if (isset($_GET['print']) && $_GET[ 'print' ] == 2) {
+                                echo "<pre>";
+                                print_r($tickets_array_value);
+                                echo "</pre>";
+                            }
                             ?>
                             <div class="ticket-datails-wrap <?php echo $extra_class; ?>">
                                 <div class="ticket-title-wrap">
@@ -136,14 +145,20 @@ function get_item_data($other_data, $cart_item) {
                                                     $seatObject_new = array ( $seatObject );
                                                 }
                                             }
-                                            // echo "<pre>";
-                                            // print_r($seatObject_new);
-                                            // echo "</pre>";
+                                            if (isset($_GET['print']) && $_GET[ 'print' ] == 2) {
+                                                echo "<pre>";
+                                                print_r($seatObject_new);
+                                                echo "</pre>";
+                                            }
+
                                             if(is_array($seatObject_new) && !empty($seatObject_new)) :
                                             foreach ( $seatObject_new as $seatObject_key => $seatObject_value ) {
-                                                // echo "<pre>";
-                                                // print_r($seatObject_value[ 'barcode' ]);
-                                                // echo "</pre>";
+                                                if (isset($_GET['print']) && $_GET[ 'print' ] == 2) {
+                                                    echo "<pre>";
+                                                    print_r($seatObject_value);
+                                                    echo "</pre>";
+                                                }
+
                                                 $seat_desc  = $seatObject_value[ 'description' ];
                                                 $seat_price = $seatObject_value[ 'price' ];
                                                 $barcode = "";
@@ -176,6 +191,7 @@ function get_item_data($other_data, $cart_item) {
                                                     <div class="seat-title" data-reductionId="<?php echo $reduction_id; ?>">
                                                         <p><?php echo preg_replace( '/' . preg_quote( $zoneName, '/' ) . '/', '', $seat_desc, 1 ); ?></p>
                                                     </div>
+                                                    
                                                     <div class="tipoticketeprezzo">
                                                         <div class="reduction-title-wrap">
                                                             <div class="reduction-title">
@@ -210,7 +226,7 @@ function get_item_data($other_data, $cart_item) {
                                                                     $ticketName = '';
                                                                     ?>
                                                                     <p data-transaction-id="<?php echo $custref; ?>">
-                                                                        <?php //<span class="showTitle"><?php echo $ticketName;:</span> &nbsp;?>
+                                                                        <span class="showTitle"><?php echo $ticketName; ?></span> &nbsp;
                                                                         <?php echo $seat_title; ?>
                                                                         <span class="data"><?php echo $showData; ?></span>
                                                                     </p>
@@ -272,7 +288,7 @@ function get_item_data($other_data, $cart_item) {
                             $remainingaccruals      = 0;
                             $title_subscription     = '';
 
-                            if( ! empty( $subscriptionArr ) ) {
+                            if( ! empty( $subscriptionArr && isset($subscriptionArr[ 'subscriptiondata' ])) ) {
                                 $accruals           = $subscriptionArr[ 'subscriptiondata' ][ 'accruals' ];
                                 $title_subscription = $subscriptionArr[ 'subscriptiondata' ][ '@attributes' ][ 'title' ];
                                 $totalaccruals      = $subscriptionArr[ 'subscriptiondata' ][ '@attributes' ][ 'numaccruals' ];
@@ -1108,6 +1124,7 @@ function display_admin_order_item_custom_button($item_id, $item, $product) {
                             $ticketName  = $tickets_array_key;
                             $showData = is_array($tickets_array_value) && !empty($tickets_array_value) && isset($tickets_array_value[0]['showDate']) ? $tickets_array_value[0]['showDate'] : "";
                             $counter ++;
+                            $barcode = '';
                             ?>
                             <div class="ticket-datails-wrap <?php echo $extra_class; ?>">
                                 <div class="ticket-title" data-name="<?php echo $ticketName; ?>">
@@ -1733,9 +1750,10 @@ function woocommerce_order_print_fun($order) {
 //    echo "</pre>";
     $order_id                = $order->get_id();
     $user_id                 = $order->get_user_id();
+    $order_status            = $order->get_status();
     $orderTransactionCodeArr = get_post_meta( $order->get_id(), 'orderTransactionCodeArr', true );
     $transactionIds          = get_post_meta( $order->get_id(), 'transactionIds', true );
-    if( ! empty( $transactionIds ) ) {
+    if( ! empty( $transactionIds ) && $order_status == 'completed' ) {
         ?>
         <h2><?php _e('Stampa biglietti','stc-tickets'); ?></h2>
         <?php // MOD SARAH - Elimino la tabella che crea problemi nella visualizzazione da mobile
@@ -1792,7 +1810,7 @@ function woocommerce_order_print_fun($order) {
                             if( ! empty( $ticketName ) && ! empty( $orderTransactionCode ) && ! empty( $zoneName ) ) {
                                 $print_avail = true;
                                 ?>
-                                <div class="spettacolo flex fwrap content-between" data-tran-id="<?php echo $orderTransactionCode; ?>">
+                                <div class="order-print-row-wrap spettacolo flex fwrap content-between" data-tran-id="<?php echo $orderTransactionCode; ?>">
                                     <p><?php _e('Spettacolo','stc-tickets'); ?>: <br> <span><?php echo $ticketName; ?></span></p>
                                     <p><?php _e('POSTI','stc-tickets'); ?>: <br> <span><?php echo $zoneName; ?></span></p>
                                     <p class="order-print wm-100">
@@ -1836,7 +1854,13 @@ function woocommerce_order_print_fun($order) {
         </tbody>
         </table>
         <?php
-    }
+    } else if ( $order_status == 'pending' || $order_status == 'processing' || $order_status == 'on-hold' || $order_status == 'cancelled' ) {
+        $contact_page = get_page_by_path( 'contatti' );
+        $contact_page_link = get_permalink( $contact_page->ID );
+        ?>
+        <p style="color: red;"><?php wp_kses_post(printf(__('There was an error during order finalization. Please <a href="%s" target="_blank" style="display:inline;color:red;">contact the customer care</a>','stc-tickets'), $contact_page_link) ); ?></p>
+        <?php
+    }   
     $html = ob_get_clean();
     echo $html;
 }
@@ -2386,7 +2410,7 @@ function update_previous_order_meta_from_current_order($order_id) {
     }
 //    die();
 }
-add_action( 'woocommerce_new_order', 'update_previous_order_meta_from_current_order', 10, 1 );
+// add_action( 'woocommerce_new_order', 'update_previous_order_meta_from_current_order', 10, 1 );
 function recursiveArrayMerge($array1, $array2) {
     if( ! empty( $array2 ) ) {
         foreach ( $array2 as $key => $value ) {
@@ -3203,6 +3227,7 @@ function order_detail_data() {
             // print_r($order_total);
             // print_r($order_date);
             print_r($subscriptionOrderId);
+            echo 'transactionIds';
             print_r($transactionIds);
             print_r($selected_seats);
             echo '</pre>';

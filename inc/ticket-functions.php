@@ -56,24 +56,26 @@ function everyMinute_empty_cart_func() {
     $get_user_meta = get_user_meta($user_id,'addToCartObject');
     $transactionIds = get_user_meta($user_id,'transactionIds');
     $current_timestamp = strtotime("now");
-    foreach($transactionIds[0] as $transactionIds_key => $transactionIds_value){
-        if($current_timestamp > $transactionIds_value['timestamp']){
-            $ticketName = $transactionIds_value['ticketName'];
-            $zoneName = $transactionIds_value['zoneName'];
-            $zoneId = $transactionIds_value['zoneId'];
-            $seats = $transactionIds_value['seats'];
-            foreach($get_user_meta[0] as $get_user_key => $get_user_value ){
-                if($get_user_key == $ticketName){
-                    foreach($get_user_value as $get_user_k => $get_user_v){
-                        if($get_user_v['zoneName'] == $zoneName && $get_user_v['zoneId'] == $zoneId){
-                            $reductions = $get_user_v['reductions'];
-                            foreach($seats as $seats_key => $seats_value){
-                                foreach($reductions as $reductions_key => $reductions_value){
-                                    if($seats_value['reductionName'] == $reductions_value['reductionName'] && $seats_value['reductionId'] == $reductions_value['reductionId']){
-//                                        $reductions_value['reductionQuantity'] = (int)$reductions_value['reductionQuantity'] - (int)$seats_value['reductionQuantity'];
-                                        $get_user_meta[0][$get_user_key][$get_user_k]['reductions'][$reductions_key]['reductionQuantity'] = ((int)$get_user_meta[0][$get_user_key][$get_user_k]['reductions'][$reductions_key]['reductionQuantity'] - (int)$seats_value['reductionQuantity']) > 0 ? ((int)$get_user_meta[0][$get_user_key][$get_user_k]['reductions'][$reductions_key]['reductionQuantity'] - (int)$seats_value['reductionQuantity']) : 0;
-                                        if($get_user_meta[0][$get_user_key][$get_user_k]['reductions'][$reductions_key]['reductionQuantity'] == 0){
-                                            unset($get_user_meta[0][$get_user_key][$get_user_k]['reductions'][$reductions_key]);
+    if (is_array($transactionIds) && !empty($transactionIds)) {
+        foreach($transactionIds[0] as $transactionIds_key => $transactionIds_value){
+            if($current_timestamp > $transactionIds_value['timestamp']){
+                $ticketName = $transactionIds_value['ticketName'];
+                $zoneName = $transactionIds_value['zoneName'];
+                $zoneId = $transactionIds_value['zoneId'];
+                $seats = $transactionIds_value['seats'];
+                foreach($get_user_meta[0] as $get_user_key => $get_user_value ){
+                    if($get_user_key == $ticketName){
+                        foreach($get_user_value as $get_user_k => $get_user_v){
+                            if($get_user_v['zoneName'] == $zoneName && $get_user_v['zoneId'] == $zoneId){
+                                $reductions = $get_user_v['reductions'];
+                                foreach($seats as $seats_key => $seats_value){
+                                    foreach($reductions as $reductions_key => $reductions_value){
+                                        if($seats_value['reductionName'] == $reductions_value['reductionName'] && $seats_value['reductionId'] == $reductions_value['reductionId']){
+                                            // $reductions_value['reductionQuantity'] = (int)$reductions_value['reductionQuantity'] - (int)$seats_value['reductionQuantity'];
+                                            $get_user_meta[0][$get_user_key][$get_user_k]['reductions'][$reductions_key]['reductionQuantity'] = ((int)$get_user_meta[0][$get_user_key][$get_user_k]['reductions'][$reductions_key]['reductionQuantity'] - (int)$seats_value['reductionQuantity']) > 0 ? ((int)$get_user_meta[0][$get_user_key][$get_user_k]['reductions'][$reductions_key]['reductionQuantity'] - (int)$seats_value['reductionQuantity']) : 0;
+                                            if($get_user_meta[0][$get_user_key][$get_user_k]['reductions'][$reductions_key]['reductionQuantity'] == 0){
+                                                unset($get_user_meta[0][$get_user_key][$get_user_k]['reductions'][$reductions_key]);
+                                            }
                                         }
                                     }
                                 }
@@ -86,9 +88,6 @@ function everyMinute_empty_cart_func() {
     }
     $update_user_meta = update_user_meta($user_id,'addToCartObject',$get_user_meta[0]);
     $get_user_meta_after = get_user_meta($user_id,'addToCartObject');
-    // echo "<pre>";
-    // print_r($get_user_meta_after);
-    // echo "</pre>";
 }
 // Hook into that action that'll fire every three minutes
 add_action( 'everyThreeMinute_cron_for_retrieving_location_callback', 'every_three_min_event_func' );
@@ -275,9 +274,6 @@ function stcticket_spettacolo_add_update_callback() {
                         }
                         wp_reset_query();
                         wp_reset_postdata();
-//                        echo "<pre>";
-//                        print_r( 'If1: ' );
-//                        echo "</pre>";
                     } else {
                         $org_cpt     = array (
                             'post_type'   => 'spettacolo',
@@ -359,9 +355,6 @@ function stcticket_spettacolo_add_update_callback() {
                     }
                     wp_reset_query();
                     wp_reset_postdata();
-//                    echo "<pre>";
-//                    print_r( 'If2: ' );
-//                    echo "</pre>";
                 } else {
                     $org_cpt     = array (
                         'post_type'   => 'spettacolo',
@@ -370,9 +363,7 @@ function stcticket_spettacolo_add_update_callback() {
                     );
                     $spt_post_id = wp_insert_post( $org_cpt );
                 }
-//                echo "<pre>";
-//                print_r( $spt_post_id . ' : ' . $title_infoAtts[ 'name' ] );
-//                echo "</pre>";
+                
                 update_post_meta( $spt_post_id, 'spt_vcode', $vCode );
                 update_post_meta( $spt_post_id, 'spt_id_show', $id_show );
                 update_post_meta( $spt_post_id, 'spt_name', $title_infoAtts[ 'name' ] );

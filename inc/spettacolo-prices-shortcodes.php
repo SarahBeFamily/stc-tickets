@@ -78,12 +78,12 @@ function stcTickets_spettacolo_prices_callback() {
         var globalJsPricing = '<?php echo isset( $globalJsPricing ) ? $globalJsPricing : '';?>';
     </script>
     <?php
-//    echo "<pre>";
-//    print_r($map_curl);
-//    echo "</pre>";
-//    echo "<pre>";
-//    print_r(API_HOST . 'backend/backend.php?id=' . APIKEY . '&cmd=extGetMapData&vcode=' . $vcode . '&pcode=' . $pcode);
-//    echo "</pre>";
+    //    echo "<pre>";
+    //    print_r($map_curl);
+    //    echo "</pre>";
+    //    echo "<pre>";
+    //    print_r(API_HOST . 'backend/backend.php?id=' . APIKEY . '&cmd=extGetMapData&vcode=' . $vcode . '&pcode=' . $pcode);
+    //    echo "</pre>";
     // curl of extGetMapData to create seat map
     $map_curl        = curl_init();
     $map_cookie = tempnam ("/tmp", "CURLCOOKIE");
@@ -105,9 +105,6 @@ function stcTickets_spettacolo_prices_callback() {
 
     $map_response = curl_exec( $map_curl );
     $err          = curl_error( $map_curl );
-    // echo "<pre>";
-    // print_r($err);
-    // echo "</pre>";
     curl_close( $map_curl );
 
     $xmlNode       = simplexml_load_string( $map_response );
@@ -115,9 +112,6 @@ function stcTickets_spettacolo_prices_callback() {
     $json_en       = json_encode( $arrayData );
     $extGetMapDataPricing = str_replace("'", "\'", $json_en);
 
-    // echo "<pre>";
-    // print_r($arrayData);
-    // echo "</pre>";
     // Extract the title from the array
     $jsonTitle = isset($arrayData['reply']['performance']['@attribute']['title']) ? json_encode($arrayData['reply']['performance']['@attribute']['title']) : '';
     $cleanedTitle = str_replace('\"', '&quot;', $jsonTitle);
@@ -145,11 +139,6 @@ function stcTickets_spettacolo_prices_callback() {
         $performance           = $extGetMapData[ 'reply' ][ 'performance' ];
         $map_seats             = isset($performance[ 'seats' ]) ? $performance[ 'seats' ] : array();
         $map_reductions        = $performance[ 'reductions' ]['reduction'];
-//        if($_GET['print'] == 1) {            
-//            echo "<pre>";
-//            print_r($map_reductions);
-//            echo "</pre>";
-//        }
         $roomLastUpdate        = $performance[ '@attribute' ][ 'roomLastUpdate' ];
         $map_zones             = isset($performance[ 'zones' ][ 'zone' ]) ? $performance[ 'zones' ][ 'zone' ] : array();
         $seatsLayout           = get_post_meta( $spe_id, 'map_room_data_xml', true );
@@ -168,7 +157,6 @@ function stcTickets_spettacolo_prices_callback() {
             update_post_meta( $spe_id, 'map_room_data_xml', $seatsLayoutObject );
             update_post_meta( $spe_id, 'room_last_update_time' . $pcode, $roomLastUpdate );
             $seatsLayout               = $seatsLayoutObject;
-//            $seatsLayout       = get_post_meta( $spe_id, 'map_room_data_xml', true );
         }
         $circles_arr         = array ();
         $seatsOfSector       = $seatsLayout[ 'room' ][ 'seats' ];
@@ -380,18 +368,13 @@ function stcTickets_spettacolo_prices_callback() {
                 'data-color'       => isset( $temp_map_seat_array[ $seatFromXml_key ] ) ? $temp_map_seat_array[ $seatFromXml_key ][ 'color' ] : '',
                 'circle-width'     => ($circle_width / 2),
                 'zone-id'          => isset( $temp_map_seat_array[ $seatFromXml_key ] ) ? $temp_map_seat_array[ $seatFromXml_key ][ 'zone_id' ] : '',
-                'zone-desc'          => isset( $temp_map_seat_array[ $seatFromXml_key ] ) ? $temp_map_seat_array[ $seatFromXml_key ][ 'zone_desc' ] : '',
-                'price'          => isset( $temp_map_seat_array[ $seatFromXml_key ] ) ? $temp_map_seat_array[ $seatFromXml_key ][ 'price' ] : '',
+                'zone-desc'        => isset( $temp_map_seat_array[ $seatFromXml_key ] ) ? $temp_map_seat_array[ $seatFromXml_key ][ 'zone_desc' ] : '',
+                'price'            => isset( $temp_map_seat_array[ $seatFromXml_key ] ) ? $temp_map_seat_array[ $seatFromXml_key ][ 'price' ] : '',
             ) );
         }
     } else {
         $errstring = isset( $extGetMapData[ 'reply' ][ '@attribute' ][ 'errstring' ] ) ? $extGetMapData[ 'reply' ][ '@attribute' ][ 'errstring' ] : '';
     }
-//    if($_GET['print'] == '1') {
-//        echo "<pre>";
-//        print_r($circles_arr);
-//        echo "</pre>";
-//    }
     ?>
 <!--    <div class="tooltip">
         <div class="tooltip__content"></div>
@@ -443,7 +426,7 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                 <div class="spe-half-wrap left_part">
                     <?php
                     if( ! empty( $circles_arr ) ) {
-                        if( $_GET[ 'selectionMode' ] == '1' ) {
+                        if( isset($_GET[ 'selectionMode' ]) && $_GET[ 'selectionMode' ] == '1' ) {
                             ?>
                             <div class="controls custom-controls">
                                 <button id="zoom-in"><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg></button>
@@ -557,41 +540,41 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                                 }
                                             }
 
+                                            /**
+                                             * Testing: print the array of reduction
+                                             * by adding ?print=6 to the URL
+                                             */
+                                            if(isset($_GET['print']) && $_GET['print'] == '6'){
+                                                echo "<pre>";
+                                                print_r($reductionArr);
+                                                echo "</pre>";
+                                            }
+
                                             $pricesArr = array_column( $reductionArr, 'price' );
                                             $min_reduction_price = !empty($pricesArr) ? (min( $pricesArr ) / 100) : 0;
-
+                                            $show_list_row = false;
                                             ob_start();
 
-                                            $show_list_row = false;
+                                            
                                             if( ! empty( $reductionArr ) ) {
+                                                
                                                 foreach ( $reductionArr as $reductionArr_key => $reductionArr_value ) {
+                                                    
                                                     if( is_user_logged_in() ) {
                                                         $reduction_flag = false;
-                                                        if(count($reductionArr) > 1 ){
-                                                            if( $reductionArr_value[ 'description' ] != 'INTERO' ) {
-                                                                $reduction_desc   = $reductionArr_value[ 'description' ];
-                                                                $reduction_price  = ((int) $reductionArr_value[ 'price' ] / 100);
-                                                                $reduction_maxbuy = $reductionArr_value[ 'maxbuy' ];
-                                                                $reduction_id     = $reductionArr_value[ '@attributes' ][ 'id' ];
-                                                                $reduction_flag = true;
-                                                            }
-                                                        }else{
-                                                        //    if( preg_match("/INTERO/i", $reductionArr_value[ 'description' ])) {
-                                                        //    if( $reductionArr_value[ 'description' ] == 'RIDOTTO 1' ) {
-                                                                $reduction_desc   = $reductionArr_value[ 'description' ];
-                                                                $reduction_price  = ((int) $reductionArr_value[ 'price' ] / 100);
-                                                                $reduction_maxbuy = $reductionArr_value[ 'maxbuy' ];
-                                                                $reduction_id     = $reductionArr_value[ '@attributes' ][ 'id' ];
-                                                                $reduction_flag = true;
-                                                        //    }
-                                                        }
+                                                        $reduction_desc   = $reductionArr_value[ 'description' ];
+                                                        $reduction_price  = ((int) $reductionArr_value[ 'price' ] / 100);
+                                                        $reduction_maxbuy = $reductionArr_value[ 'maxbuy' ];
+                                                        $reduction_id     = $reductionArr_value[ '@attributes' ][ 'id' ];
+                                                        $reduction_flag = true;
+  
                                                         if(!empty($barcode)){
                                                             $reduction_price = '0.00';
                                                         }
-                                                        if($reduction_maxbuy > 0 && $reduction_flag){
+                                                        if($reductionArr_value[ 'maxbuy' ] > 0 && $reduction_flag){
                                                             $show_list_row = true;
                                                         ?>
-                                                            <div class="list-row des1" data-reductionId="<?php echo $reduction_id ?>">
+                                                            <div class="list-row des1 n<?php echo $reductionArr_key ?>" data-reductionId="<?php echo $reduction_id ?>">
                                                                 <div class="row-title">
                                                                     <p><?php echo $reduction_desc; ?></p>
                                                                 </div>
@@ -611,7 +594,7 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                                             </div>                        
                                                         <?php
                                                         }
-                                                    } else if( ! is_user_logged_in() && strpos($reductionArr_value[ 'description' ], 'INTERO' ) !== false ) {
+                                                    } else if( ! is_user_logged_in() && strpos($reductionArr_value[ 'description' ], 'COMMUNITY' ) == false ) {
                                                         $reduction_desc   = $reductionArr_value[ 'description' ];
                                                         $reduction_price  = ((int) $reductionArr_value[ 'price' ] / 100);
                                                         $reduction_maxbuy = $reductionArr_value[ 'maxbuy' ];
@@ -647,7 +630,7 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                                     <?php
                                                 }
                                             }
-                                            $reductionArr = [];
+                                            // $reductionArr = [];
                                             $list_row_html = ob_get_clean ();
                                             if($show_list_row){
                                             ?>
@@ -693,30 +676,16 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                             <div class="cart-buy-btn-wrap">
                                 <?php
                                 if( is_user_logged_in() ) {
-//                                    $current_user_id = get_current_user_id();
                                     $current_user       = wp_get_current_user();
                                     $current_user_id    = $current_user->ID;
                                     $current_user_email = $current_user->user_email;
                                     $user_billing_phone = get_user_meta( $current_user_id, 'billing_phone', true );
                                     $place_of_birth = get_user_meta( $current_user_id, 'place_of_birth', true );
                                     $dob = get_user_meta( $current_user_id, 'dob', true );
-//                                    echo "<pre style='display:none;'>";
-//                                    print_r($user_billing_phone);
-//                                    echo "</pre>";
+
                                     if( ! empty( $user_billing_phone ) && ! empty( $place_of_birth ) && ! empty( $dob ) && empty($barcode) ) {
                                     ?>
                                         <button class="cart-buy-btn buy-btn" data-profile-status="complete"><?php _e('PROSEGUI','stc-tickets'); ?></button>
-                                    <?php
-                                    } else if(!empty($barcode)) {
-                                    ?>
-                                        <button class="subscription-buy-btn buy-btn" data-profile-status="complete" data-fancybox data-src="#subscription-fancybox-wrap"><?php _e('PROSEGUI','stc-tickets'); ?></button>
-                                        <div id="subscription-fancybox-wrap" style="display:none">
-                                            <h2><?php esc_html_e( 'Seleziona Spettacoli', 'stc-tickets' ); ?></h2>
-                                            <div id="replace-me">
-                                                <p><?php _e('Hello, this is the content to be replaced inside FancyBox!','stc-tickets'); ?></p>
-                                            </div>
-                                        <button class="cart-buy-btn buy-btn" data-profile-status="complete"><?php _e('Passo Successivo','stc-tickets'); ?></button>    
-                                        </div>
                                     <?php
                                     } else if(empty( $user_billing_phone )) {
                                     ?>
@@ -767,7 +736,18 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                             <?php } ?>
                                         </div>
                                         <?php
-                                    } else{
+                                    } else if(!empty($barcode)) {
+                                        ?>
+                                            <button class="subscription-buy-btn buy-btn" data-profile-status="complete" data-fancybox data-src="#subscription-fancybox-wrap"><?php _e('PROSEGUI','stc-tickets'); ?></button>
+                                            <div id="subscription-fancybox-wrap" style="display:none">
+                                                <h2><?php esc_html_e( 'Seleziona Spettacoli', 'stc-tickets' ); ?></h2>
+                                                <div id="replace-me">
+                                                    <p><?php _e('Hello, this is the content to be replaced inside FancyBox!','stc-tickets'); ?></p>
+                                                </div>
+                                            <button class="cart-buy-btn buy-btn" data-profile-status="complete"><?php _e('Passo Successivo','stc-tickets'); ?></button>    
+                                            </div>
+                                        <?php
+                                    }else{
                                         if( empty( $place_of_birth ) || empty( $dob ) ) {
                                             ?>
                                                 <button class="cart-buy-btn buy-btn" data-profile-status="incomplete" data-fancybox data-src="#edit-fancybox-form"><?php _e('PROSEGUI','stc-tickets'); ?></button>

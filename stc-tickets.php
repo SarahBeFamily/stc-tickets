@@ -149,8 +149,7 @@ class stcTickets {
      * Enqueue styles
      */
     public function stctickets_styles() {
-        /*wp_enqueue_style( 'stctickets-jquery-ui-min-style', 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css', array (), false, 'all' );*/
-        wp_enqueue_style( 'stctickets-fancybox-min-style', 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css', array (), false, 'all' );
+        wp_enqueue_style( 'stctickets-fancybox-min-style', plugin_dir_url( __FILE__ ) . 'assets/css/jquery.fancybox.min.css', array (), false, 'all' );
         wp_enqueue_style( 'stctickets-jquery-ui-style', 'https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css', array (), false, 'all' );
         wp_register_style( 'stctickets-public-style', plugin_dir_url( __FILE__ ) . 'assets/css/ticket-style.css', array (), time() );
         wp_enqueue_style( 'stctickets-public-style' );
@@ -163,10 +162,9 @@ class stcTickets {
             //Enqueue
             wp_enqueue_script( 'jquery' );
         }
-        /*wp_enqueue_script( 'stctickets-jquery-ui-min-script', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', array (), time(),true );*/
         wp_enqueue_script( 'stctickets-jquery-ui-script', 'https://code.jquery.com/ui/1.13.2/jquery-ui.js', array (), NULL );
         wp_enqueue_script( 'stctickets-svg-pan-zoom', 'https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.5.0/dist/svg-pan-zoom.min.js', array (), NULL );
-        wp_enqueue_script( 'stctickets-fancybox-min-script', 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js', array (), time() );
+        wp_enqueue_script( 'stctickets-fancybox-min-script', plugin_dir_url( __FILE__ ) . 'assets/js/jquery.fancybox.min.js', array (), time() );
         wp_enqueue_script( 'stctickets-recaptcha-script', 'https://www.google.com/recaptcha/api.js', array (), NULL );
         wp_enqueue_script( 'stctickets-map-script', plugin_dir_url( __FILE__ ) . 'assets/js/stc-map-script.js', array (), time() );
         wp_enqueue_script( 'stctickets-public-script', plugin_dir_url( __FILE__ ) . 'assets/js/stc-tickets-script.js', array (), time() );
@@ -179,7 +177,8 @@ class stcTickets {
             'cartSlug' => basename(wc_get_cart_url()),
             'cartData' => json_encode(WC()->cart),
             'APIKEY' => APIKEY,
-            'FORM_FIELD_CHARS' => FORM_FIELD_CHARS
+            'FORM_FIELD_CHARS' => FORM_FIELD_CHARS,
+            'preorder_nonce' => wp_create_nonce('preorder_nonce'),
         ));
         
         wp_localize_script('stctickets-public-script', 'stcTicketsText', array(

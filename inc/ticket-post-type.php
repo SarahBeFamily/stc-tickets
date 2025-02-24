@@ -4,22 +4,21 @@
  */
 function create_ticket_posttype() {
 
-    $textdomain    = 'stc-tickets';
-    $spettacolo_labels = array (
-        'name'               => _x( 'Spettacolo', 'spettacolo', $textdomain ),
-        'singular_name'      => _x( 'Spettacolo', 'spettacolo', $textdomain ),
-        'menu_name'          => _x( 'Spettacolo', 'spettacolo', $textdomain ),
-        'name_admin_bar'     => _x( 'Spettacolo', 'spettacolo', $textdomain ),
-        'add_new'            => _x( 'Add New', 'spettacolo', $textdomain ),
-        'add_new_item'       => __( 'Add New Spettacolo', $textdomain ),
-        'new_item'           => __( 'New Spettacolo', $textdomain ),
-        'edit_item'          => __( 'Edit Spettacolo', $textdomain ),
-        'view_item'          => __( 'View Spettacolo', $textdomain ),
-        'all_items'          => __( 'All Spettacoli', $textdomain ),
-        'search_items'       => __( 'Search Spettacoli', $textdomain ),
-        'parent_item_colon'  => __( 'Parent Spettacolo:', $textdomain ),
-        'not_found'          => __( 'No spettacolo found.', $textdomain ),
-        'not_found_in_trash' => __( 'No spettacolo found in Trash.', $textdomain ),
+    $spettacolo_labels = array(
+        'name'               => 'Spettacolo',
+        'singular_name'      => 'Spettacolo',
+        'menu_name'          => 'Spettacolo',
+        'name_admin_bar'     => 'Spettacolo',
+        'add_new'            => 'Aggiungi nuovo',
+        'add_new_item'       => 'Aggiungi nuovo Spettacolo',
+        'new_item'           => 'Nuovo Spettacolo',
+        'edit_item'          => 'Modifica Spettacolo',
+        'view_item'          => 'Vedi Spettacolo',
+        'all_items'          => 'Tutti gli Spettacoli',
+        'search_items'       => 'Cerca Spettacoli',
+        'parent_item_colon'  => 'Spettacolo parente:',
+        'not_found'          => 'Nessuno spettacolo trovato.',
+        'not_found_in_trash' => 'Nessuno spettacolo trovato nel cestino.',
     );
 
     $spettacolo_args = array (
@@ -43,21 +42,21 @@ function create_ticket_posttype() {
     /*
      * Location CPT
      */
-    $location_labels = array (
-        'name'               => _x( 'Location', 'location', $textdomain ),
-        'singular_name'      => _x( 'Location', 'location', $textdomain ),
-        'menu_name'          => _x( 'Location', 'location', $textdomain ),
-        'name_admin_bar'     => _x( 'Location', 'location', $textdomain ),
-        'add_new'            => _x( 'Add New', 'location', $textdomain ),
-        'add_new_item'       => __( 'Add New Location', $textdomain ),
-        'new_item'           => __( 'New Location', $textdomain ),
-        'edit_item'          => __( 'Edit Location', $textdomain ),
-        'view_item'          => __( 'View Location', $textdomain ),
-        'all_items'          => __( 'All Locations', $textdomain ),
-        'search_items'       => __( 'Search Locations', $textdomain ),
-        'parent_item_colon'  => __( 'Parent Location:', $textdomain ),
-        'not_found'          => __( 'No location found.', $textdomain ),
-        'not_found_in_trash' => __( 'No location found in Trash.', $textdomain ),
+    $location_labels = array(
+        'name'               => 'Location',
+        'singular_name'      => 'Location',
+        'menu_name'          => 'Location',
+        'name_admin_bar'     => 'Location',
+        'add_new'            => 'Aggiungi nuovo',
+        'add_new_item'       => 'Aggiungi nuova Location',
+        'new_item'           => 'Nuova Location',
+        'edit_item'          => 'Modifica Location',
+        'view_item'          => 'Vedi Location',
+        'all_items'          => 'Tutte le Locations',
+        'search_items'       => 'Cerca Locations',
+        'parent_item_colon'  => 'Location parente:',
+        'not_found'          => 'Nessuna location trovata.',
+        'not_found_in_trash' => 'Nessuna location trovata nel cestino.',
     );
 
     $location_args = array (

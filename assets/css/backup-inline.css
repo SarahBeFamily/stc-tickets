@@ -1,0 +1,973 @@
+#loginform .g-recaptcha-wrap {
+	order: 3;
+  }
+  .wc-empty-cart-message {
+		  margin: 5% auto 0;
+		  width: 75%;
+  }
+  .woocommerce-MyAccount-content p a:link {
+	display: none;
+  }
+  
+  .woocommerce-account .order-print a.button {
+	  display: flex;
+  }
+  
+  .woocommerce-cart .product-name a {
+	  display: none;
+  }
+  
+  .woocommerce-cart dt.variation-SelectedSeats {
+	  display: none !important;
+  }
+  
+  .wc-spettacolo-cart-wrapper .ticket-zone{
+	  display: block !important;
+  }
+  
+  .wc-spettacolo-cart-wrapper .spettacolo-tickets{
+	  display: block !important;
+  }
+  
+  .wc-spettacolo-cart-wrapper{
+	  display: block !important;
+  }
+  .spettacolo-prices h1.bf-title {
+	  display: none;
+  }
+  .spettacolo-prices-wrapper .showheader h3 {
+	  color: #fff;
+	  font-size: 24px;
+  }
+  .spettacolo-prices .list-location p {
+	  margin-top: 0;
+	  color: #fff;
+	  font-size: 17px;
+	  font-weight: 900;
+  }
+  .spettacolo-prices .list-date p {
+	  margin-top: 0;
+	  color: #fff;
+  }
+  .spettacolo-prices .priceqty .cart-qty-counter .button-counter input.qty {
+	  font-size: 14px;
+	  color:#000 !important;
+  }
+  .user-registration input {
+	  padding: 0.3rem;
+  }
+  .user-registration form p {
+	  font-size: 16px;
+  }
+  .user-registration h1.bf-title {
+	  display: none;
+  }
+  .woocommerce-account .addresses .title h3 {
+	  font-size: 24px;
+  }
+  .woocommerce-account header.woocommerce-Address-title.title {
+	  display: flex;
+	  flex-direction: column;
+	  margin-bottom: 1rem;
+  }
+  .woocommerce-account .addresses .title .edit {
+	  background: red;
+	  width: fit-content;
+	  color: #fff;
+	  text-decoration: none;
+	  -webkit-font-smoothing: antialiased;
+	  padding: 1rem;
+	  text-transform: uppercase;
+	  font-weight: 600;
+  }
+  
+  /*CART PAGE MOBILE*/
+  @media (max-width: 576px) {
+	  .woocommerce-cart .cart-wrap{
+	  flex-direction:column;
+	  }
+	  .wc-spettacolo-cart-wrapper .ticket-zone .zone-title {
+	  text-align: left;
+	  }
+	  .wc-spettacolo-cart-wrapper .zone-reductions{
+	  text-align: left;
+	  width: 100%;
+	  }
+	  .woocommerce-cart .coupon button.button.wp-element-button {
+	  font-size: 10px;
+	  }
+	  .woocommerce-cart .coupon input#coupon_code {
+	  font-size: 12px;
+	  }
+	  .woocommerce-cart .woocommerce table.shop_table_responsive tr td::before, .woocommerce-page table.shop_table_responsive tr td::before{
+		  display: none;
+	  }
+	  .woocommerce-cart tr.cart-subtotal {
+	  display: flex !important;
+	  align-items: center;
+	  justify-content: space-between;
+	  }
+	  .woocommerce-cart .woocommerce table.shop_table_responsive tbody th, .woocommerce-page table.shop_table_responsive tbody th{
+		  display: block;
+	  }
+	  .woocommerce-cart tr.order-total {
+	  display: flex !important;
+	  justify-content: space-between;
+	  border-top: 1px solid #dd3d41;
+	  }
+	  .wc-spettacolo-cart-wrapper .zone-title h4 {
+	  margin: 0;
+	  }
+	  .woocommerce-cart .woocommerce .quantity .qty {
+	  padding: 4px;
+	  }
+	  .woocommerce-cart td.product-price {
+	  display: none !important;
+	  }
+	  .woocommerce-cart .woocommerce {
+	  padding-top: 4em !important;
+	  }
+  }
+  /*CART PAGE MOBILE*/
+  /*CART PAGE GENERIC*/
+  .woocommerce-notices-wrapper {
+	  background: transparent;
+  }
+  /*CART PAGE GENERIC*/
+  /*CHECKOUT MOBILE*/
+  @media (max-width: 576px) {
+	  .woocommerce-checkout .woocommerce {
+	  padding-top: 4em !important;
+	  }
+  }
+  /*CHECKOUT MOBILE*/
+  @media (max-width: 576px) {
+	  .woocommerce-checkout .woocommerce {
+	  padding-top: 4em !important;
+	  }
+  }
+  /*CHECKOUT MOBILE*/
+  @media (max-width: 576px) {
+	  .woocommerce-checkout .woocommerce {
+	  padding-top: 4em !important;
+	  }
+  }
+  /*CHECKOUT MOBILE*/
+  @media (max-width: 576px) {
+	  .woocommerce-checkout .woocommerce {
+	  padding-top: 4em !important;
+	  }
+  }
+  /*CHECKOUT MOBILE*/
+  @media (max-width: 576px) {
+	  .woocommerce-checkout .woocommerce {
+	  padding-top: 4em !important;
+	  }
+	  .woocommerce-checkout .woocommerce-info:before {
+	  display: none;
+	  }
+  
+	  .woocommerce-checkout .woocommerce-info {
+		  font-size: 13px;
+		  padding-left: 7px;
+		  width: 100%;
+		  text-align: center;
+	  }
+	  .woocommerce-checkout a.showcoupon {
+	  display: block;
+	  }
+	  .woocommerce-checkout .checkout_coupon.woocommerce-form-coupon {
+	  padding-top: 2px !important;
+	  }
+	  .woocommerce-checkout .checkout_coupon.woocommerce-form-coupon {
+	  padding-top: 2px !important;
+	  }
+	  .woocommerce-checkout input#coupon_code {
+	  font-size: 11px;
+	  }
+	  .woocommerce-checkout .woocommerce-form-coupon button.button.wp-element-button {
+	  font-size: 11px;
+	  }
+	  .woocommerce-checkout h3 {
+	  font-size: 25px;
+	  }
+  }
+  
+  /*CHECKOUT MOBILE*/
+  @media (max-width: 576px) {
+	  .woocommerce-checkout .woocommerce {
+	  padding-top: 4em !important;
+	  }
+	  .woocommerce-checkout .woocommerce-info:before {
+	  display: none;
+	  }
+  
+	  .woocommerce-checkout .woocommerce-info {
+		  font-size: 13px;
+		  padding-left: 7px;
+		  width: 100%;
+		  text-align: center;
+	  }
+	  .woocommerce-checkout a.showcoupon {
+	  display: block;
+	  }
+	  .woocommerce-checkout .checkout_coupon.woocommerce-form-coupon {
+	  padding-top: 2px !important;
+	  }
+	  .woocommerce-checkout .checkout_coupon.woocommerce-form-coupon {
+	  padding-top: 2px !important;
+	  }
+	  .woocommerce-checkout input#coupon_code {
+	  font-size: 11px;
+	  }
+	  .woocommerce-checkout .woocommerce-form-coupon button.button.wp-element-button {
+	  font-size: 11px;
+	  }
+	  .woocommerce-checkout h3 {
+	  font-size: 25px;
+	  }
+  }
+  
+  /*CHECKOUT MOBILE*/
+  /*CHECKOUT GENERIC*/
+  .woocommerce-checkout .woocommerce form .form-row label {
+	  font-size: 14px;
+  }
+  .woocommerce-checkout input, .woocommerce-checkout select {
+	  padding: 10px;
+	  font-size: 14px;
+  }
+  .woocommerce-checkout .select2-container--default .select2-selection--single .select2-selection__rendered {
+	  height: 40px !important;
+	  font-size: 14px;
+  }
+  .woocommerce-checkout span.select2-selection__arrow {
+	  height: 40px !important;
+	  max-height: 40px;
+  }
+  .woocommerce-checkout span.select2-selection.select2-selection--single {
+	  max-height: 40px;
+  }
+  .woocommerce-checkout .woocommerce-privacy-policy-text p {
+	  font-size: 14px;
+  }
+  .woocommerce-checkout ul.wc_payment_methods.payment_methods.methods {
+	  display: none;
+  }
+  .woocommerce-checkout .woocommerce-form-coupon button.button.wp-element-button {
+	  font-size: 17px;
+  }
+  /*CHECKOUT GENERIC*/
+  /*TEST USER REG*/
+  .user-registration .woocommerce-form .form-row label {
+	  display: block;
+  }
+  .user-registration .woocommerce-form input#reg_country_code {
+	  /* width: auto; */
+	  max-width: 47px;
+  }
+  .user-registration .woocommerce-form input#reg_dob {
+	  font-family: 'Inter';
+  }
+  .user-registration p.introtext {
+	  font-size: 14px;
+	  color: #1b1b1b;
+	  text-align: center;
+  }
+  .user-registration #customer_login h2 {
+	  text-align: center;
+  }
+  form.woocommerce-form.woocommerce-form-register.register {
+	  text-align: center;
+  }
+  @media (min-width: 768px) {
+	  .user-registration input {
+	  width: 35%;
+	  }
+	  .user-registration .woocommerce-form input#reg_billing_phone {
+	  max-width: 32%;
+  }
+  }
+  /*REGISTRAZIONE UTENTE MOBILE*/
+  @media (max-width: 576px) {
+	  .user-registration .woocommerce-form input {
+	  width: 77%;
+	  }
+	  .user-registration .woocommerce-form input#reg_billing_phone {
+	  width: 61% !important;
+	  }
+	  .user-registration .main .simple-title {
+	  padding-top: 0rem !important;
+  }
+	  .user-registration .woocommerce-privacy-policy-text {
+	  width: 80%;
+  }
+  
+  .user-registration .woocommerce-privacy-policy-text p {
+	  font-size: 10px !important;
+	  text-align: justify;
+  }
+  }
+  /*REGISTRAZIONE UTENTE MOBILE*/
+  /*TEST USER REG*/
+  /*LOGIN POPUP FORM*/
+  div#login-fancybox-form .woocommerce-notices-wrapper {
+	  padding: 0;
+  }
+  
+  div#login-fancybox-form h2 {
+	  margin: 0;
+  }
+  div#login-fancybox-form .woocommerce-form label {
+			font-size: 15px;
+		}
+  div#login-fancybox-form .woocommerce-form input.input-text {
+	  padding: 10px;
+	  width: 100%;
+  }
+  div#login-fancybox-form .woocommerce-form input#rememberme {
+	  padding: 8px;
+  }
+  div#login-fancybox-form .woocommerce-form label.woocommerce-form__label.woocommerce-form__label-for-checkbox.woocommerce-form-login__rememberme {
+	  display: flex;
+	  align-items: center;
+	  margin-bottom: 1rem;
+  }
+  div#login-fancybox-form .woocommerce-form p {
+	  font-size: 14px;
+  }
+  @media (max-width: 576px) {
+		div#login-fancybox-form .woocommerce-form label {
+			font-size: 12px;
+		}
+  }
+  /*LOGIN POPUP FORM*/
+  /*SPETTACOLO PRICESE MOBILE*/
+  @media (max-width: 576px) {
+		.spettacolo-prices-wrapper .showheader a.backtoshow {
+		  font-size: 11px;
+		}
+		.spettacolo-prices-wrapper .showheader h3 {
+		  font-size: 15px;
+		}
+		.spettacolo-prices .list-location {
+		  display: flex;
+		  align-items: center;
+	  }
+		.spettacolo-prices .list-location p {
+		  font-size: 12px;
+		}
+		.spettacolo-prices .list-date p {
+		  font-size: 11px;
+		}
+		.spettacolo-prices-inner ul.tab li a {
+		  font-size: 13px;
+		}
+		.spettacolo-prices-wrapper .row-title p {
+		  font-size: 13px;
+		}
+  }
+  /*SPETTACOLO PRICESE MOBILE*/
+  /*LOGIN PAGE MOBILE*/
+  @media (max-width: 576px) {
+	   .page-template-accedi a#lostPassword {
+		left: 1rem;
+	  }
+	  .page-template-accedi #loginform p {
+		margin: 0;
+		margin-bottom: 1rem;
+	  }
+	  .page-template-accedi #loginform label {
+		font-size: 14px !important;
+	  }
+	  .page-template-accedi #loginform input[type="text"], .page-template-accedi #loginform input[type="password"] {
+	  padding: 4px !important;
+  }
+	  .page-template-accedi #loginform p.login-remember {
+		margin-top: 1rem;
+	  }
+  
+	  .page-template-accedi #loginform p.login-submit {
+		margin-top: 0;
+	  }
+  }
+  /*LOGIN PAGE MOBILE*/
+  
+  /*NEW REG FORM*/
+  .vc_row.wpb_row.vc_row-fluid.--light-gray.vc_custom_1683895315619.vc_row-has-fill.vc_row-bf-default {
+	  background-color: #fff !important;
+  }
+  .user-registration .woocommerce-form .form-row label{
+	  font-size: max(20px,min(.8vw,26px));
+  }
+  form.woocommerce-form.woocommerce-form-register.register .form-control-row {
+	  display: flex;
+	  flex-direction: column;
+  }
+  form.woocommerce-form.woocommerce-form-register.register .form-control-row .form-control{
+		  width: 100%;
+  }
+  form.woocommerce-form.woocommerce-form-register.register{
+	  text-align: left !important;
+  }
+  @media only screen and (min-width: 768px){
+	  form.woocommerce-form.woocommerce-form-register.register .form-control-row {
+	  flex-direction: row;
+	  justify-content: space-around;
+	  }
+	  form.woocommerce-form.woocommerce-form-register.register .form-control-row .form-control{
+		  width: 43%;
+		  margin-top: 1rem;
+	  }
+	  .user-registration input {
+	  width: 100%;
+	  }
+	  .user-registration .woocommerce-form input#reg_billing_phone{
+		  max-width: 47% !important;
+	  }
+  }
+  
+  @media only screen and (max-width: 567px){
+	  .user-registration .woocommerce-form input{
+		  width: 100% !important
+	  }
+  }
+  /*NEW REG FORM*/
+  
+  .spettacolo-prices-wrapper .list-row button {
+	  color: #fff !important;
+  }
+  
+  .price-table .table-row{
+	  padding:5px 16px !important;
+	  border: none !important;
+	  background:#f8f9fa !important;
+  }
+  .zone-pricing p {
+	  margin-top: 14px;
+  }
+  .spettacolo-prices-inner {
+	  background: transparent !important;
+  }
+  
+  .spettacolo-prices-wrapper .showheader {
+	  background: transparent !important;
+  }
+  
+  .spettacolo-prices-wrapper .showheader h3 {
+	  color: #000 !important;
+  }
+  
+  .spettacolo-prices svg.fa-location-dot path {
+	  fill: #dd3d41 !important;
+  }
+  
+  .spettacolo-prices .list-location p{
+	  color: #1c1c1c !important;
+  }
+  
+  .spettacolo-prices svg.fa-calendar path {
+	  fill: #dd3d41 !important;
+  }
+  
+  .spettacolo-prices .list-date p{
+	  color: #1c1c1c !important;
+  }
+  
+  .spettacolo-prices-wrapper .showheader a.backtoshow{
+	  display: none !important;
+  }
+  
+  /* p.mc4wp-checkbox.mc4wp-checkbox-wp-registration-form span {
+	  color: #000;
+  } */
+  p.mc4wp-checkbox.mc4wp-checkbox-wp-registration-form input[type="checkbox"] {
+	  width: auto !important;
+	  margin-right: 0.5rem;
+  }
+  
+  /*MAPPA IN SPETTACOLO*/
+  .spettacolo-prices-img image{
+	  scale:1 !important;
+  }
+  
+  .spettacolo-prices-img circle{
+	  scale:1 !important;
+  }
+  
+  .spettacolo-prices-img svg#svgSeatSvg {
+	  height: unset !important;
+  }
+  /*MAPPA IN SPETTACOLO*/
+  
+  /*CARRELLO PRICES*/
+  .woocommerce-cart .reduction-title-wrap {
+	  display: flex;
+	  align-content: center;
+	  justify-content: flex-start;
+  }
+  
+  .woocommerce-cart .reduction-title-wrap p {
+	  margin-right: 1rem;
+  }
+  
+  .tipoticketeprezzo {
+	  display: flex;
+  }
+  .woocommerce-cart  .seat-title p, .woocommerce-cart .tipoticketeprezzo .reduction-title p, .woocommerce-cart .tipoticketeprezzo .reduction-qty p, .woocommerce-cart .tipoticketeprezzo .reduction-price p {
+	  color: #000 !important;
+	  font-weight: 500 !important;
+	  font-size: max(18px,min(.7vw,22px))!important;
+  }
+  .woocommerce-cart  .zone-reductions {
+	  border-bottom: 1px solid;
+  }
+  .woocommerce-cart th.product-name {
+	  font-size: 0;
+  }
+  .woocommerce-cart .ticket-title h2 {
+	  line-height: 2.3 !important;
+	  color: #000 !important;
+	  display: block;
+  }
+  /*CARRELLO PRICES*/
+  
+  /*add to cart sticky*/
+  .spettacolo-prices-page .total-values-wrap {
+	  position: fixed;
+	  bottom: 0;
+	  width: 100%;
+	  left: 0;
+	  z-index: 999;
+  }
+  
+  
+  /*TIMER*/
+	  
+	  .page.cart .timer{
+	  padding: 1rem!important;
+	  background-color: transparent !important;
+	  width: 125px;
+	  border-radius: 5px;
+	  text-align: center;
+	  margin-bottom: 1rem;
+	  }
+	  .page.cart .timetext {
+	  color: #df3b3c;
+	  font-weight: 700;
+	  font-size: 4vw;
+	  display: flex;
+	  align-items: center;
+	  justify-content: space-evenly;
+	  }
+	  .page.cart .timetext::before{
+	  font-size: 4vw;
+	  display: inline-block;
+	  width: 20px;
+	  font-family: 'dashicons';
+	  content: '\f469';
+		  margin-right:1rem !important;
+  color:#df3b3c;
+	  }
+  
+	  @media (min-width:768px){
+  
+			  .page.cart .timer{
+			  max-width: 230px;
+			  width: 150px;
+			  }
+  
+			  .page.cart .timetext{
+			  font-size: 1.2rem;
+			  }
+  
+			  .page.cart .timetext::before {		   
+			  font-size:2vw;
+			  margin-right:.4vw;
+			  }
+  
+	  }
+  
+  /*TIMER*/
+  
+  /*MY ACCOUNT VIEW ORDER AREA*/
+  
+  .woocommerce-account.woocommerce-view-order table.shop_table tbody:first-child tr:first-child th {
+	  display: flex;
+	  color: #1b1b1b;
+	  font-size: max(18px,min(1.1vw,24px)) !important;
+	  color: #1b1b1b;
+	  text-transform: uppercase;
+	  font-weight: 500;
+  }
+  
+  .woocommerce-account.woocommerce-view-order .ticket-title h2{
+	  color: #6c757d !important;
+	  font-size:max(18px,min(1.1vw,24px));
+	  font-weight: 500;
+	  text-transform:uppercase;
+  }
+  .woocommerce-account.woocommerce-view-order .ticket-title h2:before {
+	  display: block;
+	  font-size: max(18px,min(1.1vw,24px));
+	  content: 'Spettacolo:';
+	  color: #1b1b1b;
+  }
+  .woocommerce-account.woocommerce-view-order .ticket-zone .zone-title h4 {
+	  text-transform: uppercase;
+	  font-size: max(18px,min(1.1vw,24px));
+	  font-weight: 500;
+	  color: #6c757d;
+  }
+  .woocommerce-account.woocommerce-view-order .ticket-zone .zone-title h4:before{
+	  display: block;
+	  font-size: max(18px,min(1.1vw,24px));
+	  content: 'Dettaglio:';
+	  color: #1b1b1b;
+  }
+  
+  .woocommerce-account.woocommerce-view-order .tipoticketeprezzo .reduction-title-wrap .reduction-title p {
+	  font-size: max(18px,min(1.1vw,24px)) !important;
+	  color: #6c757d !important;
+	  font-weight: 500;
+	  margin-right: 0.5rem;
+	  margin-top: 0.5rem;
+  }
+  .woocommerce-account.woocommerce-view-order .tipoticketeprezzo .reduction-title-wrap .reduction-qty p {
+	  font-size: max(18px,min(1.1vw,24px)) !important;
+	  color: #6c757d !important;
+	  font-weight: 500;
+	  margin-top: 0.5rem;
+  }
+  .woocommerce-account.woocommerce-view-order .tipoticketeprezzo .reduction-title-wrap .reduction-qty p:before {
+	  /* display: flex; */
+	  content: 'Qtà: ';
+	  color: #1b1b1b;
+  }
+  .woocommerce-account.woocommerce-view-order .tipoticketeprezzo .reduction-price p:before{
+	  content: 'Prezzo:';
+	  margin-left: 0.5rem;
+	  color: #1b1b1b;
+  }
+  .woocommerce-account.woocommerce-view-order .tipoticketeprezzo .reduction-price p{
+	  font-size: max(18px,min(1.1vw,24px)) !important;
+	  color: #6c757d !important;
+	  font-weight: 500;
+	  margin-top: 0.5rem;
+  }
+  .woocommerce-account.woocommerce-view-order .zone-reductions {
+	  width: 100% !important;
+  }
+  .woocommerce-account.woocommerce-view-order .zone-reductions .seat-title p {
+	  font-size: max(18px,min(1.1vw,24px)) !important;
+	  color: #6c757d !important;
+	  font-weight: 500;
+	  margin-top:0;
+  }
+  .woocommerce-account.woocommerce-view-order .tipoticketeprezzo .reduction-title-wrap{
+	  display: flex;
+  }
+  
+  
+  .woocommerce-account.woocommerce-view-order table.woocommerce-table.woocommerce-table--order-details.shop_table.order_details tfoot th {
+	  color: #1b1b1b;
+	  color: #1b1b1b;
+	  font-size: max(18px,min(1.1vw,24px)) !important;
+	  color: #1b1b1b;
+	  text-transform: uppercase;
+	  font-weight: 500 !important;
+  }
+  .woocommerce-account.woocommerce-view-order table:nth-of-type(2) {
+	  text-align: left !important;
+	  border-bottom: 1px solid #e5e5e5;
+	  padding-bottom: 1rem;
+  }
+  .woocommerce-account.woocommerce-view-order table:nth-of-type(2) th {
+	  color: #1b1b1b;
+	  font-weight: 500;
+	  text-transform: uppercase;
+  }
+  .woocommerce-account.woocommerce-view-order table:nth-of-type(2) td {
+	  font-size: max(18px,min(1.1vw,24px)) !important;
+	  color: #6c757d !important;
+	  font-weight: 500;
+	  text-transform: uppercase;
+  }
+  .woocommerce-account.woocommerce-view-order table:nth-of-type(2) a.button.order-print-btn {
+	  text-align: center;
+	  transition: .2s ease-in-out;
+	  color: #fff;
+	  background: var(--primary);
+  }
+  .woocommerce-account.woocommerce-view-order table:nth-of-type(2) a.button.order-print-btn:hover {
+	  background: #857b7b;
+	  color: #1b1b1b;
+  }
+  .woocommerce-account.woocommerce-view-order table.woocommerce-table.woocommerce-table--order-details.shop_table.order_details tfoot td {
+	  border-top: 1px solid #e5e5e5 !important;
+  }
+  /*MY ACCOUNT VIEW ORDER AREA*/
+  
+  /*TICKET QTY TEXT AREA*/
+  
+  
+  /*SUB LISTING MOBILE*/
+  @media (max-width: 576px) {
+	.subsciption-list .spettacolo-info-inner-wrap {
+	  flex-direction: column;
+	  justify-content: center;
+	  padding-left: 0;
+	  padding-right: 0;
+		  border-bottom: 1px solid;
+	  padding-bottom: 2rem;
+	  }
+	  .subsciption-list .spettacolo-info-inner-wrap .drop-select-box{
+	  flex-direction: column;
+	  width: 100%;
+	  }
+	  .subsciption-list .spettacolo-info-inner-wrap .spettacolo-info-inner .list-title h3{
+	  text-align: center;
+	  font-size: 1.5rem;
+	  margin-bottom: 1rem;
+	  }
+	  .subsciption-list .spettacolo-info-inner-wrap .spe-info-half-wrap{
+	  width: 100%;
+	  text-align: center;
+	  }
+	  .subsciption-list .spettacolo-info-inner-wrap .spe-info-half-wrap .spettacolo-info-img img{
+		  max-width:190px;
+	  }
+  }
+  
+  /*POPUP SUBSCRIPTION*/
+  div#subscription-fancybox-wrap button.cart-buy-btn.buy-btn {
+	  background-color: #df3b3c;
+	  border: none;
+	  color: #fff;
+	  padding: 1rem;
+	  margin: 0 auto;
+	  font-size: 20px;
+  }
+  
+  @media only screen and (max-width: 600px) {
+	  div#subscription-fancybox-wrap {
+	  padding: 5px;
+	  }
+  }
+  
+  div#subscription-fancybox-wrap ul.event-ticketlist-wrap {
+	  list-style: none;
+	  /* margin-left: 0; */
+	  padding-left: 0;
+  }
+  div#subscription-fancybox-wrap select#subscription-code {
+	  /* border: none; */
+	  padding-top: 1rem;
+	  padding-bottom: 1rem;
+	  width: 100%;
+	  font-size: 15px;
+  }
+  
+  
+  div#subscription-fancybox-wrap ul.event-ticketlist-wrap .table-row {
+	  flex-direction: column;
+	  text-align: left;
+	  align-items: flex-start !important;
+	  align-content: flex-start !important;
+  }
+  /*POPUP SUBSCRIPTION*/
+  
+  /*NASCONDO AGGIORNA CARRELLO DA CART PAGE*/
+  .woocommerce-cart .actions button[name="update_cart"] {
+	  display: none;
+  }
+  /*NASCONDO AGGIORNA CARRELLO DA CART PAGE*/
+  
+  /*FIX SIDEBAR RIGHT CHECKOUT SUMMARY*/
+  .woocommerce-checkout .wc-spettacolo-cart-wrapper .zone-reductions{
+	  width:100% !important;
+  }
+  
+  .woocommerce-checkout .reduction-title-wrap {
+	  display: flex;
+	  margin-right: 1rem;
+  }
+  
+  .woocommerce-checkout .tipoticketeprezzo {
+	  display: flex;
+	  flex-direction: row;
+	  width: 100%;
+  }
+  
+  .woocommerce-checkout .reduction-title-wrap .reduction-title {
+	  margin-right: 1rem;
+  }
+  /*FIX SIDEBAR RIGHT CHECKOUT SUMMARY*/
+  
+  /*PULSANTE BUY DETTAGLIO CARNET*/
+  .single-spettacolo .single-date-right a button {
+	  background-color: #dd3d41;
+	  color: #fff;
+	  text-transform: uppercase;
+	  -webkit-font-smoothing: antialiased;
+	  width: 100%;
+	  display: block;
+	  padding: 15px;
+	  /* margin-top: 1rem; */
+	  text-align: center;
+	  text-decoration: none;
+	  border: none;
+	  font-size: 1rem;
+  }
+  
+  .single-spettacolo .single-date-right a {
+	  text-decoration: none;
+  }
+  
+  .single-spettacolo .single-date-list{
+	  align-items:center;
+  }
+  
+  /*PULSANTE BUY DETTAGLIO CARNET*/
+  
+  button {
+	  cursor: pointer !important;
+  }
+  
+  .shop_table.cart.woocommerce-cart-form__contents td.product-remove {
+	  display:none;
+  }
+  
+  .woocommerce-cart .zone-reductions{
+	  width: 100%;
+	  font-size: 1rem;
+  }
+  
+  .single-spettacolo .single-date-list-title {
+	  display: none;
+  }
+  
+  .single-spettacolo .single-date-list-lists .single-date-list .single-date-left {
+	  display: none;
+  }
+  
+  .single-spettacoli a#buyTicket {
+	  font-size: 13px !important;
+  }
+  
+  
+  .mio-account mark {
+	  background: transparent !important;
+  }
+  
+  
+  /*MY ACCOUNT INTRO*/
+  .mio-account ul#intro-dashboard {
+	  list-style: none;
+	  line-height: 1.5;
+	  padding-left: 0;
+  }
+  
+  .mio-account ul#intro-dashboard li a {
+	  color: #000;
+	  text-decoration: none;
+  }
+  
+  #intro-dashboard li a:before {
+	  display: inline-block;
+	  content: url("data:image/svg+xml;charset=utf-8,%3Csvg width='26' height='18' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 9h24' stroke='%23DF3B3C' stroke-width='2.5'/%3E%3Cpath d='m16 17 8-8-8-8' stroke='%23DF3B3C' stroke-width='2'/%3E%3C/svg%3E");
+	  margin-right: 1rem;
+  }
+  
+  .woocommerce-cart th.product-subtotal {
+	  display: none;
+  }
+  .woocommerce-cart table.shop_table.shop_table_responsive tr.cart-subtotal {
+	  display: none;
+  }
+  .woocommerce-cart .shop_table td.product-subtotal {
+	  display: none;
+  }
+  .woocommerce-cart .spettacolo-tickets .ticket-datails-wrap.border-bot {
+	  border-bottom: 0;
+  }
+  
+  
+  .user-registration {
+	  input#privacy_policy_reg {
+	  WIDTH: AUTO;
+  }
+  }
+  
+  
+  
+  @media only screen and (max-width: 640px){
+  .woocommerce .woo-wrap{
+	  flex-direction:column;
+  }
+  }
+  
+  /*WORKAROUND AGGIORNA TELEFONO*/
+  html[lang=it-IT] li.woocommerce-MyAccount-navigation-link.woocommerce-MyAccount-navigation-link--update-phone a:before {
+	  content: 'Aggiorna Telefono';
+	  display: block !important;
+	  font-size: max(16px,min(1vw,22px));
+	  padding-left: 15px;
+		  margin-top:10px;
+		  margin-bottom:10px;
+  }
+  
+  html[lang=it-IT] li.woocommerce-MyAccount-navigation-link.woocommerce-MyAccount-navigation-link--update-phone a {
+	  font-size: 0 !important;
+  }
+  
+  
+  .woocommerce-checkout label[for="billing_phone"] {
+	  display: none !important;
+  }
+  
+  
+  /*LAST FIX JAY*/
+  .woocommerce-form-update-user label[for="reg_emailgishdgrd"] {
+	  display: block;
+  }
+  
+  .woocommerce-form-update-user input#reg_emailgishdgrd {
+	  width: 100%;
+  }
+  
+  .woocommerce-form-update-user label[for="reg_billing_phonegishdgrd"] {
+	  display: block;
+  }
+  
+  @media only screen and (min-width: 768px){
+  .woocommerce-account input#reg_billing_phonegishdgrd{
+	  width:85%;
+  }
+  
+  .user-registration .form-control-row.form-control-row-phone {
+	  justify-content: flex-start !important;
+	  padding-left: 3rem;
+  }
+  
+  
+  
+  
+  .user-registration input#reg_billing_phonegishdgrd {
+		   width: max-content;
+		  float: none;
+		  padding-bottom: 20px;
+  }
+  .user-registration select#reg_country_codegishdgrd {
+	  padding-bottom: 20px;
+  }
+  }
+  
+  .user-registration p.form-row.form-row-wide.mailchimp-newsletter {
+	  display: none;
+  }
+  
+  @media only screen and (max-width: 850px) {
+	  .wm-100 {flex-basis: 100%;}
+  }
+  
