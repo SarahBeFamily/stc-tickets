@@ -683,8 +683,8 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                     $place_of_birth = get_user_meta( $current_user_id, 'place_of_birth', true );
                                     $dob = get_user_meta( $current_user_id, 'dob', true );
 
-                                    if( ! empty( $user_billing_phone ) && ! empty( $place_of_birth ) && ! empty( $dob ) && empty($barcode) ) {
-                                    ?>
+                                    if( ! empty( $user_billing_phone ) && ! empty( $place_of_birth ) && ! empty( $dob ) && empty($barcode)) {
+                                        ?>
                                         <button class="cart-buy-btn buy-btn" data-profile-status="complete"><?php _e('PROSEGUI','stc-tickets'); ?></button>
                                     <?php
                                     } else if(empty( $user_billing_phone )) {
@@ -722,7 +722,15 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                                     <input class="woocommerce-Input woocommerce-Input--text input-text" autocomplete="nope" type="text" name="registerotp" id="registerotp" autocomplete="OTP" />
                                                 </p>
                                                 <p class="woocommerce-form-row form-row">
+                                                    <?php // Check if user has test email
+                                                        if ($current_user_email != TEST_EMAIL) { ?>
                                                     <button class="woocommerce-Button otp-generate woocommerce-button update_phone_otp button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : ''  ); ?>" name="update_phone_otp" value="<?php esc_attr_e( 'Invia OTP', 'stc-tickets' ); ?>"><?php esc_html_e( 'Invia OTP', 'stc-tickets' ); ?></button>
+                                                    <?php
+                                                        // if test email save phone number without verify and OTP
+                                                    } else { ?>
+                                                        <button class="woocommerce-Button woocommerce-button update_phone_otp otp-verified-disabled button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : ''  ); ?> woocommerce-form-update__submit" name="update_phone_otp" value="<?php esc_attr_e( 'Update', 'stc-tickets' ); ?>"><?php esc_html_e( 'Update', 'stc-tickets' ); ?></button>
+
+                                                      <?php  } ?>
                                                     <button type="submit" class="woocommerce-Button woocommerce-button button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : ''  ); ?> woocommerce-form-update__submit" name="update" value="<?php esc_attr_e( 'Update', 'stc-tickets' ); ?>" hidden="hidden" style="display: none;"><?php esc_html_e( 'Update', 'stc-tickets' ); ?></button>
                                                 </p>
                                             </form>

@@ -1097,7 +1097,9 @@ jQuery(document).ready(function ($) {
                         curr_reduction_price = '',
                         curr_reduction_id = '',
                         first_price = '';
+                        
                     // console.log(reductions);
+                    // console.log(reductions.hasOwnProperty(0));
                     if(reductions.hasOwnProperty(0)){
                         reductions.forEach(function (reduction, index) {
                             let reduction_flag = false;
@@ -1147,11 +1149,12 @@ jQuery(document).ready(function ($) {
                     }else{
                         let reduction_flag = false;
                         var temp_reduction_name = reductions.description;
+                        let curr_reduction_price = first_price = (reductions.price) / 100;
                         if(user_logged_in){
                             if(temp_reduction_name != "INTERO"){
                                 reduction_html = '';
                                 curr_reduction_name = reductions.description;
-                                curr_reduction_price = (reductions.price) / 100;
+                                // curr_reduction_price = (reductions.price) / 100;
                                 if(typeof barcode != "undefined" && barcode != ""){
                                     curr_reduction_price = 0.00;                                        
                                 }
@@ -1161,7 +1164,7 @@ jQuery(document).ready(function ($) {
                             } else{
                                 if(temp_reduction_name == "INTERO"){
                                     curr_reduction_name = reductions.description;
-                                    curr_reduction_price = (reductions.price) / 100;
+                                    // curr_reduction_price = (reductions.price) / 100;
                                     if(typeof barcode != "undefined" && barcode != ""){
                                         curr_reduction_price = 0.00;                                        
                                     }
@@ -1173,7 +1176,7 @@ jQuery(document).ready(function ($) {
                         } else{
                             if(temp_reduction_name.indexOf("INTERO") > -1){
                                 curr_reduction_name = reductions.description;
-                                curr_reduction_price = (reductions.price) / 100;
+                                // curr_reduction_price = (reductions.price) / 100;
                                 if(typeof barcode != "undefined" && barcode != ""){
                                     curr_reduction_price = 0.00;                                        
                                 }
@@ -1677,15 +1680,15 @@ jQuery(document).ready(function ($) {
                             }
                         });
                     }
-//                console.log(transaction_id);
             });
-//            console.log(delete_transaction_ids);
         }
         jQuery.ajax({
             url: STCTICKETSPUBLIC.ajaxurl,
             method: 'post',
             beforeSend: function () {
-                jQuery( "body" ).css('opacity', '0.2');
+                // jQuery( "body" ).css('opacity', '0.2');
+                $('body').addClass('loading');
+                progressLoading(0, 80); // Mostra la barra di caricamento allo 0%
             },
             data: {
                 action: 'deleteTickets',
@@ -1693,18 +1696,21 @@ jQuery(document).ready(function ($) {
                 ticket_title: ticket_title
             },
             success: function (data) {
-                jQuery( "body" ).css('opacity', '1');
-//                    console.log(data);
+                // jQuery( "body" ).css('opacity', '1');
                 var responseData = JSON.parse(data);
                 if (responseData.status) {
                     console.log(responseData.message);
                     location.reload();
                 }else{
                     console.log(responseData.message);
+                    $('body').removeClass('loading');
+                    progressLoading('clear');
                 }
             },
             error: function (request, status, error) {
                 console.log(error);
+                $('body').removeClass('loading');
+                progressLoading('clear');
             }
         });
 //        jQuery(document).find('#svgSeatSvg circle[data-id="'+seat_id+'"]').trigger('click');
@@ -1829,12 +1835,25 @@ jQuery(document).ready(function ($) {
 });
 
 function renderReCaptcha() {
+    let lang = jQuery('html').attr('lang');
     if (typeof grecaptcha !== 'undefined') {
+
+        // check if widget recaptacha placeholder is available
+        if (jQuery('#reCaptchDiv').length === 0) {
+            return;
+        }
+
+        let body_classes = document.body.className;
+        if (body_classes.indexOf('rtl') > -1) {
+            lang = 'ar';
+        }
+
         grecaptcha.ready(function() {
             // Render reCAPTCHA widget
             widgetId = grecaptcha.render('reCaptchDiv', {
                 'sitekey' : '6LedGCcpAAAAAOGFFUqTQMl7ieQiSHh7ggKrXNnL',
-                'theme' : 'light'  // Optional: change theme if needed
+                'theme' : 'light',  // Optional: change theme if needed
+                'lang' : lang,   // Optional: change language if needed
             });
 
             // Example: reset reCAPTCHA on button click        

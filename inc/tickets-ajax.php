@@ -331,7 +331,7 @@ function fun_getBookingCart (){
                 foreach ( $addToCartReductions as $addToCartReductions_key => $addToCartReductions_value ) {
                     if (is_array($addToCartReductions_value)):
                         $transaction_list[ 'transaction_qty' ] = isset( $transaction_list[ 'transaction_qty' ] ) ? $transaction_list[ 'transaction_qty' ] + $addToCartReductions_value[ 'reductionQuantity' ] : $addToCartReductions_value[ 'reductionQuantity' ];
-    //                    $transaction_list[ 'seatId' ] = isset( $transaction_list[ 'seatId' ] ) ? $transaction_list[ 'seatId' ] + $addToCartReductions_value[ 'seatId' ] : $addToCartReductions_value[ 'seatId' ];
+                        // $transaction_list[ 'seatId' ] = isset( $transaction_list[ 'seatId' ] ) ? $transaction_list[ 'seatId' ] + $addToCartReductions_value[ 'seatId' ] : $addToCartReductions_value[ 'seatId' ];
                         if($manualSelection == 'true'){
                             $seatids_tostring = is_array($addToCartReductions_value['seatId']) ? implode(",",$addToCartReductions_value['seatId']) : $addToCartReductions_value['seatId'];
                             $seatId .= rtrim($seatids_tostring, ',').',';
@@ -365,10 +365,10 @@ function fun_getBookingCart (){
                         $curl_url = API_HOST . 'backend/backend.php?cmd=bestseat&id=' . APIKEY . '&timeout='.$timeout.'&vcode=' . trim($vcode) . '&pcode=' . trim($pcode) . '&zone=' . $zoneId . $reductionTicket . '&firstname=' . urlencode(trim($firstname)) . '&lastname=' . urlencode(trim($lastname)) . '&email=' . trim($email);
                     }
                 }
-//                echo "<pre>";
-//                print_r($curl_url);
-//                echo "</pre>";
-//                die();
+            //    echo "<pre>";
+            //    print_r($curl_url);
+            //    echo "</pre>";
+            //    die();
                 $book_cart_cookie = tempnam ("/tmp", "CURLCOOKIE");
                 $curl = curl_init();
 
@@ -385,12 +385,12 @@ function fun_getBookingCart (){
                 ));
 
                 $bestseat_response = curl_exec($curl);
-//                echo "<pre>";
-//                print_r($bestseat_response);
-//                echo "</pre>";
-//                echo "<pre>";
-//                print_r(curl_error($curl));
-//                echo "</pre>";
+            //    echo "<pre>";
+            //    print_r($bestseat_response);
+            //    echo "</pre>";
+            //    echo "<pre>";
+            //    print_r(curl_error($curl));
+            //    echo "</pre>";
                 if (curl_errno($curl)) {
                     $error_msg = curl_error($curl);
                     $response[ 'message' ] = $error_msg;
@@ -400,12 +400,12 @@ function fun_getBookingCart (){
                 $xml                    = simplexml_load_string( $bestseat_response );
                 $json                   = json_encode( $xml );
                 $bestseatArr            = json_decode( $json, TRUE );
-//                echo "<pre>";
-//                print_r($addToCartReductions);
-//                echo "</pre>";
-//                echo "<pre>";
-//                print_r($bestseatArr);
-//                echo "</pre>";
+            //    echo "<pre>";
+            //    print_r($addToCartReductions);
+            //    echo "</pre>";
+            //    echo "<pre>";
+            //    print_r($bestseatArr);
+            //    echo "</pre>";
                 $transactions           = !empty( $bestseatArr[ 'transaction' ] ) ? $bestseatArr[ 'transaction' ] : '';
                 if( ! empty( $transactions ) ) {
                     $transaction_list[ 'ticketName' ]         = $ticketName;
@@ -452,21 +452,21 @@ function fun_getBookingCart (){
                         $final_seats[] = $transaction_seatObject['@attributes']['id'];
                     }
                 }
-//                $final_seats[] = $seat_ids;
-//                echo "<pre>";
-//                print_r($final_seats);
-//                echo "</pre>";
-//                echo "<pre>";
-//                print_r($subscription_list);
-//                echo "</pre>";
-//                $seat_html = '';
-//                if(count($seat_ids) > 1){
-//                    foreach($seat_ids as $seat_key => $seat_value){
-//                        $seat_html .= '&seatCode[]='.$seat_value;
-//                    }
-//                }else{
-//                    $seat_html .= '&seatCode='.$seat_ids[0];
-//                }
+            //    $final_seats[] = $seat_ids;
+            //    echo "<pre>";
+            //    print_r($final_seats);
+            //    echo "</pre>";
+            //    echo "<pre>";
+            //    print_r($subscription_list);
+            //    echo "</pre>";
+            //    $seat_html = '';
+            //    if(count($seat_ids) > 1){
+            //        foreach($seat_ids as $seat_key => $seat_value){
+            //            $seat_html .= '&seatCode[]='.$seat_value;
+            //        }
+            //    }else{
+            //        $seat_html .= '&seatCode='.$seat_ids[0];
+            //    }
                 if($loop_counter == 0){
                     $prev_count = count($seat_ids);
                     $start = 0;
@@ -485,19 +485,19 @@ function fun_getBookingCart (){
                     $oldRedId = $subscription_list[$i]['reductionId'];
                     $newRedId = $subscription_list[$i]['reductionId'];
                     $subsCode = $subscription_list[$i]['subscription'];
-//                    if(count($seat_ids) > 1){
-//                        $oldRedId_html .= '&oldRedId[]='.$subscription_list[$i]['reductionId'];
-//                        $newRedId_html .= '&newRedId[]='.$subscription_list[$i]['reductionId'];
-//                        $subsCode_html .= '&subsCode[]='.$subscription_list[$i]['subscription'];
-//                    }else{
-//                    echo "<pre>";
-//                    print_r('i = '.$i.' - '.'$start = '.$start.' - '.'$end = '.$end.' - '.$final_seats[$i]);
-//                    echo "</pre>";
+                //    if(count($seat_ids) > 1){
+                //        $oldRedId_html .= '&oldRedId[]='.$subscription_list[$i]['reductionId'];
+                //        $newRedId_html .= '&newRedId[]='.$subscription_list[$i]['reductionId'];
+                //        $subsCode_html .= '&subsCode[]='.$subscription_list[$i]['subscription'];
+                //    }else{
+                //    echo "<pre>";
+                //    print_r('i = '.$i.' - '.'$start = '.$start.' - '.'$end = '.$end.' - '.$final_seats[$i]);
+                //    echo "</pre>";
                         $seat_html .= '&seatCode='.$seatCode;
                         $oldRedId_html .= '&oldRedId='.$oldRedId;
                         $newRedId_html .= '&newRedId='.$newRedId;
                         $subsCode_html .= '&subsCode='.$subsCode;
-//                    }
+                //    }
                     $subscription_curl_url = API_HOST . 'backend/backend.php?id='.APIKEY.'&cmd=xmlChangeLock&tranCode='.$transcode.$seat_html.$oldRedId_html.$newRedId_html.$subsCode_html;
                     // echo "<pre>";
                     // print_r($subscription_curl_url);
@@ -536,9 +536,9 @@ function fun_getBookingCart (){
                         $subscription_tickets['transaction']['seat_id'] = $seatCode;
                         $subs_seat_list[$subsCode][] = $subscription_tickets['transaction'];
                     }
-//                    echo "<pre>";
-//                    print_r($subscription_tickets);
-//                    echo "</pre>";
+                //    echo "<pre>";
+                //    print_r($subscription_tickets);
+                //    echo "</pre>";
                 }
             }
             $loop_counter++;
@@ -815,17 +815,17 @@ function fun_getUserLogin (){
         AND meta_value = %s
     ", 'billing_phone', $get_billing_phone);
     $results = $wpdb->get_results($query);
-//    $billing_phone_exist = false;
-//    $users = get_users(array( 'fields' => array( 'ID' ) ));
-//    foreach($users as $users_key => $users_value){
-//        $user_id = $users_value->id;
-//        $this_billing_phone  = get_user_meta ($user_id, 'billing_phone' );
-//        if(in_array($get_billing_phone,$this_billing_phone)){
-//            $billing_phone_exist = true;
-//        }else{
-//            $billing_phone_exist = false;
-//        }
-//    }
+    //    $billing_phone_exist = false;
+    //    $users = get_users(array( 'fields' => array( 'ID' ) ));
+    //    foreach($users as $users_key => $users_value){
+    //        $user_id = $users_value->id;
+    //        $this_billing_phone  = get_user_meta ($user_id, 'billing_phone' );
+    //        if(in_array($get_billing_phone,$this_billing_phone)){
+    //            $billing_phone_exist = true;
+    //        }else{
+    //            $billing_phone_exist = false;
+    //        }
+    //    }
     $curl_response = array();
     if( $generate_otp_now ) {
         if(email_exists($email)){
@@ -956,6 +956,7 @@ function fun_UpdateUserPhone (){
     $email               = isset($_POST[ 'email' ]) ? $_POST[ 'email' ] : '';
     $generate_otp_now    = isset($_POST[ 'generate_otp_now' ]) ? $_POST[ 'generate_otp_now' ] : false;
     $registerOtp         = isset( $_POST[ 'registerotp' ] ) ? (int) $_POST[ 'registerotp' ] : '';
+    $registerOtp         = $email === TEST_EMAIL ? "TEST_OTP" : $registerOtp;
     $current_user = wp_get_current_user();
     $current_user_id =  $current_user->ID;
     $query = $wpdb->prepare("
@@ -979,6 +980,7 @@ function fun_UpdateUserPhone (){
     //    }
     $curl_response = array();
     if( $generate_otp_now ) {
+        
         if(empty($results)) {
             $genratedOtp        = random_int( 100000, 999999 );
             $_SESSION[ "$email" ] = $genratedOtp;
@@ -1029,7 +1031,14 @@ function fun_UpdateUserPhone (){
     }
     $phone_updated = '';
     if(!empty($registerOtp)){
-        $genratedOtp = $_SESSION["$email"];
+        // Check for email test
+        if ( $email == TEST_EMAIL ) {
+            $genratedOtp = "TEST_OTP";
+            $otpCreated = "TEST_OTP";
+        } else {
+            $genratedOtp = $_SESSION["$email"];
+        }
+        
         if($registerOtp === $genratedOtp){
             $otpMatched = true;
             if(isset($_POST[ 'country_code' ])) {
@@ -1050,6 +1059,13 @@ function fun_UpdateUserPhone (){
         $response[ 'generate_otp_now' ] = $generate_otp_now;
         $response[ 'status' ]           = true;
         $response[ 'error' ]            = $err;
+
+        if ($email === TEST_EMAIL) {
+            $response[ 'email' ]        = $email;
+            $response[ 'registerOtp' ]  = $registerOtp;
+            $response[ 'genratedOtp' ]  = $genratedOtp;
+        }
+        
     }
     echo json_encode ( $response );
     wp_die ();

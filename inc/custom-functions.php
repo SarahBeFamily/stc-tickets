@@ -2117,110 +2117,22 @@ function removed_from_cart_title($message, $cart_item) {
     }
     return $message;
 }
-//function custom_mini_cart_product_count($count, $cart) {
-//    // Set your custom count here
-//    $custom_count = 5; // Replace with your desired count
-//    
-//    return $custom_count;
-//}
-//
-//add_filter('woocommerce_mini_cart_product_count', 'custom_mini_cart_product_count', 10, 2);
-//function filter_woocommerce_get_endpoint_url( $url, $endpoint, $value, $permalink ) {
-//    // Specific endpoint
-//    if ( $endpoint === 'view-order' ) {
-//        // New URL
-////        if($_GET['print'] == '1'){
-////            echo "<pre>";
-////            print_r($url);
-////            echo "</pre>";
-////            echo "<pre>";
-////            print_r($value);
-////            echo "</pre>";
-////            echo "<pre>";
-////            print_r($permalink);
-////            echo "</pre>";
-////            echo "<pre>";
-////            print_r($endpoint);
-////            echo "</pre>";
-////            
-////        }
-//    }
-//
-//    return $url;
-//}
-//add_filter( 'woocommerce_get_endpoint_url', 'filter_woocommerce_get_endpoint_url', 10, 4 );
-// Change View Order URL in WooCommerce
-function modify_view_order_url($view_order_url) {
-//    if($_GET['print'] == '1'){
-//        echo "<pre>";
-//        print_r($view_order_url);
-//        echo "</pre>";
-//    }
 
-    return $view_order_url;
-}
-//add_filter('woocommerce_get_view_order_url', 'modify_view_order_url', 10, 1);
-// Modify View Order button HTML
-//function modify_view_order_button_html($button_html, $order) {
-//    $order_id = $order->get_id();
-//
-//    // Customize the button HTML as needed
-//    $button_html = sprintf(
-//        '<a class="button test" href="%s">%s</a>',
-//        esc_url($order->get_view_order_url()),
-//        __('View Order', 'stc-tickets') // Replace with your desired text
-//    );
-//
-//    return $button_html;
-//}
-//add_filter('woocommerce_order_button_html', 'modify_view_order_button_html', 10, 2);
+
 add_filter( 'woocommerce_my_account_my_orders_actions', 'modify_view_order_button_url', 999999999999999, 2 );
 function modify_view_order_button_url($actions, $order) {
-//    if($_GET['print'] == 1) {
-//        echo "<pre>";
-//        print_r($actions);
-//        echo "</pre>";
-//        die();
-//    }
+    // test
+   if(isset($_GET['print']) && $_GET['print'] == 1) {
+       echo "<pre>";
+       print_r($actions);
+       echo "</pre>";
+       die();
+   }
     $actions[ 'view' ][ 'url' ] = $order->get_view_order_url();
     return $actions;
 }
 // add subscription tab to My Account page
-//function woocommerce_account_subscription_endpoint() {
-//    add_rewrite_endpoint( 'abbonamenti', EP_ROOT | EP_PAGES );
-//}
-//  
-//add_action( 'init', 'woocommerce_account_subscription_endpoint' );
-//  
-//// ------------------
-//// 2. Add new query var
-//  
-//function woocommerce_account_subscription_query_vars( $vars ) {
-//    $vars[] = 'abbonamenti';
-//    return $vars;
-//}
-//  
-//add_filter( 'query_vars', 'woocommerce_account_subscription_query_vars', 0 );
-//  
-//// ------------------
-//// 3. Insert the new endpoint into the My Account menu
-//  
-//function woocommerce_account_subscription_link_my_account( $items ) {
-//    $items['abbonamenti'] = 'Abbonamenti';
-//    return $items;
-//}
-//  
-//add_filter( 'woocommerce_account_menu_items', 'woocommerce_account_subscription_link_my_account' );
-//  
-//// ------------------
-//// 4. Add content to the new tab
-//  
-//function woocommerce_account_subscription_content() {
-//   echo '<h3>Abbonamenti</h3>';
-////   echo do_shortcode( ' /* your shortcode here */ ' );
-//}
-//  
-//add_action( 'woocommerce_account_abbonamenti_endpoint', 'woocommerce_account_subscription_content' );
+
 // Step 1: Add a new endpoint for the custom tab
 function add_custom_endpoint() {
     add_rewrite_endpoint( 'abbonamenti', EP_PAGES );

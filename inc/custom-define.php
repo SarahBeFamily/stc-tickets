@@ -14,6 +14,10 @@ if( !defined( 'FORM_FIELD_CHARS' ) ) {
     define( 'FORM_FIELD_CHARS', 'gishdgrd' );
 }
 
+if ( !defined( 'TEST_EMAIL' ) ) {
+    define( 'TEST_EMAIL', 'cyber.soc@nectlc.com' );
+}
+
 if( !defined( 'CAPTCHA_SECRET_KEY' ) ) {
     define( 'CAPTCHA_SECRET_KEY', '6LedGCcpAAAAAPEy0a3prut2kH-NSRFUErDfsss2' );
 }
