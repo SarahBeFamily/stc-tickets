@@ -2697,9 +2697,11 @@ function custom_update_phone_content() {
             <input class="woocommerce-Input woocommerce-Input--text input-text"  autocomplete="nope" type="text" name="registerotp" id="registerotp" autocomplete="OTP" />
         </p>
         <p id="otpAttemptsError" style="color:red; display:none;"><?php esc_html_e( "Hai già richiesto l' OTP, attendi 15 minuti prima di riprovare", 'stc-tickets' ); ?></p>
+        <!-- Turnstile captcha -->
+        <div id="ts-container" class="cf-turnstile" data-sitekey="<?php echo TS_CAPTCHA_DEV_SITE_KEY; ?>"></div>
         <p class="form-row form-row-wide">
-            <button class="wp-element-button otp-generate update_phone_otp" name="update_phone_otp" value="otp">Invia OTP</button>
-            <button class="wp-element-button update_billing_phone" name="update_billing_phone" value="update" style="display:none;">Update</button>
+            <button class="wp-element-button otp-generate update_phone_otp" name="update_phone_otp" value="otp"><?php esc_html_e( 'Invia OTP', 'stc-tickets' ); ?></button>
+            <button class="wp-element-button update_billing_phone" name="update_billing_phone" value="update" style="display:none;"><?php esc_html_e( 'Update', 'stc-tickets' ); ?></button>
         </p>
     </form>
     <?php
@@ -2774,11 +2776,39 @@ function add_custom_fields_to_edit_account_form() {
         'value' => $date_of_birth,
     ), $date_of_birth);
     echo '</p>';
+    echo '<div id="ts-container" class="cf-turnstile" data-sitekey="'.TS_CAPTCHA_DEV_SITE_KEY.'"></div>';
 }
+
+// Avoid change email account details
+add_filter('woocommerce_save_account_details_required_fields', 'avoid_change_email_account_details');
+function avoid_change_email_account_details($required_fields) {
+    // Validate Turnstile captcha
+
+    if ((isset($_POST['cf-turnstile-response']) && empty($_POST['cf-turnstile-response'])) || !isset($_POST['cf-turnstile-response'])) {
+        wc_add_notice(__('Please complete the captcha.', 'woocommerce'), 'error');
+        return;
+    } else {
+        $turnstile_response = sanitize_text_field($_POST['cf-turnstile-response']);
+        $response = wp_remote_post('https://challenges.cloudflare.com/turnstile/v0/siteverify', array(
+            'body' => array(
+                'secret' => TS_CAPTCHA_DEV_SECRET_KEY,
+                'response' => $turnstile_response,
+                'remoteip' => $_SERVER['REMOTE_ADDR'],
+            ),
+        ));
+        // Check for errors in the response
+        if (is_wp_error($response)) {
+            wc_add_notice(__('Captcha verification failed. Please try again.', 'woocommerce'), 'error');
+            return;
+        }
+    }
+}
+
 
 // Validate and save custom field data when account details are saved
 add_action('woocommerce_save_account_details', 'validate_and_save_custom_fields_on_account_save');
 function validate_and_save_custom_fields_on_account_save($user_id) {
+
     if (isset($_POST['place_of_birth']) && !empty($_POST['place_of_birth'])) {
         update_user_meta($user_id, 'place_of_birth', sanitize_text_field($_POST['place_of_birth']));
     } else {

@@ -10,7 +10,7 @@ function stcTickets_spettacolo_prices_callback() {
     $regData       = isset( $_GET[ 'regData' ] ) ? $_GET[ 'regData' ] : '';
     $spe_id        = isset( $_GET[ 'postId' ] ) ? $_GET[ 'postId' ] : '';
     $selectionMode = isset( $_GET[ 'selectionMode' ] ) ? $_GET[ 'selectionMode' ] : 0;
-    $barcode = isset( $_GET[ 'barcode' ] ) ? $_GET[ 'barcode' ] : 0;
+    $barcode       = isset( $_GET[ 'barcode' ] ) ? $_GET[ 'barcode' ] : 0;
     $spe_permalink = get_post_permalink( $spe_id );
     $spt_location  = ! empty( get_post_meta( $spe_id, 'spt_location', true ) ) ? get_post_meta( $spe_id, 'spt_location', true ) : __('Teatro San Carlo - NAPOLI','stc-tickets');
     $spt_img       = get_the_post_thumbnail_url( $spe_id ) ? get_the_post_thumbnail_url( $spe_id ) : plugin_dir_url( __DIR__ ) . 'assets/img/emiliano_test.jpg';
@@ -684,175 +684,37 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                     $dob = get_user_meta( $current_user_id, 'dob', true );
 
                                     if( ! empty( $user_billing_phone ) && ! empty( $place_of_birth ) && ! empty( $dob ) && empty($barcode)) {
-                                        ?>
-                                        <button class="cart-buy-btn buy-btn" data-profile-status="complete"><?php _e('PROSEGUI','stc-tickets'); ?></button>
-                                    <?php
+                                        // Ho tutto i dati del profilo e procedo
+                                        $button_class = 'cart-buy-btn';
+                                        $profile_status = 'complete';
+                                        $data_src = '';
                                     } else if(empty( $user_billing_phone )) {
-                                    ?>
-                                        <button class="cart-buy-btn buy-btn" data-profile-status="incomplete" data-fancybox data-src="#edit-fancybox-form"><?php _e('PROSEGUI','stc-tickets'); ?></button>
-                                        <div id="edit-fancybox-form" style="display:none">
-                                            <h2><?php esc_html_e( 'Update Profile', 'stc-tickets' ); ?></h2>
-
-                                            <form class="woocommerce-form woocommerce-form-update-user update-user" method="post">
-
-                                                <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-                                                    <label for="reg_email<?php echo FORM_FIELD_CHARS; ?>"><?php esc_html_e( 'Email address', 'stc-tickets' ); ?>&nbsp;<span class="required">*</span></label>
-                                                    <input type="email" autocomplete="nope" class="woocommerce-Input woocommerce-Input--text input-text" name="email<?php echo FORM_FIELD_CHARS; ?>" id="reg_email<?php echo FORM_FIELD_CHARS; ?>" autocomplete="email" disabled="<?php echo ! empty( $current_user_email ) ? 'disabled' : ''; ?>" value="<?php echo ! empty( $current_user_email ) ? $current_user_email : ''; ?>" />
-                                                </p>
-                                                <p class="upd-phone-msg"><?php  _e('Enter your mobile phone number in the field below to receive a SMS with a 6-digit OTP code to confirm your submission','stc-tickets');?></p>
-                                                <p class="form-row form-row-wide vivaticket-original-field">
-                                                    <label for="reg_billing_phone"><?php _e( 'Telefono *', 'stc-tickets' ); ?></label>
-                                                    <select class="input-text" name="country_code" id="reg_country_code">
-                                                        <?php echo do_shortcode( '[get_country_code_options]' ); ?>
-                                                    </select>
-                                                    <input type="text" autocomplete="nope" class="input-text" name="billing_phone" id="reg_billing_phone" value="<?php isset($_POST[ 'billing_phone' ]) ? esc_attr_e( $_POST[ 'billing_phone' ] ) : ''; ?>" />
-                                                </p>
-                                                <p class="form-row form-row-wide">
-                                                    <label for="reg_billing_phone<?php echo FORM_FIELD_CHARS; ?>"><?php _e( 'Telefono *', 'stc-tickets' ); ?></label>
-                                                    <select class="input-text" name="country_code<?php echo FORM_FIELD_CHARS; ?>" id="reg_country_code<?php echo FORM_FIELD_CHARS; ?>">
-                                                        <?php echo do_shortcode( '[get_country_code_options]' ); ?>
-                                                    </select>
-                                                    <input type="text" autocomplete="nope" class="input-text" name="billing_phone<?php echo FORM_FIELD_CHARS; ?>" id="reg_billing_phone<?php echo FORM_FIELD_CHARS; ?>" value="<?php isset($_POST[ 'billing_phone' . FORM_FIELD_CHARS ])? esc_attr_e( $_POST[ 'billing_phone' . FORM_FIELD_CHARS ] ) : ''; ?>" />
-                                                    <span id="phoneNumberError" style="color:red; display:none;"><?php esc_html_e( 'Invalid phone number', 'stc-tickets' ); ?></span>
-                                                </p>
-                                                <p id="otpAttemptsError" style="color:red; display:none;"><?php esc_html_e( "Hai già richiesto l' OTP, attendi 15 minuti prima di riprovare", 'stc-tickets' ); ?></p>
-                                                <p class="upd-phone-msg otp-msg" style="display:none;"><?php  _e('Enter the OTP code to verify your account and complete your purchase.','stc-tickets');?></p>
-                                                <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide otp-box" style="display:none;">
-                                                    <label for="registerotp"><?php esc_html_e( 'OTP', 'stc-tickets' ); ?>&nbsp;<span class="required">*</span></label>
-                                                    <input class="woocommerce-Input woocommerce-Input--text input-text" autocomplete="nope" type="text" name="registerotp" id="registerotp" autocomplete="OTP" />
-                                                </p>
-                                                <p class="woocommerce-form-row form-row">
-                                                    <?php // Check if user has test email
-                                                        if ($current_user_email != TEST_EMAIL) { ?>
-                                                    <button class="woocommerce-Button otp-generate woocommerce-button update_phone_otp button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : ''  ); ?>" name="update_phone_otp" value="<?php esc_attr_e( 'Invia OTP', 'stc-tickets' ); ?>"><?php esc_html_e( 'Invia OTP', 'stc-tickets' ); ?></button>
-                                                    <?php
-                                                        // if test email save phone number without verify and OTP
-                                                    } else { ?>
-                                                        <button class="woocommerce-Button woocommerce-button update_phone_otp otp-verified-disabled button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : ''  ); ?> woocommerce-form-update__submit" name="update_phone_otp" value="<?php esc_attr_e( 'Update', 'stc-tickets' ); ?>"><?php esc_html_e( 'Update', 'stc-tickets' ); ?></button>
-
-                                                      <?php  } ?>
-                                                    <button type="submit" class="woocommerce-Button woocommerce-button button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : ''  ); ?> woocommerce-form-update__submit" name="update" value="<?php esc_attr_e( 'Update', 'stc-tickets' ); ?>" hidden="hidden" style="display: none;"><?php esc_html_e( 'Update', 'stc-tickets' ); ?></button>
-                                                </p>
-                                            </form>
-                                            <?php
-                                                if( empty( $place_of_birth ) || empty( $dob ) ) {
-                                            ?>
-                                                <div class="cta-wrap cta-with-phone"  style="display:none">
-                                                    <p><?php esc_html_e( 'Thank you, your telephone is now verified.', 'stc-tickets' ); ?></p>
-                                                    <p><?php echo __( 'Your profile however is still not complete, please', 'stc-tickets' ). ' ' .'<a href="'.site_url()."/mio-account/?edit-account".'" target="_blank">'.__( "click here", "stc-tickets" ).'</a>'. ' ' .__( 'to complete it in order to buy the tickets', 'stc-tickets' ); ?></p>
-                                                </div>
-                                            <?php } ?>
-                                        </div>
-                                        <?php
+                                        // Non ho il telefono, devo chiedere di aggiornarlo
+                                        $button_class = 'cart-buy-btn';
+                                        $profile_status = 'incomplete';
+                                        $data_src = '#edit-fancybox-form';
                                     } else if(!empty($barcode)) {
-                                        ?>
-                                            <button class="subscription-buy-btn buy-btn" data-profile-status="complete" data-fancybox data-src="#subscription-fancybox-wrap"><?php _e('PROSEGUI','stc-tickets'); ?></button>
-                                            <div id="subscription-fancybox-wrap" style="display:none">
-                                                <h2><?php esc_html_e( 'Seleziona Spettacoli', 'stc-tickets' ); ?></h2>
-                                                <div id="replace-me">
-                                                    <p><?php _e('Hello, this is the content to be replaced inside FancyBox!','stc-tickets'); ?></p>
-                                                </div>
-                                            <button class="cart-buy-btn buy-btn" data-profile-status="complete"><?php _e('Passo Successivo','stc-tickets'); ?></button>    
-                                            </div>
-                                        <?php
-                                    }else{
-                                        if( empty( $place_of_birth ) || empty( $dob ) ) {
-                                            ?>
-                                                <button class="cart-buy-btn buy-btn" data-profile-status="incomplete" data-fancybox data-src="#edit-fancybox-form"><?php _e('PROSEGUI','stc-tickets'); ?></button>
-                                                <div id="edit-fancybox-form" style="display:none">
-                                                    <h2><?php esc_html_e( 'Update Profile', 'stc-tickets' ); ?></h2>
-                                                    <div class="cta-wrap">
-                                                        <p><?php echo __( 'Your profile however is still not complete, please', 'stc-tickets' ). ' ' .'<a href="'.site_url()."/mio-account/?edit-account".'" target="_blank">'.__( "click here", "stc-tickets" ).'</a>'. ' ' .__( 'to complete it in order to buy the tickets', 'stc-tickets' ); ?></p>
-                                                    </div>
-                                                </div>
-                                            <?php 
-                                        }
-                                    }
-                                } else {
-                                    ?>
-                                    <button class="cart-buy-btn buy-btn" data-profile-status="incomplete" data-fancybox data-src="#login-fancybox-form">PROSEGUI</button>
-                                    <div id="login-fancybox-form" style="display:none">
-                                        <?php do_action( 'woocommerce_before_customer_login_form' ); ?>
-
-                                        <?php if( 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ) : ?>
-
-                                            <div class="u-columns col2-set" id="customer_login">
-
-                                                <div class="u-column1 col-1">
-
-                                                <?php endif; ?>
-
-                                                <h2><?php esc_html_e( 'Login', 'stc-tickets' ); ?></h2>
-
-                                                <form class="woocommerce-form woocommerce-form-login login" method="post">
-
-                                                    <?php do_action( 'woocommerce_login_form_start' ); ?>
-
-                                                    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-                                                        <label for="username"><?php esc_html_e( 'Username or email address', 'stc-tickets' ); ?>&nbsp;<span class="required">*</span></label>
-                                                        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="username" id="username" autocomplete="username" value="<?php echo ( ! empty( $_POST[ 'username' ] ) ) ? esc_attr( wp_unslash( $_POST[ 'username' ] ) ) : ''; ?>" /><?php // @codingStandardsIgnoreLine   ?>
-                                                    </p>
-                                                    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide form-login-password">
-                                                        <label for="password"><?php esc_html_e( 'Password', 'stc-tickets' ); ?>&nbsp;<span class="required">*</span></label>
-                                                        <input class="woocommerce-Input woocommerce-Input--text input-text" type="password" name="password" id="password" autocomplete="current-password" /><i onclick="showPsw()" class="bf-icon icon-hide-password toggle-password"></i> <?php // added by sarah ?>
-                                                    </p>
-
-                                                    <?php do_action( 'woocommerce_login_form' ); ?>
-
-                                                    <p class="form-row">
-                                                        <label class="woocommerce-form__label woocommerce-form__label-for-checkbox woocommerce-form-login__rememberme">
-                                                            <input class="woocommerce-form__input woocommerce-form__input-checkbox" name="rememberme" type="checkbox" id="rememberme" value="forever" /> <span><?php esc_html_e( 'Remember me', 'stc-tickets' ); ?></span>
-                                                        </label>
-                                                        <?php wp_nonce_field( 'woocommerce-login', 'woocommerce-login-nonce' ); ?>
-                                                        <button type="submit" class="woocommerce-button button woocommerce-form-login__submit<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : ''  ); ?>" name="login" value="<?php esc_attr_e( 'Log in', 'stc-tickets' ); ?>"><?php esc_html_e( 'Log in', 'stc-tickets' ); ?></button>
-                                                    </p>
-                                                    <p class="woocommerce-LostPassword lost_password tt">
-                                                        <a href="<?php echo esc_url( wp_lostpassword_url() ); ?>" id="custom-lost-password-link"><?php esc_html_e( 'Lost your password?', 'stc-tickets' ); ?></a>
-                                                    </p>
-
-                                                    <?php // added by sarah ?>
-                                                    <p>
-                                                        <?php
-                                                        echo sprintf( __( 'Non hai un account? <a href="%s">Registrati</a>', 'stc-tickets' ),
-                                                                home_url( '/user-registration' )
-                                                        );
-                                                        ?>
-                                                    </p>
-
-                                                    <?php do_action( 'woocommerce_login_form_end' ); ?>
-
-                                                </form>
-                                                
-                                                <?php // added by sarah ?>
-                                                <script>
-                                                    function showPsw() {
-                                                        var x = document.getElementById("password");
-                                                        if (x.type === "password") {
-                                                            x.type = "text";
-                                                        } else {
-                                                            x.type = "password";
-                                                        }
-                                                    } 
-                                                </script>
-
-                                                <?php if( 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ) : ?>
-
-                                                </div>
-
-                                                <div class="u-column2 col-2">
-
-                                                    <a href="/user-registration" target="_blank"><?php echo __('Register Now','stc-tickets').'!!'; ?></a>
-
-                                                </div>
-
-                                            </div>
-                                        <?php endif; ?>
-
-                                        <?php do_action( 'woocommerce_after_customer_login_form' ); ?>
-                                    </div>
-                                    <?php
+                                        // Ho il telefono ma ho un barcode, quindi sono in fase di acquisto di un abbonamento
+                                        $button_class = 'subscription-buy-btn';
+                                        $profile_status = 'complete';
+                                        $data_src = '#subscription-fancybox-wrap';
+                                        
+                                    } else if(empty( $place_of_birth ) || empty( $dob )) {
+                                        // Ho il telefono ma non ho i dati di nascita
+                                        $button_class = 'cart-buy-btn';
+                                        $profile_status = 'incomplete';
+                                        $data_src = '#edit-fancybox-form';
+                                    } 
+ 
+                                } else { // Non sono loggato
+                                    $button_class = 'cart-buy-btn';
+                                    $data_src = '#login-fancybox-form';
+                                    $profile_status = 'incomplete';
                                 }
+
+                                echo '<button class="'.$button_class.' buy-btn" data-profile-status="'.$profile_status.'" data-src="'.$data_src.'">' . __('PROSEGUI','stc-tickets') . '</button>';
                                 ?>
+
                             </div>
                         </div>
                     </div>
@@ -860,10 +722,195 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
             </div>
         </div>
     </div>
-    <?php
+
+<?php // EX fancybox form for update profile
+if (is_user_logged_in(  )) {
+    if(empty( $user_billing_phone )) { 
+        $disabled_email = !empty( $current_user_email ) ? 'style="pointer-events:none;"' : '';
+        ?>
+
+    <div id="edit-fancybox-form" class="ffancybox-wrapper">
+        <button class="chiudi-box" aria-label="<?php _e( 'Chiudi finestra', 'stc-tickets' ); ?>">⨯</button>
+        <div class="fancyfox-content">
+
+        <h2><?php esc_html_e( 'Update Profile', 'stc-tickets' ); ?></h2>
+
+        <form class="woocommerce-form woocommerce-form-update-user update-user" method="post">
+
+            <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                <label for="reg_email<?php echo FORM_FIELD_CHARS; ?>"><?php esc_html_e( 'Email address', 'stc-tickets' ); ?>&nbsp;<span class="required">*</span></label>
+                <input type="email" autocomplete="nope" class="woocommerce-Input woocommerce-Input--text input-text" name="reg_email<?php echo FORM_FIELD_CHARS; ?>" id="reg_email<?php echo FORM_FIELD_CHARS; ?>" autocomplete="email" value="<?php echo ! empty( $current_user_email ) ? $current_user_email : ''; ?>" <?php echo $disabled_email; ?> />
+            </p>
+            <p class="upd-phone-msg"><?php  _e('Enter your mobile phone number in the field below to receive a SMS with a 6-digit OTP code to confirm your submission','stc-tickets');?></p>
+            <p class="form-row form-row-wide vivaticket-original-field">
+                <label for="reg_billing_phone"><?php _e( 'Telefono *', 'stc-tickets' ); ?></label>
+                <select class="input-text" name="country_code" id="reg_country_code">
+                    <?php echo do_shortcode( '[get_country_code_options]' ); ?>
+                </select>
+                <input type="text" autocomplete="nope" class="input-text" name="billing_phone" id="reg_billing_phone" value="<?php isset($_POST[ 'billing_phone' ]) ? esc_attr_e( $_POST[ 'billing_phone' ] ) : ''; ?>" />
+            </p>
+            <p class="form-row form-row-wide">
+                <label for="reg_billing_phone<?php echo FORM_FIELD_CHARS; ?>"><?php _e( 'Telefono *', 'stc-tickets' ); ?></label>
+                <select class="input-text" name="country_code<?php echo FORM_FIELD_CHARS; ?>" id="reg_country_code<?php echo FORM_FIELD_CHARS; ?>">
+                    <?php echo do_shortcode( '[get_country_code_options]' ); ?>
+                </select>
+                <input type="text" autocomplete="nope" class="input-text" name="billing_phone<?php echo FORM_FIELD_CHARS; ?>" id="reg_billing_phone<?php echo FORM_FIELD_CHARS; ?>" value="<?php isset($_POST[ 'billing_phone' . FORM_FIELD_CHARS ])? esc_attr_e( $_POST[ 'billing_phone' . FORM_FIELD_CHARS ] ) : ''; ?>" />
+                <span id="phoneNumberError" style="color:red; display:none;"><?php esc_html_e( 'Invalid phone number', 'stc-tickets' ); ?></span>
+            </p>
+            <p id="otpAttemptsError" style="color:red; display:none;"><?php esc_html_e( "Hai già richiesto l' OTP, attendi 15 minuti prima di riprovare", 'stc-tickets' ); ?></p>
+            <!-- Turnstile captcha -->
+            <div id="ts-container" class="cf-turnstile" data-sitekey="<?php echo TS_CAPTCHA_DEV_SITE_KEY; ?>"></div>
+            <p class="upd-phone-msg otp-msg" style="display:none;"><?php  _e('Enter the OTP code to verify your account and complete your purchase.','stc-tickets');?></p>
+            <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide otp-box" style="display:none;">
+                <label for="registerotp"><?php esc_html_e( 'OTP', 'stc-tickets' ); ?>&nbsp;<span class="required">*</span></label>
+                <input class="woocommerce-Input woocommerce-Input--text input-text" autocomplete="nope" type="text" name="registerotp" id="registerotp" autocomplete="OTP" />
+            </p>
+            <p class="woocommerce-form-row form-row">
+                <?php // Check if user has test email
+                /* DISABILITATO
+                    if ($current_user_email == TEST_EMAIL) { 
+                        <button class="woocommerce-Button woocommerce-button update_phone_otp otp-verified-disabled button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : ''  ); ?> woocommerce-form-update__submit" name="update_phone_otp" value="<?php esc_attr_e( 'Update', 'stc-tickets' ); ?>"><?php esc_html_e( 'Update', 'stc-tickets' ); ?></button>
+
+                    // if test email save phone number without verify and OTP
+                    } else { */
+                    ?>
+                <button type="submit" class="woocommerce-Button otp-generate woocommerce-button update_phone_otp button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : ''  ); ?>" name="update_phone_otp" value="otp"><?php esc_html_e( 'Invia OTP', 'stc-tickets' ); ?></button>
+                <button class="woocommerce-Button woocommerce-button button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : ''  ); ?> woocommerce-form-update__submit" name="update_billing_phone" value="update" hidden="hidden" style="display: none;"><?php esc_html_e( 'Update', 'stc-tickets' ); ?></button>
+            </p>
+        </form>
+        <?php if( empty( $place_of_birth ) || empty( $dob ) ) { ?>
+            <div class="cta-wrap cta-with-phone"  style="display:none">
+                <p><?php esc_html_e( 'Thank you, your telephone is now verified.', 'stc-tickets' ); ?></p>
+                <p><?php echo __( 'Your profile however is still not complete, please', 'stc-tickets' ). ' ' .'<a href="'.site_url()."/mio-account/?edit-account".'" target="_blank">'.__( "click here", "stc-tickets" ).'</a>'. ' ' .__( 'to complete it in order to buy the tickets', 'stc-tickets' ); ?></p>
+            </div>
+        <?php } ?>
+        </div>
+    </div>
+    
+    <?php // 
+    } else if(!empty($barcode)) { // Se ho il barcode, sono in fase di acquisto di un abbonamento ?>
+    <div id="subscription-fancybox-wrap" class="ffancybox-wrapper">
+        <button class="chiudi-box" aria-label="<?php _e( 'Chiudi finestra', 'stc-tickets' ); ?>">⨯</button>
+        <div class="fancyfox-content">
+            <h2><?php esc_html_e( 'Seleziona Spettacoli', 'stc-tickets' ); ?></h2>
+            <div id="replace-me">
+                <p><?php _e('Hello, this is the content to be replaced inside FancyBox!','stc-tickets'); ?></p>
+            </div>
+            <button class="cart-buy-btn buy-btn" data-profile-status="complete"><?php _e('Passo Successivo','stc-tickets'); ?></button>    
+        </div>
+    </div>
+
+    <?php } else if( empty( $place_of_birth ) || empty( $dob ) ) {
+        // Non ho il profilo completo 
+        // retrieve site url in current language
+        $site_url = site_url();
+        if ( get_locale() !== 'it_IT' ) {
+            $site_url = $site_url . '/en/';
+        }
+    ?>
+    <div id="edit-fancybox-form" class="ffancybox-wrapper">
+        <button class="chiudi-box" aria-label="<?php _e( 'Chiudi finestra', 'stc-tickets' ); ?>">⨯</button>
+        <div class="fancyfox-content">
+            <h2><?php esc_html_e( 'Update Profile', 'stc-tickets' ); ?></h2>
+            <div class="cta-wrap">
+                <p><?php echo __( 'Your profile however is still not complete, please', 'stc-tickets' ). ' ' .'<a href="'.$site_url."/mio-account/?edit-account".'" target="_blank">'.__( "click here", "stc-tickets" ).'</a>'. ' ' .__( 'to complete it in order to buy the tickets', 'stc-tickets' ); ?></p>
+            </div>
+        </div>
+    </div>
+    <?php 
+    }
+
+} else { // login
+?>
+
+<div id="login-fancybox-form" class="ffancybox-wrapper">
+    <button class="chiudi-box" aria-label="<?php _e( 'Chiudi finestra', 'stc-tickets' ); ?>">⨯</button>
+    <div class="fancyfox-content">
+        <?php do_action( 'woocommerce_before_customer_login_form' ); ?>
+
+        <?php if( 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ) : ?>
+
+            <div class="u-columns col2-set" id="customer_login">
+
+                <div class="u-column1 col-1">
+
+                <?php endif; ?>
+
+                <h2><?php esc_html_e( 'Login', 'stc-tickets' ); ?></h2>
+
+                <form class="woocommerce-form woocommerce-form-login login" method="post">
+
+                    <?php do_action( 'woocommerce_login_form_start' ); ?>
+
+                    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                        <label for="username"><?php esc_html_e( 'Username or email address', 'stc-tickets' ); ?>&nbsp;<span class="required">*</span></label>
+                        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="username" id="username" autocomplete="username" value="<?php echo ( ! empty( $_POST[ 'username' ] ) ) ? esc_attr( wp_unslash( $_POST[ 'username' ] ) ) : ''; ?>" /><?php // @codingStandardsIgnoreLine   ?>
+                    </p>
+                    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide form-login-password">
+                        <label for="password"><?php esc_html_e( 'Password', 'stc-tickets' ); ?>&nbsp;<span class="required">*</span></label>
+                        <input class="woocommerce-Input woocommerce-Input--text input-text" type="password" name="password" id="password" autocomplete="current-password" /><i onclick="showPsw()" class="bf-icon icon-hide-password toggle-password"></i> <?php // added by sarah ?>
+                    </p>
+
+                    <?php do_action( 'woocommerce_login_form' ); ?>
+                    <div id="ts-container" class="cf-turnstile" data-sitekey="<?php echo TS_CAPTCHA_DEV_SITE_KEY; ?>"></div>
+                    <p class="form-row">
+                        <label class="woocommerce-form__label woocommerce-form__label-for-checkbox woocommerce-form-login__rememberme">
+                            <input class="woocommerce-form__input woocommerce-form__input-checkbox" name="rememberme" type="checkbox" id="rememberme" value="forever" /> <span><?php esc_html_e( 'Remember me', 'stc-tickets' ); ?></span>
+                        </label>
+                        <?php wp_nonce_field( 'woocommerce-login', 'woocommerce-login-nonce' ); ?>
+                        <button type="submit" class="woocommerce-button button woocommerce-form-login__submit<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : ''  ); ?>" name="login" value="<?php esc_attr_e( 'Log in', 'stc-tickets' ); ?>"><?php esc_html_e( 'Log in', 'stc-tickets' ); ?></button>
+                    </p>
+                    <p class="woocommerce-LostPassword lost_password tt">
+                        <a href="<?php echo esc_url( wp_lostpassword_url() ); ?>" id="custom-lost-password-link"><?php esc_html_e( 'Lost your password?', 'stc-tickets' ); ?></a>
+                    </p>
+
+                    <?php // added by sarah ?>
+                    <p>
+                        <?php
+                        echo sprintf( __( 'Non hai un account? <a href="%s">Registrati</a>', 'stc-tickets' ),
+                                home_url( '/user-registration' )
+                        );
+                        ?>
+                    </p>
+
+                    <?php do_action( 'woocommerce_login_form_end' ); ?>
+
+                </form>
+                
+                <?php // added by sarah ?>
+                <script>
+                    function showPsw() {
+                        var x = document.getElementById("password");
+                        if (x.type === "password") {
+                            x.type = "text";
+                        } else {
+                            x.type = "password";
+                        }
+                    } 
+                </script>
+
+                <?php if( 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ) : ?>
+
+                </div>
+
+                <div class="u-column2 col-2">
+
+                    <a href="/user-registration" target="_blank"><?php echo __('Register Now','stc-tickets').'!!'; ?></a>
+
+                </div>
+
+            </div>
+        <?php endif; ?>
+
+        <?php do_action( 'woocommerce_after_customer_login_form' ); ?>
+    </div>
+</div>
+<?php
+}
     $html = ob_get_clean();
     return $html;
 }
+
 function my_js_variables() {
     ?>
     <script type="text/javascript">

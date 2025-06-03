@@ -58,8 +58,8 @@ function stcTickets_spettacolo_subscription_callback() {
             }
             $subs_remaining_seats[$subscription_barcode] = array('remaining' => $remainingaccruals,'total' => $remainingaccruals);
             // setcookie($cookie_name, urlencode(json_encode($subs_remaining_seats)), time() + (86400 * 30), "/"); // 86400 = 1 day
-            echo '<script>document.cookie = "'.$cookie_name.'=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";</script>';  // Remove existing cookie
-            echo '<script>document.cookie = "'.$cookie_name.'='.urlencode(json_encode($subs_remaining_seats)).'; expires='.strtotime('+1 hour').'; path=/";</script>';
+            echo '<script>document.cookie = "'.$cookie_name.'=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;HttpOnly;Samesite=lax;";</script>';  // Remove existing cookie
+            echo '<script>document.cookie = "'.$cookie_name.'='.urlencode(json_encode($subs_remaining_seats)).'; expires='.strtotime('+1 hour').'; path=/;HttpOnly;Samesite=lax;";</script>';
             // echo '<script>document.cookie = "'.$cookie_name.'='.json_encode($subs_remaining_seats).'; expires='.strtotime('+1 hour').'; path=/";</script>';
         }
         if(!empty($perfs['perf']) && $remainingaccruals != '0'){

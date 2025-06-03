@@ -828,6 +828,23 @@ function fun_getUserLogin (){
     //    }
     $curl_response = array();
     if( $generate_otp_now ) {
+
+        // Check turnstile reecaptcha
+        $turnstile_response = isset($_POST['turnstile_response']) ? $_POST['turnstile_response'] : '';
+        if (empty($turnstile_response)) {
+            $response['error'] = __('Please complete the reCAPTCHA verification.', 'stc-tickets');
+            echo json_encode($response);
+            wp_die();
+        }
+        $turnstile_response = sanitize_text_field($_POST['cf-turnstile-response']);
+        $response = wp_remote_post('https://challenges.cloudflare.com/turnstile/v0/siteverify', array(
+            'body' => array(
+                'secret' => TS_CAPTCHA_DEV_SECRET_KEY,
+                'response' => $turnstile_response,
+                'remoteip' => $_SERVER['REMOTE_ADDR'],
+            ),
+        ));
+
         if(email_exists($email)){
             $response[ 'error' ]            = "Email già esistente!!";
             echo json_encode ( $response );
@@ -956,7 +973,15 @@ function fun_UpdateUserPhone (){
     $email               = isset($_POST[ 'email' ]) ? $_POST[ 'email' ] : '';
     $generate_otp_now    = isset($_POST[ 'generate_otp_now' ]) ? $_POST[ 'generate_otp_now' ] : false;
     $registerOtp         = isset( $_POST[ 'registerotp' ] ) ? (int) $_POST[ 'registerotp' ] : '';
-    $registerOtp         = $email === TEST_EMAIL ? "TEST_OTP" : $registerOtp;
+    // $registerOtp         = $email === TEST_EMAIL ? "TEST_OTP" : $registerOtp;
+    $turnstile_response = isset($_POST['tsc_verify']) ? $_POST['tsc_verify'] : '';
+    
+    // Verify nonce
+    if ( ! wp_verify_nonce( $_POST['nonce'], 'otp_nonce' ) ) {
+        $err = __('Nonce verification failed.', 'stc-tickets');
+        wp_send_json_error($err);
+        wp_die();
+    }
     $current_user = wp_get_current_user();
     $current_user_id =  $current_user->ID;
     $query = $wpdb->prepare("
@@ -980,6 +1005,28 @@ function fun_UpdateUserPhone (){
     //    }
     $curl_response = array();
     if( $generate_otp_now ) {
+        // Check turnstile reecaptcha
+        if (empty($turnstile_response)) {
+            $err = __('Please complete the reCAPTCHA verification.', 'stc-tickets');
+            // echo json_encode($err);
+            wp_send_json_error($err);
+            wp_die();
+        } else {
+            $response = wp_remote_post('https://challenges.cloudflare.com/turnstile/v0/siteverify', array(
+                'body' => array(
+                    'secret' => TS_CAPTCHA_DEV_SECRET_KEY,
+                    'response' => $turnstile_response,
+                    'remoteip' => $_SERVER['REMOTE_ADDR'],
+                ),
+            ));
+            if (is_wp_error($response)) {
+                $err = __('Turnstile verification failed.', 'stc-tickets');
+                // echo json_encode($err);
+                wp_send_json_error($err);
+                wp_die();
+            }
+        }
+        
         
         if(empty($results)) {
             $genratedOtp        = random_int( 100000, 999999 );
@@ -1009,7 +1056,7 @@ function fun_UpdateUserPhone (){
               CURLOPT_MAXREDIRS => 10,
               CURLOPT_TIMEOUT => 0,
               CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_COOKIEJAR => $gen_otp_cookie,
+              CURLOPT_COOKIEJAR => $gen_otp_cookie,
               CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
               CURLOPT_CUSTOMREQUEST => 'POST',
               CURLOPT_POSTFIELDS =>$curl_body,
@@ -1032,12 +1079,13 @@ function fun_UpdateUserPhone (){
     $phone_updated = '';
     if(!empty($registerOtp)){
         // Check for email test
-        if ( $email == TEST_EMAIL ) {
-            $genratedOtp = "TEST_OTP";
-            $otpCreated = "TEST_OTP";
-        } else {
-            $genratedOtp = $_SESSION["$email"];
-        }
+        //  DISABILITATO
+        // if ( $email == TEST_EMAIL ) {
+        //     $genratedOtp = "TEST_OTP";
+        //     $otpCreated = "TEST_OTP";
+        // } else {
+        //     $genratedOtp = $_SESSION["$email"];
+        // }
         
         if($registerOtp === $genratedOtp){
             $otpMatched = true;
@@ -1060,11 +1108,11 @@ function fun_UpdateUserPhone (){
         $response[ 'status' ]           = true;
         $response[ 'error' ]            = $err;
 
-        if ($email === TEST_EMAIL) {
-            $response[ 'email' ]        = $email;
-            $response[ 'registerOtp' ]  = $registerOtp;
-            $response[ 'genratedOtp' ]  = $genratedOtp;
-        }
+        // if ($email === TEST_EMAIL) {
+        //     $response[ 'email' ]        = $email;
+        //     $response[ 'registerOtp' ]  = $registerOtp;
+        //     $response[ 'genratedOtp' ]  = $genratedOtp;
+        // }
         
     }
     echo json_encode ( $response );

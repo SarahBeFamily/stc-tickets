@@ -2,15 +2,44 @@ var mouseX = '';
 var mouseY = '';
 var cart_counter_flag = true;
 var cart_count = 0;
+
 const developmentMode = (STCTICKETSPUBLIC.siteurl).includes('-dev') ? true : false;
+const turnstileSiteKey = STCTICKETSPUBLIC.ts_sitekey;
+
 let loadingArray = {},
 	id_var = 0,
     language = document.documentElement.lang;
 
+// Check if turnstile is enabled
+if (typeof turnstile === 'undefined') {
+  console.error('Turnstile is not enabled or site key is missing.');
+} else {
+
+    setTimeout(function () {
+    if (turnstileSiteKey !== '' && document.getElementById("ts-container")) {
+        turnstile.ready(function () {
+            turnstile.render("#ts-container", {
+                sitekey: turnstileSiteKey,
+                callback: function (token) {
+                    // console.log(`Challenge Success ${token}`);
+                    console.log('recaptcha ok');
+                },
+            });
+        });
+    }
+    }, 500);
+}
+
+// Render Turnstile reCaptcha in fancybox
+let TSWidget = '';
+
+
 console.log(developmentMode);
+
+
 jQuery(document).ready(function ($) {
     
-    var widgetId;
+    var widgetId = '';
     
     renderReCaptcha();
     
@@ -391,7 +420,7 @@ jQuery(document).ready(function ($) {
                         if(localStorage.getItem("addToCartObject")){
                             localStorage.removeItem("addToCartObject");
                         }
-                        updateCookie('remainingSeats', encodeURIComponent(remainingSeats), 1);
+                        updateCookie('remainingSeats', encodeURIComponent(remainingSeats), 1, 'HttpOnly', 'Lax');
                         window.location.href = STCTICKETSPUBLIC.siteurl + "/" + STCTICKETSPUBLIC.cartSlug;
                     }else{
                         jQuery('body').removeClass('loading');
@@ -431,6 +460,9 @@ jQuery(document).ready(function ($) {
         } else {
             console.log('user profile is incompleted..!!');            
             localStorage.setItem("addToCartObject", JSON.stringify(ajax_data));
+            let inner = jQuery(this).attr('data-src');
+
+            jQuery(inner).length > 0 ? jQuery(inner).fadeIn() : '';
         }
     });
     
@@ -665,22 +697,12 @@ jQuery(document).ready(function ($) {
                 }
             });
         }
-        
-//        var first_name = jQuery('#customer_details').find('input#billing_first_name').val();
-//        var last_name = jQuery('#customer_details').find('input#billing_last_name').val();
-//        var last_name = jQuery('#customer_details').find('input#billing_last_name').val();
-//        
-//        if(first_name && last_name){
-//            alert('not empty');
-//        }else{
-//            alert('empty');
-//        }
     });
     
-    jQuery(document).on('input','#reg_billing_phone'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS, function() {
-        var phoneNumber = jQuery(this).val();
-        var country_code = jQuery(document).find('#reg_country_code'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS).val();
-        var isValid = validatePhoneNumber(phoneNumber,country_code);
+    jQuery(document).on('input',`#reg_billing_phone${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`, function() {
+        let phoneNumber = jQuery(this).val();
+        let country_code = jQuery(document).find(`#reg_country_code${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`).val();
+        let isValid = validatePhoneNumber(phoneNumber,country_code);
 
         if (isValid) {
             jQuery(document).find('#phoneNumberError').hide();
@@ -779,6 +801,7 @@ jQuery(document).ready(function ($) {
                                             action: 'checkUserEmail',
                                             email: email,
                                             username: username,
+                                            nonce: STCTICKETSPUBLIC.otp_nonce,
                                         },
                                 success: function (data) {
                                         jQuery( "body" ).css('opacity', '1');
@@ -808,6 +831,7 @@ jQuery(document).ready(function ($) {
                                                     email: email,       
                                                     first_name: first_name,
                                                     last_name: last_name,
+                                                    nonce: STCTICKETSPUBLIC.otp_nonce,
                                                 },
                                                 success: function (data) {
                                                     jQuery( "body" ).css('opacity', '1');
@@ -1381,14 +1405,22 @@ jQuery(document).ready(function ($) {
         table.find('thead, .woocommerce-table__line-item.order_item').remove();
     }
     
-    jQuery('.subscription-buy-btn').fancybox({
-        beforeLoad: function(){
-            jQuery(document).find( "body" ).css('opacity', '0.2');
-        },
-        afterLoad: function(instance, current) {
-            console.log('fancybox open');
+    // jQuery('.subscription-buy-btn').fancybox({
+    jQuery('.subscription-buy-btn').on('click', function (e) {
+        e.preventDefault();
+        let $this = jQuery(this);
+        const innerBox = jQuery(this).attr('data-src');
+        let content = jQuery(innerBox).html();
+
+        console.log(innerBox, content);
+        // var instance = jQuery.fancybox.getInstance();
+        // beforeLoad: function(){
+        //     jQuery(document).find( "body" ).css('opacity', '0.2');
+        // },
+        // afterLoad: function(instance, current) {
+            // console.log('fancybox open');
             // Get the existing content of the FancyBox
-            var content = instance ? instance.current.content : '';
+            // var content = instance ? instance.current.content : '';
             var selectedRow = [];
             var subscription_html = '';
             var selectbox_html = '';
@@ -1515,7 +1547,8 @@ jQuery(document).ready(function ($) {
                                         </div>
                                     </div>`;
                 
-            } else if (jQuery(document).find('.spettacolo-prices-inner .selected-seat-row:visible').length > 0){
+            // } else 
+            if (jQuery(document).find('.spettacolo-prices-inner .selected-seat-row:visible').length > 0){
                 jQuery(document).find('.spettacolo-prices-inner .selected-seat-row').each(function () {
                     let zoneArr = new Object();
                     let reductionArr = [];
@@ -1584,14 +1617,14 @@ jQuery(document).ready(function ($) {
             
             console.log(selectedRow,subscription_html,getbarcodes,selectbox_html);
             // Find and replace the content of the specific div
-//            var newContent = '<p>New content replacing the existing content.</p>';
-            var $content = jQuery('#subscription-fancybox-wrap').html(content);
+            let $content = jQuery('#subscription-fancybox-wrap').html(content);
             console.log($content);
             $content.find('#replace-me').html(subscription_html);
 
             // Set the modified content inside the FancyBox
-            instance.current.content = $content.html();
-//            jQuery(document).find( "body" ).css('opacity', '1');
+            // instance.current.content = $content.html();
+            // open
+            jQuery(innerBox).fadeIn();
         }
     });
     
@@ -1715,60 +1748,79 @@ jQuery(document).ready(function ($) {
         });
 //        jQuery(document).find('#svgSeatSvg circle[data-id="'+seat_id+'"]').trigger('click');
     });
+
+    jQuery(document).on('click', '.chiudi-box', function (e) {
+        jQuery(this).parent().fadeOut();
+    });
+
     jQuery(document).on('click', '.update_phone_otp', function (e) {
         e.preventDefault();
-        var data = {};
-            var billing_phone_spam = jQuery(document).find('#reg_billing_phone').val();            
-            var billing_phone = jQuery(document).find('#reg_billing_phone'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS ).val();
-            var country_code = jQuery(document).find('#reg_country_code'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS ).val();
-            var email = jQuery(document).find('#reg_email'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS).val();
-            var registerOtp = jQuery(document).find('#registerotp').val();
-            var $this = jQuery(this);
-            
-            var isValid = validatePhoneNumber(billing_phone,country_code);
-            
-            if (!isValid) {
-                e.preventDefault();
+        let formDataObject = jQuery(this).parents('form').serializeArray(),
+            formData = {},
+            $this = jQuery(this),
+            isUserBlocked = false;
+
+        jQuery.each(formDataObject, function (i, field) {
+            formData[field.name] = field.value;
+        });
+
+        console.log('Form Data:', formData);
+
+        // Validate phone number
+        let isValid = validatePhoneNumber(formData[`billing_phone${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`], formData.country_code);
+
+        if (!isValid) {
+            e.preventDefault();
+            jQuery(document).find('#phoneNumberError').show();
+            jQuery(document).find(`#reg_billing_phone${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`).addClass('is-invalid');
+            return false;
+        } else {
+            jQuery(document).find('#phoneNumberError').hide();
+            jQuery(document).find(`#reg_billing_phone${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`).removeClass('is-invalid');
+        }
+
+        // Check if billing phone and email are provided
+        if (formData[`billing_phone${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`] && formData[`reg_email${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`]) {
+            console.log('update_phone_otp clicked');
+            jQuery(document).find(`.update-phone-form #reg_billing_phone${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`).attr('style', 'border-color: #d8dbe2 !important');
+            if (formData.billing_phone_spam) {
                 jQuery(document).find('#phoneNumberError').show();
-                jQuery(document).find('#reg_billing_phone'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS).addClass('is-invalid');
                 return false;
             }
+            
+            let data = {};
+            if ($this.hasClass('otp-generate')) {
+                // Check if OTP attempts are blocked
+                isUserBlocked = checkOtpAttemptsBlocked();
+                data = {
+                    action: 'UpdateUserPhone',
+                    billing_phone: formData[`billing_phone${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`],
+                    country_code: formData[`country_code${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`],
+                    email: formData[`reg_email${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`],
+                    generate_otp_now: true,
+                    nonce: STCTICKETSPUBLIC.otp_nonce,
+                    tsc_verify: formData['cf-turnstile-response'] || '' // Add tsc_verify if it exists
+                };
+            } else if ($this.hasClass('otp-verified-disabled')) {
+                data = {
+                    action: 'UpdateUserPhone',
+                    billing_phone: formData[`billing_phone${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`],
+                    country_code: formData[`country_code${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`],
+                    email: formData[`reg_email${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`],
+                    registerotp: formData['registerotp'],
+                    nonce: STCTICKETSPUBLIC.otp_nonce,
+                    tsc_verify: formData['cf-turnstile-response'] || '' // Add tsc_verify if it exists
+                };
+            }
 
+            if (isUserBlocked) {
+                jQuery(document).find('#otpAttemptsError').show();
+                return false;
+            } else {
+                jQuery(document).find('#otpAttemptsError').hide();
 
-            if (billing_phone && email) {
-                console.log('update_phone_otp clicked');
-                jQuery(document).find('.update-phone-form #reg_billing_phone'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS).attr('style', 'border-color: #d8dbe2 !important');
-                if(billing_phone_spam) {                    
-                    jQuery(document).find('#phoneNumberError').show();                
-                    return false;
-                }                                
-                var isUserBlocked = false;
-                
-                if ($this.hasClass('otp-generate')) {
-                    /// otpattempts
-                    isUserBlocked = checkOtpAttemptsBlocked();
-                    data = {
-                        action: 'UpdateUserPhone',
-                        billing_phone: billing_phone,
-                        country_code: country_code,
-                        email: email,
-                        generate_otp_now: true,
-                    }
-                } else if ($this.hasClass('otp-verified-disabled')) {
-                    data = {
-                        action: 'UpdateUserPhone',
-                        billing_phone: billing_phone,
-                        country_code: country_code,
-                        email: email,
-                        registerotp: registerOtp,
-                    }
-                }       
-                if(isUserBlocked == true) {
-                    jQuery(document).find('#otpAttemptsError').show();
-                    return false;
-                } else {
-                    jQuery(document).find('#otpAttemptsError').hide();
-                }
+                // console.log('OTP generation data:', data);
+                // Ajax request to update phone
                 jQuery.ajax({
                     url: STCTICKETSPUBLIC.ajaxurl,
                     method: 'post',
@@ -1778,7 +1830,7 @@ jQuery(document).ready(function ($) {
                     data: data,
                     success: function (data) {
                             jQuery( "body" ).css('opacity', '1');
-                        var responseData = JSON.parse(data);
+                        let responseData = JSON.parse(data);
                             if (responseData.status) {
                             if (responseData.otpCreated) {
                                     jQuery(document).find('.woocommerce-form-row.otp-box').show();
@@ -1786,7 +1838,7 @@ jQuery(document).ready(function ($) {
                                 $this.removeClass('otp-generate');
                                 $this.addClass('otp-verified-disabled');
                                 $this.text(stcTicketsText.str_17);
-                                    jQuery(document).find('form .error-display').remove();
+                                jQuery(document).find('form .error-display').remove();
                             }
                             if (responseData.otpMatched) {
                                 if (responseData.error != '') {                                    
@@ -1802,7 +1854,8 @@ jQuery(document).ready(function ($) {
                                         }else{
                                             jQuery(document).find('.cart-buy-btn').attr('data-profile-status','complete');
                                             jQuery(document).find('.cart-buy-btn[data-profile-status="complete"]').removeAttr('data-fancybox data-src');
-                                            jQuery.fancybox.close();
+                                            jQuery(document).find('#edit-fancybox-form').hide();
+                                            // jQuery.fancybox.close();
                                         }
 
                                     }else{
@@ -1823,14 +1876,80 @@ jQuery(document).ready(function ($) {
                         console.log(error);
                     }
                 });
-
-            } else {
-                if (!billing_phone) {
-                    jQuery(document).find('.update-phone-form #reg_billing_phone'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS).attr('style', 'border-color: red !important');
-                }else{
-                    jQuery(document).find('.update-phone-form #reg_billing_phone'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS).removeAttr('style');
-                }
             }
+
+        } else {
+            // If billing phone or email is missing, show error
+            if (!formData[`billing_phone${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`]) {
+                jQuery(document).find(`.update-phone-form #reg_billing_phone${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`).attr('style', 'border-color: red !important');
+            } else {
+                jQuery(document).find(`.update-phone-form #reg_billing_phone${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`).removeAttr('style');
+            }
+        }
+
+    
+
+    //     let data = {};
+    //         var billing_phone_spam = jQuery(document).find('#reg_billing_phone').val();            
+    //         var billing_phone = jQuery(document).find('#reg_billing_phone'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS ).val();
+    //         var country_code = jQuery(document).find('#reg_country_code'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS ).val();
+    //         var email = jQuery(document).find('#reg_email'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS).val();
+    //         var registerOtp = jQuery(document).find('#registerotp').val();
+    //         var $this = jQuery(this);
+            
+    //     let isValid = validatePhoneNumber(`formData.billing_phone${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`,country_code);
+            
+    //         if (!isValid) {
+    //             e.preventDefault();
+    //             jQuery(document).find('#phoneNumberError').show();
+    //             jQuery(document).find('#reg_billing_phone'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS).addClass('is-invalid');
+    //             return false;
+    //         }
+
+
+    //         if (billing_phone && email) {
+    //             console.log('update_phone_otp clicked');
+    //             jQuery(document).find('.update-phone-form #reg_billing_phone'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS).attr('style', 'border-color: #d8dbe2 !important');
+    //             if(billing_phone_spam) {                    
+    //                 jQuery(document).find('#phoneNumberError').show();                
+    //                 return false;
+    //             }                                
+    //             var isUserBlocked = false;
+                
+    //             if ($this.hasClass('otp-generate')) {
+    //                 /// otpattempts
+    //                 isUserBlocked = checkOtpAttemptsBlocked();
+    //                 data = {
+    //                     action: 'UpdateUserPhone',
+    //                     billing_phone: billing_phone,
+    //                     country_code: country_code,
+    //                     email: email,
+    //                     generate_otp_now: true,
+    //                 }
+    //             } else if ($this.hasClass('otp-verified-disabled')) {
+    //                 data = {
+    //                     action: 'UpdateUserPhone',
+    //                     billing_phone: billing_phone,
+    //                     country_code: country_code,
+    //                     email: email,
+    //                     registerotp: registerOtp,
+    //                 }
+    //             }       
+    //             if(isUserBlocked == true) {
+    //                 jQuery(document).find('#otpAttemptsError').show();
+    //                 return false;
+    //             } else {
+    //                 jQuery(document).find('#otpAttemptsError').hide();
+    //             }
+    //             
+
+    //         } else {
+    //             if (!billing_phone) {
+    //                 jQuery(document).find('.update-phone-form #reg_billing_phone'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS).attr('style', 'border-color: red !important');
+    //             }else{
+    //                 jQuery(document).find('.update-phone-form #reg_billing_phone'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS).removeAttr('style');
+    //             }
+    //         }
     });
 });
 
@@ -2033,10 +2152,17 @@ var createTextInSvg = function (x, y, text) {
             .appendTo($svg);
 };
 
-function setCookie(key, value, expiry) {
-    var expires = new Date();
+function setCookie(key, value, expiry, sameSite, HttpOnly, flag) {
+    let expires = new Date();
     expires.setTime(expires.getTime() + (expiry * 24 * 60 * 60 * 1000)); // 1 Day
-    document.cookie = key + '=' + value + ';expires=' + expires.toUTCString() + ";path=/";
+    // If flag is set, add the SameSite attribute
+    let addSameSite = sameSite ? ";SameSite=" + sameSite : "";
+    // If flag is set, add the Secure attribute
+    let addSecure = flag ? ";Secure" : "";
+    // If HttpOnly is set, add the HttpOnly attribute
+    let addHttpOnly = HttpOnly ? ";HttpOnly" : "";
+    // Set the cookie with the specified attributes
+    document.cookie = key + '=' + value + ';expires=' + expires.toUTCString() + ";path=/;" + addSameSite + addSecure + addHttpOnly;
 }
 
 //function setCookie(cookieName, cookieValue, expirationDays) {
@@ -2066,23 +2192,34 @@ function getCookie(cookieName) {
     return "";
 }
 
-function updateCookie(cookieName, newValue, expirationDays) {
+function updateCookie(cookieName, newValue, expirationDays, sameSite, HttpOnly, flag) {
     // Remove existing cookie
     document.cookie = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
     // Set a new cookie with the updated value
-    setCookie(cookieName, newValue, expirationDays);
+    setCookie(cookieName, newValue, expirationDays, sameSite, HttpOnly, flag);
 }
     
 function validatePhoneNumber(number,country_code) {
+    // Define regex patterns for all countries
+    let regexPattern = /^[0-9]{1,12}$/ // Default pattern for most countries
+    
+    // Check the country code and set the regex accordingly
     if(country_code == 49 || country_code == 43){
-        var regex = /^[0-9]{1,12}$/; // Regular expression for 1 to 12 digits
+        regexPattern = /^[0-9]{1,12}$/; // Regular expression for 1 to 12 digits
     }else if(country_code == 55){
-        var regex = /^[0-9]{1,15}$/; // Regular expression for 1 to 15 digits
-    }else{
-        var regex = /^[0-9]{1,12}$/; // Regular expression for 1 to 12 digits for all other countries
+        regexPattern = /^[0-9]{1,15}$/; // Regular expression for 1 to 15 digits
     }
-    return regex.test(number);
+    regexPattern = new RegExp(regexPattern);
+    // else{
+    //     var regex = /^[0-9]{1,12}$/; // Regular expression for 1 to 12 digits for all other countries
+    // }
+    // Check if the number matches the regex
+    if (number === '' || number === null) {
+        return false; // Return false if the number is empty or null
+    }
+    // test
+    return regexPattern.test(number); // Return true if the number matches the regex, false otherwise
 }
     
 function addMinutes(date, minutes) {
@@ -2116,6 +2253,7 @@ function checkOtpAttemptsBlocked() {
     } else {                        
         updateCookie('otpAttempts', '1', 1);
     }
+    console.log('User OTP Attempts: ', userOtpAttempts, 'User Blocked: ', userBlocked);
     return userBlocked;
 }
 

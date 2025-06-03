@@ -861,8 +861,49 @@ table.woocommerce-checkout-review-order-table thead {
     width: 0;
     z-index: -1;
 }
-div#edit-fancybox-form {
+.ffancybox-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    z-index: 9999999;
+}
+/* div#edit-fancybox-form {
+    display: none; 
+} */
+div.ffancybox-wrapper .fancyfox-content {
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
     max-width: 600px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+div.ffancybox-wrapper .chiudi-box {
+  top: 15%;
+  position: relative;
+  transform: translateY(-15%);
+  left: 65%;
+  border-radius: 50%;
+  font-size: 33px;
+  width: 43px;
+  height: 43px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+}
+#subscription-fancybox-wrap > div {
+  width: 90vw !important;
+  max-width: 100%;
+  overflow: auto;
+  max-height: 100vh;
 }
 
 p:not(.bf-title).upd-phone-msg {
@@ -1622,6 +1663,12 @@ margin: 0 auto;
 font-size: 20px;
 }
 
+div#subscription-fancybox-wrap .chiudi-box {
+  top: 4% !important;
+  transform: translateY(-15%);
+  left: 95% !important;
+}
+
 @media only screen and (max-width: 600px) {
 div#subscription-fancybox-wrap {
 padding: 5px;
@@ -1632,6 +1679,10 @@ div#subscription-fancybox-wrap ul.event-ticketlist-wrap {
 list-style: none;
 /* margin-left: 0; */
 padding-left: 0;
+display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
 }
 div#subscription-fancybox-wrap select#subscription-code {
 /* border: none; */
@@ -1649,6 +1700,11 @@ align-items: flex-start !important;
 align-content: flex-start !important;
 }
 /*POPUP SUBSCRIPTION*/
+.subscription-select-wrap > div {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
 
 /*NASCONDO AGGIORNA CARRELLO DA CART PAGE*/
 .woocommerce-cart .actions button[name="update_cart"] {

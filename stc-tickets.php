@@ -162,10 +162,15 @@ class stcTickets {
             //Enqueue
             wp_enqueue_script( 'jquery' );
         }
+        
         wp_enqueue_script( 'stctickets-jquery-ui-script', 'https://code.jquery.com/ui/1.13.2/jquery-ui.js', array (), NULL );
+        // wp_enqueue_script( 'stctickets-jquery-ui-script', plugin_dir_url( __FILE__ ) . 'assets/js/jquery-ui.min.js', array (), NULL );
         wp_enqueue_script( 'stctickets-svg-pan-zoom', 'https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.5.0/dist/svg-pan-zoom.min.js', array (), NULL );
-        wp_enqueue_script( 'stctickets-fancybox-min-script', plugin_dir_url( __FILE__ ) . 'assets/js/jquery.fancybox.min.js', array (), time() );
+        // wp_register_script( 'stctickets-svg-pan-zoom', plugin_dir_url( __FILE__ ) . 'assets/js/svg-pan-zoom.min.js', array (), NULL );
+        // wp_enqueue_script( 'stctickets-fancybox-min-script', plugin_dir_url( __FILE__ ) . 'assets/js/jquery.fancybox.min.js', array (), time() );
         wp_enqueue_script( 'stctickets-recaptcha-script', 'https://www.google.com/recaptcha/api.js', array (), NULL );
+        wp_enqueue_script( 'stctickets-turnstile-script', 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit', array (), NULL );
+        wp_script_add_data( 'stctickets-turnstile-script', 'defer', true );
         wp_enqueue_script( 'stctickets-map-script', plugin_dir_url( __FILE__ ) . 'assets/js/stc-map-script.js', array (), time() );
         wp_enqueue_script( 'stctickets-public-script', plugin_dir_url( __FILE__ ) . 'assets/js/stc-tickets-script.js', array (), time() );
         
@@ -179,6 +184,8 @@ class stcTickets {
             'APIKEY' => APIKEY,
             'FORM_FIELD_CHARS' => FORM_FIELD_CHARS,
             'preorder_nonce' => wp_create_nonce('preorder_nonce'),
+            'ts_sitekey' => TS_CAPTCHA_DEV_SITE_KEY,
+            'otp_nonce' => wp_create_nonce('otp_nonce'),
         ));
         
         wp_localize_script('stctickets-public-script', 'stcTicketsText', array(
