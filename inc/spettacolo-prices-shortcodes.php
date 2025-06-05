@@ -11,7 +11,7 @@ function stcTickets_spettacolo_prices_callback() {
     $regData       = (int) (isset( $_GET[ 'regData' ] ) ? $_GET[ 'regData' ] : '');
     $spe_id        = isset( $_GET[ 'postId' ] ) ? $_GET[ 'postId' ] : '';
     $selectionMode = (int) (isset( $_GET[ 'selectionMode' ] ) ? $_GET[ 'selectionMode' ] : 0);
-    $barcode       = (int) (isset( $_GET[ 'barcode' ] ) ? $_GET[ 'barcode' ] : 0);
+    $barcode       = isset( $_GET[ 'barcode' ] ) ? $_GET[ 'barcode' ] : 0;
 
     $spe_permalink = get_post_permalink( $spe_id );
     $spt_location  = ! empty( get_post_meta( $spe_id, 'spt_location', true ) ) ? get_post_meta( $spe_id, 'spt_location', true ) : __('Teatro San Carlo - NAPOLI','stc-tickets');
