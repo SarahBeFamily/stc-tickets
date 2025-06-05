@@ -794,8 +794,8 @@ function fun_getUserLogin (){
         'message' => '',
         'status'  => false,
     );
-//    $user = 'Kidea';
-//    $password = 'TSC@2023';
+    // $user = 'Kidea';
+    // $password = 'TSC@2023';
     $otpMatched          = false;
     $otpCreated          = false;
     $err                 = '';
@@ -829,7 +829,7 @@ function fun_getUserLogin (){
     $curl_response = array();
     if( $generate_otp_now ) {
 
-        // Check turnstile reecaptcha
+        // Check turnstile recaptcha
         $turnstile_response = isset($_POST['turnstile_response']) ? $_POST['turnstile_response'] : '';
         if (empty($turnstile_response)) {
             $response['error'] = __('Please complete the reCAPTCHA verification.', 'stc-tickets');
@@ -844,6 +844,24 @@ function fun_getUserLogin (){
                 'remoteip' => $_SERVER['REMOTE_ADDR'],
             ),
         ));
+        
+        $response = json_decode(wp_remote_retrieve_body($response), true);
+
+        if (isset($response['success']) && $response['success'] === false) {
+            $response[ 'error' ] = __('reCAPTCHA verification failed.', 'stc-tickets');
+            wp_send_json_error($response);
+            wp_die();
+        } elseif (!isset($response['success']) || $response['success'] !== true) {
+            $response[ 'error' ] = __('reCAPTCHA verification failed.', 'stc-tickets');
+            wp_send_json_error($response);
+            wp_die();
+        } else {
+            // reCAPTCHA verification passed
+            // $response['otp_next'] = 'manda OPT';
+            // echo json_encode($response);
+            // wp_die();
+        }
+        
 
         if(email_exists($email)){
             $response[ 'error' ]            = "Email già esistente!!";
@@ -854,6 +872,7 @@ function fun_getUserLogin (){
             echo json_encode ( $response );
             wp_die ();
         }
+
         if(empty($results)) {
             $genratedOtp        = random_int( 100000, 999999 );
             $_SESSION[ "$email" ] = $genratedOtp;
@@ -974,7 +993,7 @@ function fun_UpdateUserPhone (){
     $generate_otp_now    = isset($_POST[ 'generate_otp_now' ]) ? $_POST[ 'generate_otp_now' ] : false;
     $registerOtp         = isset( $_POST[ 'registerotp' ] ) ? (int) $_POST[ 'registerotp' ] : '';
     // $registerOtp         = $email === TEST_EMAIL ? "TEST_OTP" : $registerOtp;
-    $turnstile_response = isset($_POST['tsc_verify']) ? $_POST['tsc_verify'] : '';
+    $turnstile_response  = isset($_POST['tsc_verify']) ? $_POST['tsc_verify'] : '';
     
     // Verify nonce
     if ( ! wp_verify_nonce( $_POST['nonce'], 'otp_nonce' ) ) {
@@ -1007,10 +1026,9 @@ function fun_UpdateUserPhone (){
     if( $generate_otp_now ) {
         // Check turnstile reecaptcha
         if (empty($turnstile_response)) {
-            $err = __('Please complete the reCAPTCHA verification.', 'stc-tickets');
-            // echo json_encode($err);
-            wp_send_json_error($err);
-            wp_die();
+            $response['error'] = __('Please complete the reCAPTCHA verification.', 'stc-tickets');
+            echo json_encode ( $response );
+            wp_die ();
         } else {
             $response = wp_remote_post('https://challenges.cloudflare.com/turnstile/v0/siteverify', array(
                 'body' => array(
@@ -1019,11 +1037,24 @@ function fun_UpdateUserPhone (){
                     'remoteip' => $_SERVER['REMOTE_ADDR'],
                 ),
             ));
-            if (is_wp_error($response)) {
-                $err = __('Turnstile verification failed.', 'stc-tickets');
-                // echo json_encode($err);
-                wp_send_json_error($err);
+
+            // Check reCAPTCHA response
+            $response = json_decode($response['body'], true);
+            
+            if (isset($response['success']) && $response['success'] === false) {
+                $response['error'] = __('reCAPTCHA verification failed.', 'stc-tickets');
+                echo json_encode ( $response );
+                wp_die ();
+
+            } elseif (!isset($response['success']) || $response['success'] !== true) {
+                $response['error'] = __('reCAPTCHA verification failed.', 'stc-tickets');
+                echo json_encode ( $response );
                 wp_die();
+            } else {
+                // reCAPTCHA verification passed
+                // $response['otp_next'] = 'manda OPT';
+                // echo json_encode($response);
+                // wp_die();
             }
         }
         
@@ -1045,6 +1076,7 @@ function fun_UpdateUserPhone (){
                     [ "to" => "$billing_phone" ]
                 ]
             );
+
             $curl_body     = json_encode ( $curl_body );
             $gen_otp_cookie = tempnam ("/tmp", "CURLCOOKIE");
             $curl = curl_init();
@@ -1078,13 +1110,12 @@ function fun_UpdateUserPhone (){
     }
     $phone_updated = '';
     if(!empty($registerOtp)){
+        $genratedOtp = $_SESSION["$email"];
         // Check for email test
         //  DISABILITATO
         // if ( $email == TEST_EMAIL ) {
         //     $genratedOtp = "TEST_OTP";
         //     $otpCreated = "TEST_OTP";
-        // } else {
-        //     $genratedOtp = $_SESSION["$email"];
         // }
         
         if($registerOtp === $genratedOtp){

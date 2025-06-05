@@ -1819,7 +1819,6 @@ jQuery(document).ready(function ($) {
             } else {
                 jQuery(document).find('#otpAttemptsError').hide();
 
-                // console.log('OTP generation data:', data);
                 // Ajax request to update phone
                 jQuery.ajax({
                     url: STCTICKETSPUBLIC.ajaxurl,
@@ -1830,11 +1829,14 @@ jQuery(document).ready(function ($) {
                     data: data,
                     success: function (data) {
                             jQuery( "body" ).css('opacity', '1');
+                        // Parse the response data
                         let responseData = JSON.parse(data);
-                            if (responseData.status) {
+                        if (responseData.status) {
+                            // console.log('status:', responseData.status);
+
                             if (responseData.otpCreated) {
-                                    jQuery(document).find('.woocommerce-form-row.otp-box').show();
-                                    jQuery(document).find('.upd-phone-msg.otp-msg').show();
+                                jQuery(document).find('.woocommerce-form-row.otp-box').show();
+                                jQuery(document).find('.upd-phone-msg.otp-msg').show();
                                 $this.removeClass('otp-generate');
                                 $this.addClass('otp-verified-disabled');
                                 $this.text(stcTicketsText.str_17);
@@ -1865,15 +1867,26 @@ jQuery(document).ready(function ($) {
                             } else {
                                 console.log("error",responseData);
                                 if (responseData.error != '') {
-                                        jQuery(document).find('form .otp-box').after('<p class="error-display">' + responseData.error + '</p>');
+                                    jQuery(document).find('form .otp-box').after('<p class="error-display">' + responseData.error + '</p>');
                                 }
                             }
                         } else {
-                            console.log(responseData);
+                            console.log('no status, recaptcha or error');
+                            // Check if the response contains an error message
+                            if (responseData.error) {
+                                let errorP = jQuery(document).find('form .otp-box .error-display');
+                                if (errorP.length > 0) {
+                                    errorP.text(responseData.error);
+                                } else {
+                                    jQuery(document).find('form .otp-box').after('<p class="error-display">' + responseData.error + '</p>');
+                                }
+                            }
                         }
                     },
                     error: function (request, status, error) {
-                        console.log(error);
+                        console.log('!!! Error:', error);
+                        console.log('!!! Request:', request);
+                        console.log('!!! Status:', status);
                     }
                 });
             }

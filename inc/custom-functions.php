@@ -2796,10 +2796,18 @@ function avoid_change_email_account_details($required_fields) {
                 'remoteip' => $_SERVER['REMOTE_ADDR'],
             ),
         ));
-        // Check for errors in the response
-        if (is_wp_error($response)) {
+        // Check reCAPTCHA response
+        $response = json_decode($response['body'], true);
+        
+        if (isset($response['success']) && $response['success'] === false) {
             wc_add_notice(__('Captcha verification failed. Please try again.', 'woocommerce'), 'error');
             return;
+
+        } elseif (!isset($response['success']) || $response['success'] !== true) {
+            wc_add_notice(__('Captcha verification failed. Please try again.', 'woocommerce'), 'error');
+            return;
+        } else {
+            // reCAPTCHA verification passed
         }
     }
 }
