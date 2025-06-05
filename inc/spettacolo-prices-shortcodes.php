@@ -5,12 +5,14 @@
 add_shortcode( 'spettacolo_prices', 'stcTickets_spettacolo_prices_callback' );
 function stcTickets_spettacolo_prices_callback() {
     ob_start();
+
     $vcode         = isset( $_GET[ 'vcode' ] ) ? $_GET[ 'vcode' ] : '';
-    $pcode         = isset( $_GET[ 'pcode' ] ) ? $_GET[ 'pcode' ] : '';
-    $regData       = isset( $_GET[ 'regData' ] ) ? $_GET[ 'regData' ] : '';
+    $pcode         = (int) (isset( $_GET[ 'pcode' ] ) ? $_GET[ 'pcode' ] : '');
+    $regData       = (int) (isset( $_GET[ 'regData' ] ) ? $_GET[ 'regData' ] : '');
     $spe_id        = isset( $_GET[ 'postId' ] ) ? $_GET[ 'postId' ] : '';
-    $selectionMode = isset( $_GET[ 'selectionMode' ] ) ? $_GET[ 'selectionMode' ] : 0;
+    $selectionMode = (int) (isset( $_GET[ 'selectionMode' ] ) ? $_GET[ 'selectionMode' ] : 0);
     $barcode       = isset( $_GET[ 'barcode' ] ) ? $_GET[ 'barcode' ] : 0;
+
     $spe_permalink = get_post_permalink( $spe_id );
     $spt_location  = ! empty( get_post_meta( $spe_id, 'spt_location', true ) ) ? get_post_meta( $spe_id, 'spt_location', true ) : __('Teatro San Carlo - NAPOLI','stc-tickets');
     $spt_img       = get_the_post_thumbnail_url( $spe_id ) ? get_the_post_thumbnail_url( $spe_id ) : plugin_dir_url( __DIR__ ) . 'assets/img/emiliano_test.jpg';
