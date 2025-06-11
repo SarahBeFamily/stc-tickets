@@ -148,6 +148,11 @@ function stcTickets_spettacolo_prices_callback() {
         if( empty( $room_last_update_time ) ) {
             update_post_meta( $spe_id, 'room_last_update_time' . $pcode, $roomLastUpdate );
         }
+        $roomName               = isset( $performance[ '@attribute' ][ 'roomName' ] ) ? $performance[ '@attribute' ][ 'roomName' ] : '';
+        if( !empty( $roomName ) ) {
+            update_post_meta( $spe_id, 'spt_location', $roomName );
+            $spt_location = $roomName;
+        }
         $get_room_last_update_time = get_post_meta( $spe_id, 'room_last_update_time' . $pcode, true );
         if( empty( $seatsLayout ) || $roomLastUpdate > $get_room_last_update_time ) {
             $path              = API_HOST.'/map_room_data/' . $vcode . '.xml';
