@@ -8,7 +8,8 @@ const turnstileSiteKey = STCTICKETSPUBLIC.ts_sitekey;
 
 let loadingArray = {},
 	id_var = 0,
-    language = document.documentElement.lang;
+    language = document.documentElement.lang,
+    widgetId = '';
 
 // Check if turnstile is enabled
 if (typeof turnstile === 'undefined') {
@@ -22,6 +23,7 @@ if (typeof turnstile === 'undefined') {
                 sitekey: turnstileSiteKey,
                 callback: function (token) {
                     // console.log(`Challenge Success ${token}`);
+                    widgetId = token;
                     console.log('recaptcha ok');
                 },
             });
@@ -39,9 +41,9 @@ console.log(developmentMode);
 
 jQuery(document).ready(function ($) {
     
-    var widgetId = '';
+    // var widgetId = '';
     
-    renderReCaptcha();
+    // renderReCaptcha();
     
     if (jQuery(document).find('.spettacolo-prices-wrapper').length > 0) {
         jQuery(document).find('body').addClass('spettacolo-prices-page');
@@ -410,7 +412,7 @@ jQuery(document).ready(function ($) {
                 method: 'post',
                 beforeSend: function () {
                     jQuery('body').addClass('loading');
-                    progressLoading(0, 100);
+                    progressLoading(0, 150);
                 },
                 data: ajax_data,
                 success: function (data) {
@@ -511,19 +513,20 @@ jQuery(document).ready(function ($) {
     jQuery(document).on('click', '#place_order', function (e) {
         e.preventDefault();
         
-        var recaptcha = "";
-        if(jQuery(document).find('#g-recaptcha-response').length > 0){
-            recaptcha = jQuery(document).find('#g-recaptcha-response').val();
-        }
+        // var recaptcha = "";
+        // if(jQuery(document).find('#g-recaptcha-response').length > 0){
+        //     recaptcha = jQuery(document).find('#g-recaptcha-response').val();
+        // }
+        let recaptcha = jQuery(document).find('input[name=cf-turnstile-response]').length > 0 ? jQuery(document).find('input[name=cf-turnstile-response]').val() : '';
         
         // If is not developer test mode then check for recaptcha
-        if(!developmentMode){
+        // if(!developmentMode){
             jQuery.ajax({
                 url: STCTICKETSPUBLIC.ajaxurl,
                 method: 'post',
                 beforeSend: function () {
                     jQuery('body').addClass('loading');
-                    progressLoading(0, 100);
+                    progressLoading(0, 200);
                 },
                 data: {
                     action: 'checkRecaptcha',
@@ -629,74 +632,74 @@ jQuery(document).ready(function ($) {
                     console.log(error);
                 }
             });
-        } else {
-            jQuery.ajax({
-                url: STCTICKETSPUBLIC.ajaxurl,
-                method: 'post',
-                beforeSend: function () {
-                    // jQuery( "body" ).css('opacity', '0.2');
-                    jQuery('body').addClass('loading');
-                    progressLoading(0, 100);
-                },
-                data: {
-                    action: 'getCheckout',
-                },
-                success: function (data) {
-                    var responseData = JSON.parse(data);
-                    console.log(responseData);
-                    if (responseData.status) {
-                        console.log(responseData.message);
-                        var responseArr = responseData.message;
-                        var redirecturl = responseArr.redirecturl
-                        // First create the preorder
-                        jQuery.ajax({
-                            url: STCTICKETSPUBLIC.ajaxurl,
-                            method: 'post',
-                            data: {
-                                action: 'createPreorder',
-                                preorder_nonce: STCTICKETSPUBLIC.preorder_nonce,
-                                transactionCode: responseArr.paym_code,
-                            },
-                            success: function (data) {
-                                jQuery('body').removeClass('loading');
-                                progressLoading('clear');
+        // } else {
+        //     jQuery.ajax({
+        //         url: STCTICKETSPUBLIC.ajaxurl,
+        //         method: 'post',
+        //         beforeSend: function () {
+        //             // jQuery( "body" ).css('opacity', '0.2');
+        //             jQuery('body').addClass('loading');
+        //             progressLoading(0, 100);
+        //         },
+        //         data: {
+        //             action: 'getCheckout',
+        //         },
+        //         success: function (data) {
+        //             var responseData = JSON.parse(data);
+        //             console.log(responseData);
+        //             if (responseData.status) {
+        //                 console.log(responseData.message);
+        //                 var responseArr = responseData.message;
+        //                 var redirecturl = responseArr.redirecturl
+        //                 // First create the preorder
+        //                 jQuery.ajax({
+        //                     url: STCTICKETSPUBLIC.ajaxurl,
+        //                     method: 'post',
+        //                     data: {
+        //                         action: 'createPreorder',
+        //                         preorder_nonce: STCTICKETSPUBLIC.preorder_nonce,
+        //                         transactionCode: responseArr.paym_code,
+        //                     },
+        //                     success: function (data) {
+        //                         jQuery('body').removeClass('loading');
+        //                         progressLoading('clear');
                                 
-                                console.log(data);
-                                console.log(redirecturl);
-                                if (redirecturl) {
-                                    console.log('redirecting to payment page');
-                                    // window.location.href = redirecturl;
-                                }
-                            },
-                            error: function (request, status, error) {
-                                console.log(error);
-                                jQuery('body').removeClass('loading');
-                                progressLoading('clear');
+        //                         console.log(data);
+        //                         console.log(redirecturl);
+        //                         if (redirecturl) {
+        //                             console.log('redirecting to payment page');
+        //                             // window.location.href = redirecturl;
+        //                         }
+        //                     },
+        //                     error: function (request, status, error) {
+        //                         console.log(error);
+        //                         jQuery('body').removeClass('loading');
+        //                         progressLoading('clear');
 
-                                if(jQuery(document).find('#order_review .checkout-error').length > 0){
-                                    jQuery(document).find('#order_review .checkout-error').text(error);                            
-                                }else{
-                                    jQuery(document).find('#order_review').append('<p class="checkout-error" style="color:red;">'+ error +'</p>');                            
-                                }
-                            }
-                        });
-                    } else {
-                        console.log(responseData.message['@attributes']);
-                        let responseError = responseData.message['@attributes'];
-                        if(responseError.errcode){
-                            if(jQuery(document).find('#order_review .checkout-error').length > 0){
-                                jQuery(document).find('#order_review .checkout-error').text(stcTicketsText.str_8 + (responseError.hasOwnProperty ? ' : '+responseError.errstring : ''));                            
-                            }else{
-                                jQuery(document).find('#order_review').append('<p class="checkout-error" style="color:red;">'+ stcTicketsText.str_8 + (responseError.hasOwnProperty ? ' : '+responseError.errstring : '') +'</p>');                            
-                            }
-                        }
-                    }
-                },
-                error: function (request, status, error) {
-                    console.log(error);
-                }
-            });
-        }
+        //                         if(jQuery(document).find('#order_review .checkout-error').length > 0){
+        //                             jQuery(document).find('#order_review .checkout-error').text(error);                            
+        //                         }else{
+        //                             jQuery(document).find('#order_review').append('<p class="checkout-error" style="color:red;">'+ error +'</p>');                            
+        //                         }
+        //                     }
+        //                 });
+        //             } else {
+        //                 console.log(responseData.message['@attributes']);
+        //                 let responseError = responseData.message['@attributes'];
+        //                 if(responseError.errcode){
+        //                     if(jQuery(document).find('#order_review .checkout-error').length > 0){
+        //                         jQuery(document).find('#order_review .checkout-error').text(stcTicketsText.str_8 + (responseError.hasOwnProperty ? ' : '+responseError.errstring : ''));                            
+        //                     }else{
+        //                         jQuery(document).find('#order_review').append('<p class="checkout-error" style="color:red;">'+ stcTicketsText.str_8 + (responseError.hasOwnProperty ? ' : '+responseError.errstring : '') +'</p>');                            
+        //                     }
+        //                 }
+        //             }
+        //         },
+        //         error: function (request, status, error) {
+        //             console.log(error);
+        //         }
+        //     });
+        // }
     });
     
     jQuery(document).on('input',`#reg_billing_phone${STCTICKETSPUBLIC.FORM_FIELD_CHARS}`, function() {
@@ -720,14 +723,14 @@ jQuery(document).ready(function ($) {
             var password = jQuery(document).find('.woocommerce-form-register #reg_password').val();
             var first_name = jQuery(document).find('#reg_fname').val();
             var last_name = jQuery(document).find('#reg_lname').val();
-//            var billing_phone = jQuery(document).find('#reg_billing_phone' + STCTICKETSPUBLIC.FORM_FIELD_CHARS ).val();
-//            var billing_phone_spam = jQuery(document).find('#reg_billing_phone').val();
+        //    var billing_phone = jQuery(document).find('#reg_billing_phone' + STCTICKETSPUBLIC.FORM_FIELD_CHARS ).val();
+        //    var billing_phone_spam = jQuery(document).find('#reg_billing_phone').val();
             var country_code = jQuery(document).find('#reg_country_code'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS).val();
             var email = jQuery(document).find('#reg_email').val();
             var dob = jQuery(document).find('#reg_dob').val();
             var place_of_birth = jQuery(document).find('#reg_place_of_birth').val();
-            var registerOtp = jQuery(document).find('#registerotp').val();
-            var $this = jQuery(this);
+            // var registerOtp = jQuery(document).find('#registerotp').val();
+            // var $this = jQuery(this);
             
             var username = email;
             var privacy_checkbox_1 = jQuery(document).find("#privacy_policy_reg").prop('checked');
@@ -744,10 +747,13 @@ jQuery(document).ready(function ($) {
 //                jQuery(document).find('#reg_billing_phone'+ STCTICKETSPUBLIC.FORM_FIELD_CHARS).removeClass('is-invalid');                
 //            }
             
-            console.log('send-register-otp clicked');
-            var recaptcha = "";
-            if(jQuery(document).find('#g-recaptcha-response').length > 0){
-                recaptcha = jQuery(document).find('#g-recaptcha-response').val();
+            // console.log('send-register-otp clicked');
+            let recaptcha = "";
+            // if(jQuery(document).find('#g-recaptcha-response').length > 0){
+            //     recaptcha = jQuery(document).find('#g-recaptcha-response').val();
+            // }
+            if(jQuery(document).find('input[name=cf-turnstile-response]').length > 0){
+                recaptcha = jQuery(document).find('input[name=cf-turnstile-response]').val();
             }
 
             jQuery.ajax({
@@ -855,27 +861,9 @@ jQuery(document).ready(function ($) {
                                 }
                             });
                         } else {
-//                            jQuery(document).find('#g-recaptcha-response').val('');
-//                            if (typeof grecaptcha !== 'undefined') {
-//                                console.log('test',grecaptcha);
-//                                // reCAPTCHA script is loaded
-//                                // Your code that interacts with grecaptcha object here
-//                            } else {
-//                                console.log('reCAPTCHA script not yet loaded.');
-//                            }                        
-//jQuery('#reCaptchDiv').html('');
-//        // Render reCAPTCHA widget
-//        widgetId = grecaptcha.render('reCaptchDiv', {
-//            'sitekey' : '6LfqMQgqAAAAADbNO6xczPwkjiKYhSN8KN9J9vLd',
-//            'theme' : 'light'  // Optional: change theme if needed
-//        });
-//                            console.log('widgetId', widgetId);
-//                            grecaptcha.reset(widgetId);
-//                            grecaptcha.render('reCaptchDiv', {
-//                                 'sitekey' : '6LfqMQgqAAAAADbNO6xczPwkjiKYhSN8KN9J9vLd',
-//                                'theme' : 'light'  // Optional: change theme if needed
-//                            });
-                            grecaptcha.reset(widgetId);
+
+                            // grecaptcha.reset(widgetId);
+                            turnstile.reset(widgetId);
                             if(jQuery(document).find('form .error-empty').length > 0){
                                 jQuery(document).find('form .error-empty').text("Non hai compilato tutti i campi obbligatori");
                             }else{
@@ -912,7 +900,6 @@ jQuery(document).ready(function ($) {
                                 jQuery(document).find('.woocommerce-form-register #reg_place_of_birth').removeAttr('style');
                             }
                         }
-//                        }, 1000);
                     } else {
                         console.log(responseData.message);
                         let responseError = responseData.message;
