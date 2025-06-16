@@ -2867,9 +2867,15 @@ function custom_user_search( $user_query ) {
 }
 add_action( 'pre_user_query', 'custom_user_search' );
 
+/**
+ * Add Turnstile captcha to the WooCommerce review order before payment section
+ *
+ * @return void
+ */
 function woocommerce_review_order_before_payment_fun(){
-//    echo '<div class="g-recaptcha" data-sitekey="'.CAPTCHA_SITE_KEY.'"></div>';
-    echo '<div id="reCaptchDiv"></div>';
+    // echo '<div class="g-recaptcha" data-sitekey="'.CAPTCHA_SITE_KEY.'"></div>';
+    // echo '<div id="reCaptchDiv"></div>';
+    echo '<div id="ts-container" class="cf-turnstile" data-sitekey="'.TS_CAPTCHA_DEV_SITE_KEY.'"></div>';
 }
 
 add_action( 'woocommerce_review_order_before_payment', 'woocommerce_review_order_before_payment_fun' );
@@ -3187,3 +3193,21 @@ function order_detail_data() {
 }
 // in woocommerce admin order details page
 add_action('woocommerce_admin_order_data_after_order_details', 'order_detail_data');
+
+/**
+ *  Function to get remote file contents using WordPress HTTP API
+ *  Fix by Diego Purpo
+ * 
+ * @param [type] $url
+ * @return void
+ */
+function remote_file_get_contents($url) {
+    $response = wp_remote_get($url);
+
+    if (is_wp_error($response)) {
+        error_log( 'ERRORE : ' . $response->get_error_message() );
+        return false;
+    } else {
+        return wp_remote_retrieve_body( $response );
+    }
+}

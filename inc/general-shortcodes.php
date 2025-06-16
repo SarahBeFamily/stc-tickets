@@ -838,7 +838,8 @@ function stcTickets_login_form_callback() {
                         </p>
                     </div>
                 </div>
-                <div id="reCaptchDiv"></div>
+                <!-- <div id="reCaptchDiv"></div> -->
+                <div id="ts-container" class="cf-turnstile" data-sitekey="<?php echo TS_CAPTCHA_DEV_SITE_KEY ?>"></div>
                 <p id="otpAttemptsError" style="color:red; display:none;"><?php esc_html_e( "OTP already requested the code, please wait 15 minutes to try again", 'stc-tickets' ); ?></p>                
                 <?php do_action( 'woocommerce_register_form' ); ?>
                 <p class="woocommerce-form-row form-row">

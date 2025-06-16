@@ -1026,7 +1026,7 @@ function fun_UpdateUserPhone (){
     if( $generate_otp_now ) {
         // Check turnstile reecaptcha
         if (empty($turnstile_response)) {
-            $response['error'] = __('Please complete the reCAPTCHA verification.', 'stc-tickets');
+            $response['error'] = __("Please check on the reCAPTCHA box.",'stc-tickets');
             echo json_encode ( $response );
             wp_die ();
         } else {
@@ -1428,12 +1428,20 @@ function print_order_fun() {
     );
 
     /** MOD SARAH **/
-    $api_response = file_get_contents($pdfApiUrl);
-    $apiData = simplexml_load_string($api_response);
+    $api_response = remote_file_get_contents($pdfApiUrl);
 
     //Check if apiData starts with $amp;lt; which is a special character
     // $clean_apiData = $apiData.indexOf('&amp;lt;') == -1 ? '&amp;lt;'.$apiData : $apiData;
     // <!-- simplexml_load_string(): Entity: line 1: parser error : Start tag expected, '&amp;lt;' not found (500 Internal Server Error) -->
+    // Clean the API response to remove any unwanted characters
+    if (strpos($api_response, '&amp;lt;') !== false) {
+        $api_response = str_replace('&amp;lt;', '<', $api_response);
+    }
+    if (strpos($api_response, '&amp;gt;') !== false) {
+        $api_response = str_replace('&amp;gt;', '>', $api_response);
+    }
+    // Decode the XML response
+    $apiData = simplexml_load_string($api_response);
 
     $errmsg = '';
 
@@ -1446,8 +1454,12 @@ function print_order_fun() {
         }
     }
 
+    $response[ 'errmsg' ] = $errmsg;
+    // $response[ 'ApiResponse' ] = $api_response;
+    // $response[ 'ApiData' ] = $apiData;
+
     // Check if the response is successful and the content type is PDF
-    if ($api_response !== false && empty($errmsg)) {
+    if ($api_response !== false && $errmsg == '') {
         $fileName = dirname(__dir__) .'/pdf/order_'.$trcode.'.pdf';
 
         // Set headers for PDF download
@@ -1470,7 +1482,7 @@ function print_order_fun() {
         if ( !empty($order) ) {
             $order->update_status( 'completed' );
         }
-    } else if(!empty($errmsg)){
+    } else if($errmsg != '') {
         $response[ 'message' ] = $errmsg;
         $response[ 'status' ]  = false;
     } else {
@@ -1749,20 +1761,41 @@ function checkRecaptcha_fun() {
     if(!empty($recaptcha)) {
 
         // Google secret API
-        $secretAPIkey = CAPTCHA_SECRET_KEY;
+        // $secretAPIkey = CAPTCHA_SECRET_KEY;
 
         // reCAPTCHA response verification
-        $verifyResponse = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.$secretAPIkey.'&response='.$recaptcha);
+        // $verifyResponse = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.$secretAPIkey.'&response='.$recaptcha);
+        $turnstile_response = sanitize_text_field($recaptcha);
+        $response = wp_remote_post('https://challenges.cloudflare.com/turnstile/v0/siteverify', array(
+            'body' => array(
+                'secret' => TS_CAPTCHA_DEV_SECRET_KEY,
+                'response' => $turnstile_response,
+                'remoteip' => $_SERVER['REMOTE_ADDR'],
+            ),
+        ));
+        // Check reCAPTCHA response
+        $response = json_decode($response['body'], true);
+        
+        if (isset($response['success']) && $response['success'] === false) {
+            $response[ 'message' ] = __("Robot verification failed, please try again.",'stc-tickets');
+
+        } elseif (!isset($response['success']) || $response['success'] !== true) {
+            $response[ 'message' ] = __("Robot verification failed, please try again.",'stc-tickets');
+        } else {
+            // reCAPTCHA verification passed
+            $response[ 'message' ] = __("reCAPTCHA is verified.",'stc-tickets');
+            $response[ 'status' ] = true;
+        }
 
         // Decode JSON data
-        $res = json_decode($verifyResponse);
-            if($res->success){
+        // $res = json_decode($verifyResponse);
+        //     if($res->success){
 
-                $response[ 'message' ] = __("reCAPTCHA is verified.",'stc-tickets');
-                $response[ 'status' ] = true;
-            } else {
-                $response[ 'message' ] = __("Robot verification failed, please try again.",'stc-tickets');
-            }
+        //         $response[ 'message' ] = __("reCAPTCHA is verified.",'stc-tickets');
+        //         $response[ 'status' ] = true;
+        //     } else {
+        //         $response[ 'message' ] = __("Robot verification failed, please try again.",'stc-tickets');
+        //     }
     } else{
         $response[ 'message' ] = __("Please check on the reCAPTCHA box.",'stc-tickets');
     }
