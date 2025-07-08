@@ -39,13 +39,13 @@ function stcTickets_spettacolo_prices_callback() {
     $pricesArr       = json_decode( $pricesJson, TRUE );
 
     // testing: print the array of prices
-    if(isset($_GET['print']) && $_GET['print'] == 1) { 
+    if(isset($_GET['print']) && $_GET['print'] == 1) {
         echo "<pre>";
         print_r($pricesJson);
         print_r($pricesArr);
         echo "</pre>";
     }
-    
+
     // if(isset($pricesArr['@attributes']['errcode']) && isset($pricesArr['@attributes']['errstring'])){
     //     echo "<pre>";
     //     print_r(API_HOST . 'backend/backend.php?cmd=prices&id=' . APIKEY . '&vcode=' . $vcode . '&pcode=' . $pcode);
@@ -55,7 +55,7 @@ function stcTickets_spettacolo_prices_callback() {
     $title           = ! empty( $pricesArr[ 'title' ] ) ? $pricesArr[ 'title' ] : '';
     $info_date       = ! empty( $pricesArr[ 'date' ] ) ? $pricesArr[ 'date' ] : '';
     $info_curr_date  = ! empty( $info_date ) ? explode( "/", $info_date ) : '';
-        
+
     $info_final_date = ! empty( $info_curr_date ) && count($info_curr_date) > 1 ? $info_curr_date[ 1 ] . '/' . $info_curr_date[ 0 ] . '/' . $info_curr_date[ 2 ] : '';
 
     $info_final_date = ! empty( $info_final_date ) ? change_date_time_in_italy( strtotime( $info_final_date ), 'EEEE dd MMMM y' ) : '';
@@ -66,7 +66,7 @@ function stcTickets_spettacolo_prices_callback() {
     } else {
         $subscription = "0";
     }
-    
+
     $jsonTitle = json_encode($title);
     $cleanedTitle = str_replace('\"', '&quot;', $jsonTitle);
     $cleanedTitle = str_replace("'", '&apos;', $cleanedTitle);
@@ -74,7 +74,7 @@ function stcTickets_spettacolo_prices_callback() {
     // search and replace the title with the cleaned title
     $pricesJson = str_replace($jsonTitle, $cleanedTitle, $pricesJson);
     $globalJsPricing = $pricesJson;
-    
+
     ?>
     <script type="text/javascript">
         var globalJsPricing = '<?php echo isset( $globalJsPricing ) ? $globalJsPricing : '';?>';
@@ -124,9 +124,9 @@ function stcTickets_spettacolo_prices_callback() {
 
     ?>
     <script type="text/javascript">
-        var extGetMapDataPricing = '<?php echo isset( $extGetMapDataPricing ) ? $extGetMapDataPricing : ""; ?>';        
+        var extGetMapDataPricing = '<?php echo isset( $extGetMapDataPricing ) ? $extGetMapDataPricing : ""; ?>';
     </script>
-    <?php            
+    <?php
     $extGetMapData = json_decode( $json_en, true );
 
     // Testing: print the array of extGetMapData
@@ -153,17 +153,44 @@ function stcTickets_spettacolo_prices_callback() {
             update_post_meta( $spe_id, 'spt_location', $roomName );
             $spt_location = $roomName;
         }
+        // save seats layout and romm last update time in plugin meta options
+        $stc_tickets_map_room_data_xml = get_option( 'stc_tickets_map_room_data_xml' );
+        $stc_tickets_room_last_update_time = get_option( 'stc_tickets_room_last_update_time' . $pcode );
+
+        // se le opzioni non esistono, le creo
+        if( empty( $stc_tickets_map_room_data_xml ) ) {
+            add_option( 'stc_tickets_map_room_data_xml', $seatsLayout, '', 'no' );
+        }
+        if( empty( $stc_tickets_room_last_update_time ) ) {
+            add_option( 'stc_tickets_room_last_update_time' . $pcode, $roomLastUpdate, '', 'no' );
+        }
+
         $get_room_last_update_time = get_post_meta( $spe_id, 'room_last_update_time' . $pcode, true );
         if( empty( $seatsLayout ) || $roomLastUpdate > $get_room_last_update_time ) {
-            $path              = API_HOST.'/map_room_data/' . $vcode . '.xml';
-            //    $path = plugin_dir_url ( __DIR__ ) . 'assets/xml/vt0000711.xml';
-            $xmlfile           = file_get_contents( $path );
-            $fileObject        = simplexml_load_string( $xmlfile );
-            $jsonObject        = json_encode( $fileObject );
-            $seatsLayoutObject = json_decode( $jsonObject, true );
-            update_post_meta( $spe_id, 'map_room_data_xml', $seatsLayoutObject );
-            update_post_meta( $spe_id, 'room_last_update_time' . $pcode, $roomLastUpdate );
+            $path              = API_HOST.'map_room_data/' . $vcode . '.xml';
+            $xmlfile           = remote_file_get_contents( $path );
+
+            if (!$xmlfile || $xmlfile === false) {
+                // uso la mappa salvata nelle opzioni del plugin
+                $seatsLayoutObject = get_option( 'stc_tickets_map_room_data_xml' );
+            } else {
+                $fileObject        = simplexml_load_string( $xmlfile );
+                $jsonObject        = json_encode( $fileObject );
+                $seatsLayoutObject = json_decode( $jsonObject, true );
+            }
+
+            // dd( $path, $xmlfile, $seatsLayoutObject );
+
+            if ($xmlfile !== false) {
+                update_post_meta( $spe_id, 'map_room_data_xml', $seatsLayoutObject );
+                update_post_meta( $spe_id, 'room_last_update_time' . $pcode, $roomLastUpdate );
+
+                update_option( 'stc_tickets_map_room_data_xml', $seatsLayoutObject );
+                update_option( 'stc_tickets_room_last_update_time' . $pcode, $roomLastUpdate );
+            }
+
             $seatsLayout               = $seatsLayoutObject;
+        
         }
         $circles_arr         = array ();
         $seatsOfSector       = $seatsLayout[ 'room' ][ 'seats' ];
@@ -179,7 +206,8 @@ function stcTickets_spettacolo_prices_callback() {
         // by adding ?print=1 to the URL
         if(isset($_GET['print']) && $_GET['print'] == 3) {
             echo "<pre>";
-            print_r($map_zones);
+            print_r($seatsLayout);
+            // print_r($map_seats);
             echo "</pre>";
         }
 
@@ -195,6 +223,8 @@ function stcTickets_spettacolo_prices_callback() {
                     $value_arr          = str_split( $value, $width );
                     $status_arr         = str_split( $status, 1 );
                     $chunk_offset_limit = (int) $chunk_offset + count( $value_arr );
+                    $prices_arr         = array();
+                    $prices_attr        = array();
                     $c                  = 0;
                     for ( $i = (int) $chunk_offset; $i < $chunk_offset_limit; $i ++ ) {
                         $index_value               = $value_arr[ $c ] < 10 ? substr( $value_arr[ $c ], -1 ) : $value_arr[ $c ];
@@ -227,7 +257,7 @@ function stcTickets_spettacolo_prices_callback() {
                         }else{
                             if( array_key_first( $map_zones['price'] ) == '0' ) {
                                 $prices_attr = array_column( $map_zones['price'], '@attribute' );
-                                $prices_arr = array_column( $prices_attr, 'price' );                                
+                                $prices_arr = array_column( $prices_attr, 'price' );
                             } else {
                                 $prices_attr = array_column( $map_zones['price'], 'price' );
                                 $prices_arr = $prices_attr;
@@ -277,7 +307,7 @@ function stcTickets_spettacolo_prices_callback() {
                     if(key( $map_zones ) == '0'){
                         if( array_key_first( $map_zones[ $index_value ]['price'] ) == '0' ) {
                             $prices_attr = array_column( $map_zones[ $index_value ]['price'], '@attribute' );
-                            $prices_arr = array_column( $prices_attr, 'price' );                                
+                            $prices_arr = array_column( $prices_attr, 'price' );
                         } else {
                             $prices_attr = array_column( $map_zones[ $index_value ]['price'], 'price' );
                             $prices_arr = $prices_attr;
@@ -300,7 +330,7 @@ function stcTickets_spettacolo_prices_callback() {
                     }else{
                         if( array_key_first( $map_zones['price'] ) == '0' ) {
                             $prices_attr = array_column( $map_zones['price'], '@attribute' );
-                            $prices_arr = array_column( $prices_attr, 'price' );                                
+                            $prices_arr = array_column( $prices_attr, 'price' );
                         } else {
                             $prices_attr = array_column( $map_zones['price'], 'price' );
                             $prices_arr = $prices_attr;
@@ -334,6 +364,18 @@ function stcTickets_spettacolo_prices_callback() {
             }
         }
         endif;
+
+        /**
+         * Testing: print the current seat
+         * by adding ?print=4 to the URL
+         */
+        if(isset($_GET['print']) && $_GET['print'] == 41) {
+            echo 'oooooooooooooooooo';
+            echo "<pre>";
+            print_r($seatFromXml);
+            echo "</pre>";
+        }
+
         foreach ( $seatFromXml as $seatFromXml_key => $seatFromXml_value ) {
             $currentSeat = $seatFromXml_value;
 
@@ -341,7 +383,8 @@ function stcTickets_spettacolo_prices_callback() {
              * Testing: print the current seat
              * by adding ?print=4 to the URL
              */
-            if(isset($_GET['print']) && $_GET['print'] == 4) {
+            if(isset($_GET['print']) && $_GET['print'] == 42) {
+                echo 'aaaaaaaaaaaaaa';
                 echo "<pre>";
                 print_r($currentSeat);
                 echo "</pre>";
@@ -378,9 +421,20 @@ function stcTickets_spettacolo_prices_callback() {
                 'zone-desc'        => isset( $temp_map_seat_array[ $seatFromXml_key ] ) ? $temp_map_seat_array[ $seatFromXml_key ][ 'zone_desc' ] : '',
                 'price'            => isset( $temp_map_seat_array[ $seatFromXml_key ] ) ? $temp_map_seat_array[ $seatFromXml_key ][ 'price' ] : '',
             ) );
+
+
         }
     } else {
         $errstring = isset( $extGetMapData[ 'reply' ][ '@attribute' ][ 'errstring' ] ) ? $extGetMapData[ 'reply' ][ '@attribute' ][ 'errstring' ] : '';
+    }
+    /**
+     * Testing: print the current seat
+     * by adding ?print=4 to the URL
+     */
+    if(isset($_GET['print']) && $_GET['print'] == 4) {
+        echo "<pre>";
+        print_r($circles_arr);
+        echo "</pre>";
     }
     ?>
 <!--    <div class="tooltip">
@@ -432,6 +486,14 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
             <div class="spettacolo-prices-wrap">
                 <div class="spe-half-wrap left_part">
                     <?php
+                    /**
+                     * Print 5 test
+                     */
+                    if(isset($_GET['print']) && $_GET['print'] == 5) {
+                        echo "<pre>";
+                        print_r($circles_arr);
+                        echo "</pre>";
+                    }
                     if( ! empty( $circles_arr ) ) {
                         if( isset($_GET[ 'selectionMode' ]) && $_GET[ 'selectionMode' ] == '1' ) {
                             ?>
@@ -439,7 +501,7 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                 <button id="zoom-in"><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg></button>
                                 <button id="zoom-out"><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/></svg></button>
                                 <button id="reset"><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg></button>
-                            </div> 
+                            </div>
                         <?php } ?>
                         <div class="spettacolo-prices-img">
                             <svg id="svgSeatSvg" height="<?php echo $svgHeight; ?>" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" viewBox="0 0 1280 960" style="width: 100%;" draggable="false">
@@ -469,7 +531,7 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                     <div class="tooltip-price-title"></div>
                                     <div class="tooltip-price"></div>
                                 </div>
-                            </div>                            
+                            </div>
                         </div>
                         <?php
                     } else {
@@ -499,7 +561,7 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                             </div>
                             <div class="price-table tab-content">
                                 <?php
-                                
+
                                 /**
                                  * Testing: print the array of prices
                                  * by adding ?print=5 to the URL
@@ -509,7 +571,7 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                     print_r($pricesArr);
                                     echo "</pre>";
                                 }
-                                
+
                                 if(!empty($pricesArr[ 'macrozone' ])){
                                     $reduction_maxbuy = 0;
                                     $macrozone = $pricesArr[ 'macrozone' ];
@@ -562,11 +624,11 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                             $show_list_row = false;
                                             ob_start();
 
-                                            
+
                                             if( ! empty( $reductionArr ) ) {
-                                                
+
                                                 foreach ( $reductionArr as $reductionArr_key => $reductionArr_value ) {
-                                                    
+
                                                     if( is_user_logged_in() ) {
                                                         $reduction_flag = false;
                                                         $reduction_desc   = $reductionArr_value[ 'description' ];
@@ -574,7 +636,7 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                                         $reduction_maxbuy = $reductionArr_value[ 'maxbuy' ];
                                                         $reduction_id     = $reductionArr_value[ '@attributes' ][ 'id' ];
                                                         $reduction_flag = true;
-  
+
                                                         if(!empty($barcode)){
                                                             $reduction_price = '0.00';
                                                         }
@@ -598,7 +660,7 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>                        
+                                                            </div>
                                                         <?php
                                                         }
                                                     } else if( ! is_user_logged_in() && strpos($reductionArr_value[ 'description' ], 'COMMUNITY' ) == false ) {
@@ -629,7 +691,7 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>                        
+                                                            </div>
                                                         <?php
                                                         }
                                                     }
@@ -658,7 +720,7 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                                     </div>
                                                     <?php echo $list_row_html; ?>
                                                 </div>
-                                            <?php   
+                                            <?php
                                             }
                                         }
                                     }else{
@@ -705,14 +767,14 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
                                         $button_class = 'subscription-buy-btn';
                                         $profile_status = 'complete';
                                         $data_src = '#subscription-fancybox-wrap';
-                                        
+
                                     } else if(empty( $place_of_birth ) || empty( $dob )) {
                                         // Ho il telefono ma non ho i dati di nascita
                                         $button_class = 'cart-buy-btn';
                                         $profile_status = 'incomplete';
                                         $data_src = '#edit-fancybox-form';
-                                    } 
- 
+                                    }
+
                                 } else { // Non sono loggato
                                     $button_class = 'cart-buy-btn';
                                     $data_src = '#login-fancybox-form';
@@ -732,7 +794,7 @@ Log in and discover your reserved fees for this event.', 'stc-tickets');?></p>
 
 <?php // EX fancybox form for update profile
 if (is_user_logged_in(  )) {
-    if(empty( $user_billing_phone )) { 
+    if(empty( $user_billing_phone )) {
         $disabled_email = !empty( $current_user_email ) ? 'style="pointer-events:none;"' : '';
         ?>
 
@@ -775,7 +837,7 @@ if (is_user_logged_in(  )) {
             <p class="woocommerce-form-row form-row">
                 <?php // Check if user has test email
                 /* DISABILITATO
-                    if ($current_user_email == TEST_EMAIL) { 
+                    if ($current_user_email == TEST_EMAIL) {
                         <button class="woocommerce-Button woocommerce-button update_phone_otp otp-verified-disabled button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : ''  ); ?> woocommerce-form-update__submit" name="update_phone_otp" value="<?php esc_attr_e( 'Update', 'stc-tickets' ); ?>"><?php esc_html_e( 'Update', 'stc-tickets' ); ?></button>
 
                     // if test email save phone number without verify and OTP
@@ -793,8 +855,8 @@ if (is_user_logged_in(  )) {
         <?php } ?>
         </div>
     </div>
-    
-    <?php // 
+
+    <?php //
     } else if(!empty($barcode)) { // Se ho il barcode, sono in fase di acquisto di un abbonamento ?>
     <div id="subscription-fancybox-wrap" class="ffancybox-wrapper">
         <button class="chiudi-box" aria-label="<?php _e( 'Chiudi finestra', 'stc-tickets' ); ?>">⨯</button>
@@ -803,12 +865,12 @@ if (is_user_logged_in(  )) {
             <div id="replace-me">
                 <p><?php _e('Hello, this is the content to be replaced inside FancyBox!','stc-tickets'); ?></p>
             </div>
-            <button class="cart-buy-btn buy-btn" data-profile-status="complete"><?php _e('Passo Successivo','stc-tickets'); ?></button>    
+            <button class="cart-buy-btn buy-btn" data-profile-status="complete"><?php _e('Passo Successivo','stc-tickets'); ?></button>
         </div>
     </div>
 
     <?php } else if( empty( $place_of_birth ) || empty( $dob ) ) {
-        // Non ho il profilo completo 
+        // Non ho il profilo completo
         // retrieve site url in current language
         $site_url = site_url();
         if ( get_locale() !== 'it_IT' ) {
@@ -824,7 +886,7 @@ if (is_user_logged_in(  )) {
             </div>
         </div>
     </div>
-    <?php 
+    <?php
     }
 
 } else { // login
@@ -883,7 +945,7 @@ if (is_user_logged_in(  )) {
                     <?php do_action( 'woocommerce_login_form_end' ); ?>
 
                 </form>
-                
+
                 <?php // added by sarah ?>
                 <script>
                     function showPsw() {
@@ -893,7 +955,7 @@ if (is_user_logged_in(  )) {
                         } else {
                             x.type = "password";
                         }
-                    } 
+                    }
                 </script>
 
                 <?php if( 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ) : ?>
