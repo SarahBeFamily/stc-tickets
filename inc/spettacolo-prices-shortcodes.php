@@ -251,8 +251,11 @@ function stcTickets_spettacolo_prices_callback() {
                                 }
                             },ARRAY_FILTER_USE_BOTH);
                             if(!empty($final_prices_arr)){
-                                $final_prices_arr = array_filter($final_prices_arr, function($v) { return $v > 0; });
-                                $min_price =  is_user_logged_in() ? min( $final_prices_arr ) : max( $final_prices_arr );
+                                // $final_prices_arr = array_filter($final_prices_arr, function($v) { return $v > 0; });
+                                $final_prices_arr = array_filter($final_prices_arr, fn($v) => $v !== null && $v !== '');
+                                $min_final = min( $final_prices_arr );
+                                $max_final = max( $final_prices_arr );
+                                $min_price =  is_user_logged_in() ? $min_final : $max_final;
                             }
                         }else{
                             if( array_key_first( $map_zones['price'] ) == '0' ) {
